@@ -8,7 +8,7 @@
   basis.require('basis.ui.field');
   basis.require('basis.ui.button');
   basis.require('basis.data.property');
-  //basis.require('basis.net.ajax');
+  basis.require('basis.net');
   basis.require('basis.ui.resizer');
 
   var STATE = basis.data.STATE;
