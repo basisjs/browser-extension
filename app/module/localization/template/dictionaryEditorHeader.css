@@ -1,0 +1,38 @@
+
+  #DictionaryEditor-Header 
+  {
+    position: relative;
+    overflow: hidden;
+    z-index: 200;
+    background: -webkit-linear-gradient(top, #E8E8E8, #DDD);
+    border-bottom: 1px solid #CCC;
+    height: 2.5em;
+    padding-right: 17px;
+  }
+
+  #DictionaryEditor-Header .Cultures
+  {
+    position: relative;
+    z-index: 1;
+    float: right;
+  }
+  #DictionaryEditor-Header .Culture-Wrapper 
+  {
+    text-align: center;
+    padding: 0.65em 0; 
+  } 
+
+  .AddCulture-Row
+  {
+    position: absolute;
+    right: 0;
+  }
+
+  .AddCulture-Row .Table-Column
+  {
+    background: none !important;
+    float: right;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }

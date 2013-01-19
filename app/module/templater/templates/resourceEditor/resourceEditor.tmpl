@@ -1,0 +1,18 @@
+{resource:resourceEditor.css}
+<div class="ResourceEditor {modified} {disabled}">
+  <div class="ResourceEditor-Title">
+    <!--{buttonPanel}-->
+    <div class="ResourceEditor-Caption" title="{title}">{filename}</div>
+  </div>
+  <div class="ResourceEditor-Container {modified}">
+    <!--{createFilePanel}-->
+    <pre{field} class="ResourceEditor-Content"
+      event-keydown="keydown"
+      event-keyup="keyup"
+      event-keypress="keypress"
+      event-focus="focus"
+      event-blur="blur"
+      event-change="change"
+      event-input="input"/>
+  </div>
+</div>

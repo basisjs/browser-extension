@@ -1,0 +1,165 @@
+
+  #EditorToolbar
+  {
+    /*background-color: green !important;*/
+  }
+
+  #TemplateDeclarationViewer
+  {
+    font-family: Consolas;
+    /*float: right;
+    margin-left: 5px;
+    width: 40%;
+    min-width: 200px;
+    max-width: 50%;*/
+    box-shadow: 0 0 8px rgba(128, 128, 128, .25) inset;
+    border-top: 1px solid #DDD;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    overflow: auto;
+  }
+  #TemplateDeclarationViewer.focus
+  {
+    border-color: #ACF;
+    background: white;
+  }
+
+  /*#TemplateDeclarationViewer .Basis-Resizer
+  {
+    position: absolute;
+    left: 0;
+    top: -8px;
+    bottom: 0;
+    height: 5px;
+  }*/
+
+  #TemplateDeclarationViewer .devtools-templateTree,
+  #TemplateDeclarationViewer .devtools-templateNode-Content
+  {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateTree
+  {
+    position: absolute;
+    top: 1.2em;
+    margin-top: 5px;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    outline: none;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode
+  {
+    position: relative;
+    margin: 0;
+    padding: 0;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode.Text .devtools-templateNode-Caption
+  {
+    white-space: pre-wrap;
+    background: #E8E8E8;
+    padding: 2px;
+    border-radius: 2px;
+  }
+  #TemplateDeclarationViewer .devtools-templateNode.Text.hasRefs .devtools-templateNode-Caption
+  {
+    background: #CDEB8B;
+    color: #050;
+    text-shadow: 0 1px rgba(255,255,255,.75);
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode-Title
+  {
+    padding: 1px;
+    font-size: 90%;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode.selected > .devtools-templateNode-Title
+  {
+    background-color: #DEF;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode-Title:hover
+  {
+    background-color: #EEE;
+      -webkit-box-shadow: 0 -1px 3px #AAA;
+      -moz-box-shadow: 0 -1px 3px #AAA;
+    box-shadow: 0 -1px 3px #AAA;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode-Content .devtools-templateNode-Title,
+  #TemplateDeclarationViewer .devtools-templateNode-Content .devtools-templateNode-Content
+  {
+    margin-left: -375px;
+    padding-left: 400px;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode-Title:hover + .devtools-templateNode-Content
+  {
+      -webkit-box-shadow: 0 2px 3px -1px #AAA;
+      -moz-box-shadow: 0 2px 3px -1px #AAA;
+    box-shadow: 0 2px 3px -1px #AAA;
+  }
+
+
+  #TemplateDeclarationViewer .devtools-templateNode.Comment > .devtools-templateNode-Title
+  {
+    color: #444;
+  }
+
+  #TemplateDeclarationViewer .devtools-templateNode-Prefix,
+  #TemplateDeclarationViewer .devtools-templateNode.Tag > .devtools-templateNode-Title > .devtools-templateNode-Caption
+  {
+    font-weight: bold;
+  }
+  #TemplateDeclarationViewer .closeTag
+  {
+    display: none;
+  }
+  #TemplateDeclarationViewer .closeTag.hasChilds
+  {
+    display: block;
+  }
+
+  #TemplateDeclarationViewer .Field-Edit
+  {
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+  }
+  #TemplateDeclarationViewer .Field-Edit .Basis-Field-Title
+  {
+    display: none;
+  }
+  #TemplateDeclarationViewer .Field-Edit .Basis-Field-Container
+  {
+    height: 100%;
+    padding-right: 1px;
+  }
+  #TemplateDeclarationViewer .Field-Edit textarea
+  {
+    display: block;
+    margin: 0;
+    padding: 2px;
+    height: 100%;
+    width: 100%;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    resize: none;
+  }
+

@@ -1,0 +1,206 @@
+
+  .LocalizationPage
+  {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }
+
+
+  .Editor-Toolbar
+  {
+    border-bottom: 1px solid #B6BAC0;
+    /*box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.15);*/
+    padding: 0.5em;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .Editor-Box
+  {
+    -webkit-box-flex: 1;
+    position: relative;
+    /*display: -webkit-box;
+    overflow: auto;
+    position: relative;*/
+    /*height: 100%;
+    overflow: hidden;
+    position: relative;*/
+  }
+
+  .Editor-Box-Wrapper
+  {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .Editor-Sidebar
+  {
+    width: 20%;
+    float: left;
+    height: 100%;
+    border-right: 4px solid #B6BAC0;
+    position: relative;
+    /*height: 100%;
+    overflow: auto;*/
+  }
+
+  .Editor-Sidebar .Basis-Resizer
+  {
+    top: 0;
+    bottom: 0;
+    right: -5px;
+    width: 5px;
+  }
+
+  .Editor-Content
+  {
+    overflow: hidden;
+    height: 100%;
+    position: relative;    
+    /*-webkit-box-flex: 1;*/
+  }
+
+  .DictionaryList
+  {
+    height: 100%;
+    overflow: auto;
+  }
+
+  .DictionaryMatchInput
+  {
+    display: inline-block;
+    margin-right: 1em;
+    width: 20%;
+    position: relative;
+  }
+
+  .DictionaryMatchInput.Basis-Field INPUT
+  {
+    width: 100%;
+    margin: 0;
+    padding: 2px;
+    border-color: #BAB6C0;
+    padding-left: 20px;
+    background: url(img/input_search_16x16.png) no-repeat left center;
+    box-sizing: border-box;
+  }
+
+  .DictionaryMatchInput .Basis-Field-Container
+  {
+    /*padding-right: 6px;*/
+
+  }
+
+  .DictionaryMatchInput .CancelFilterButton
+  {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: 20px;
+    height: 20px;
+    background: url(img/cross_gray_12x12.png) no-repeat center center;
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .DictionaryMatchInput .CancelFilterButton:hover
+  {
+    opacity: 1;
+  }
+
+
+  .Localization-InspectButton.Basis-Button
+  {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    font-size: 100%;
+  }
+
+  .Localization-InspectButton.Basis-Button .Basis-Button-Caption
+  {
+    font-weight: bold;
+    font-size: 85%;
+    padding: 1.1em 0;
+    margin: 0 5ex;
+  }
+
+
+  .Localization-InspectButton.Basis-Button.active .Basis-Button-Back
+  {
+    background-color: #BCD7F2;
+    border-color: #888;
+
+      -webkit-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+      -moz-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+  }
+
+  /*.DictionaryList
+  {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5em;
+  }
+
+
+  .DictionaryList-Item.modified
+  {
+  }
+
+  .DictionaryList-Item .modifiedMarker
+  {
+    display: none;
+    float: right;
+    width: 5px;
+    height: 5px;
+    border-radius: 5px;
+    margin: 4px;
+    background: #006699;
+  }
+
+  .DictionaryList-Item.modified .modifiedMarker
+  {
+    display: block;
+  }*/
+
+  .CultureList
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .CultureList .Basis-Field-Title,
+  .DictionaryList .Basis-Field-Title,
+  .DictionaryList .Basis-Field-Container,
+  .CultureList .Basis-Field-Container
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .CultureList .Basis-Field-Title,
+  .DictionaryList .Basis-Field-Title
+  {
+    margin-right: 0.5em;
+  }
+
+  .SaveButtonPanel
+  {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 0.5em;
+  }
+
+  .FileSaveErrorLabel
+  {
+    display: inline-block;
+    vertical-align: middle;
+    color: red;
+  }

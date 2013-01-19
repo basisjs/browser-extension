@@ -1,0 +1,39 @@
+
+  #TemplateDeclarationViewer .AttributeList
+  {
+    color: #333;
+  }
+  #TemplateDeclarationViewer .Attribute
+  {
+    padding: 2px .25em;
+    white-space: nowrap;
+  }
+  #TemplateDeclarationViewer .AttributeValue
+  {
+    display: none;
+  }
+  #TemplateDeclarationViewer .templater-AttributeValueBinding,
+  #TemplateDeclarationViewer .templater-AttributeClassBinding
+  {
+    background: #CDEB8B;
+    color: #050;
+    padding: 2px .2em;
+    border-radius: 2px;
+    text-shadow: 0 1px rgba(255,255,255,.75);
+  }
+  #TemplateDeclarationViewer .Attribute.hasChildren .AttributeValue
+  {
+    display: inline;
+  }
+  #TemplateDeclarationViewer .Attribute.isEvent
+  {
+    border-radius: 2px;
+    background-color: #FE8;
+    color: #530;
+    text-shadow: 0 1px rgba(255, 255, 255, .75);
+  }
+  #TemplateDeclarationViewer .Attribute.isEvent:hover
+  {
+    background-color: #FFE000;
+    color: #000;
+  }

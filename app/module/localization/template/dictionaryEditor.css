@@ -1,0 +1,78 @@
+
+  #DictionaryEditor
+  {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }
+
+  #DictionaryEditor .DictionaryEditor-Content
+  {
+    position: relative;
+    z-index: 1;
+    -webkit-box-flex: 1;
+    overflow-y: scroll;
+  }
+
+
+  .Table-Row
+  {
+    width: 80%;
+    float: right; 
+  }
+
+  .Table-Column
+  {
+    width: 50%;
+    float: left;
+  }
+
+  .columnCount_3 .Table-Column
+  {
+    width: 33.33%;
+  }
+  .columnCount_4 .Table-Column
+  {
+    width: 25%;
+  }
+  .columnCount_5 .Table-Column
+  {
+    width: 20%;
+  }
+  .columnCount_6 .Table-Column
+  {
+    width: 16.66%;
+  }
+
+
+  #ColumnBackgroundContainer
+  {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+  #ColumnBackgroundContainer .Table-Column
+  {
+    /*position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;*/
+    height: 100%;
+  }
+
+  #DictionaryEditor-Header .Table-Column,
+  #ColumnBackgroundContainer .Table-Column
+  {
+    background: #F0F0F0;
+  }
+  #DictionaryEditor-Header .Table-Column.even,
+  #ColumnBackgroundContainer .Table-Column.even
+  {
+    background: #F8F8F8;
+  }

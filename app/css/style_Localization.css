@@ -1,0 +1,145 @@
+
+
+
+
+  /*.Token-FormContent
+  {
+    padding: 0.5em;
+    background: #F1F1F1;
+  }
+
+  .Token-FormContent:nth-child(2n+1)
+  {
+    background: #F8F8F8;
+  }
+
+  .Token-FormContent-Title
+  {
+    display: inline-block;
+    vertical-align: middle;
+    width: 20%;
+  }
+
+
+  .Token-FormContent-Content,
+  .Token-FormContent .Basis-Field-Container,
+  .Token-FormContent .Basis-Field-Title
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }*/
+
+  /**/
+
+
+/*Header*/
+
+
+
+  #AddCultureButton
+  {
+    /*float: right;*/
+    margin: 0.5em 0.5em 0.5em 0;
+  }
+
+
+  #SaveButton
+  {
+    float: left;
+    margin: 0.5em 0 0 1em;
+  }
+
+  /*#DictionaryEditor-Header .ua .title,
+  .AddCulturePanel .Culture-Flag.ua
+  {
+    background-image: url(img/flags/ua.png);
+  }*/
+
+
+  /* Editor Tree */
+
+
+
+  /*.Resource-Value
+  {
+    border: 1px solid #EEE;
+    padding: 1px 2px;
+    cursor: text;
+    word-wrap: break-word;
+    background: white;
+    white-space: pre-wrap;
+  }*/
+
+  #DictionaryEditor .EmptyLabel
+  {
+    display: inline-block;
+    padding-top: 0.5em;
+    color: #888;
+    text-align: center;
+    position: relative;
+    width: 100%;
+  }
+
+  #DictionaryEditor .EmptyLabel-Title
+  {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.5em;
+  }
+
+  #DictionaryEditor .EmptyLabel .Basis-Button
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  #SaveButtonPanel
+  {
+    width: 100%;
+    padding: 0.5em 0;
+    margin: 0;
+    position: fixed;
+    background: #EEE;
+    bottom: 0;
+    font-size: 130%;
+    width: 300px;
+    -moz-border-radius: 0 5px 0 0;
+  }
+
+  #SaveButtonPanel .Basis-Button
+  {
+    margin-left: 20px;
+  }
+
+
+
+  
+  /*#ColumnBackgroundContainer .Column_2
+  {
+    left: 50%;
+  }
+
+  .childCount_3 #ColumnBackgroundContainer  .Column_2
+  {
+    left: 33.33%;
+  }
+  .childCount_3 #ColumnBackgroundContainer .Column_3
+  {
+    left: 66.66%;
+  }
+
+  .childCount_4 #ColumnBackgroundContainer .Column_2
+  {
+    left: 25%;
+  }
+  .childCount_4 #ColumnBackgroundContainer .Column_3
+  {
+    left: 50%;
+  }
+  .childCount_4 #ColumnBackgroundContainer .Column_4
+  {
+    left: 75%;
+  }*/
+
+
+

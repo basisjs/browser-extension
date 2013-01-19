@@ -1,0 +1,10 @@
+
+  .CultureComboboxItem-Flag
+  {
+    width: 16px;
+    height: 11px;
+    display: inline-block;
+    margin-right: 5px;
+    background: url(img/flags2.png) no-repeat -1000px -1000px;
+  }
+

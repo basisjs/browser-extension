@@ -1,0 +1,10 @@
+
+  <b:resource src="cultureComboboxItem.css"/>
+
+  <b:define name="selected" type="bool"/>
+  <b:define name="disabled" type="bool"/>
+
+  <div class="CultureComboboxItem Basis-Combobox-Item {selected} {disabled}" event-click="select">
+    <span class="CultureComboboxItem-Flag" style="background-position: -{spriteX}px -{spriteY}px"></span>
+    {title}
+  </div>

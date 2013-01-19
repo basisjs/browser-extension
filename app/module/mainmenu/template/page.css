@@ -1,0 +1,17 @@
+
+  /*.App-MainMenu-Page
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px;
+    z-index: 1;
+    overflow: hidden;
+    overflow-y: auto;
+  }*/
+  .App-MainMenu-Page__unselected
+  {
+    display: none;
+  }

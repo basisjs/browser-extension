@@ -1,0 +1,10 @@
+
+  .ResourceListItem
+  {
+    padding: 0.5em;
+    text-decoration: underline;
+    color: #05D;
+    display: inline-block;
+    font-size: 85%;
+    cursor: pointer;
+  }

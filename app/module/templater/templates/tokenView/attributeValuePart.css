@@ -1,0 +1,9 @@
+
+  #TemplateDeclarationViewer .templater-AttributeValuePart
+  {
+    margin-right: 1ex;
+  }
+  #TemplateDeclarationViewer .templater-AttributeValuePart:last-child
+  {
+    margin-right: 0;
+  }

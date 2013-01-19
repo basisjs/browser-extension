@@ -1,0 +1,65 @@
+
+  .App-MainMenu-Tab
+  {
+    float: left;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .App-MainMenu-TabContent
+  {
+    padding: 0.8em 1.5em;
+    display: block;
+  }
+
+
+  .App-MainMenu-Tab.selected
+  {
+    background: #7A7975;
+    color: white;
+
+  }
+
+  /*.App-MainMenu-Tab
+  {
+    display: inline-block;
+    width: 33.33%;
+    height: 50%;
+    position: relative;
+    vertical-align: bottom;
+    cursor: pointer;
+  }
+  .App-MainMenu-Tab:hover
+  {
+
+  }
+
+  .App-MainMenu-TabContent
+  {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    border: 8px solid white;
+    background-repeat: no-repeat;
+    background-position: center 20%;
+    background-color: #F0F0F0;
+      -webkit-transition: background-color .25s;
+
+    font-size: 150%;
+  }
+  .App-MainMenu-Tab:hover .App-MainMenu-TabContent
+  {
+    background-color: #E0E0E0;
+      -webkit-transition: background-color .4s;
+  }
+
+  .App-MainMenu-TabCaption
+  {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 25%;
+  }*/

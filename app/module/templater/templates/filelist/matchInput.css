@@ -1,0 +1,37 @@
+
+  .FileList-MatchInput
+  {
+    padding: 5px;
+    border-bottom: 1px solid #B6BAC0;
+    background: #F4F4F4;
+  }
+  .FileList-MatchInput INPUT
+  {
+    width: 100%;
+    margin: 0;
+    border: 1px solid #BAB6C0;
+    padding: 2px 20px;
+    box-sizing: border-box;
+    background: white url(img/input_search_16x16.png) no-repeat left center;
+  }
+
+  .FileList-MatchInput-CancelButton
+  {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: url(img/cross_gray_12x12.png) no-repeat center center;
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .FileList-MatchInput-CancelButton:hover
+  {
+    opacity: 1;
+  }
+
+  .FileList-MatchInput_clean .FileList-MatchInput-CancelButton
+  {
+    display: none;
+  }

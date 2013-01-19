@@ -1,0 +1,24 @@
+
+  .FileListItem
+  {
+    padding: 0.2em 1em;
+    cursor: pointer;
+  }
+
+  .FileListItem:hover
+  {
+    background: #AAA;
+    color: white;
+  }
+
+  .FileListItem_selected
+  {
+    background: #7A7975 !important;
+    color: white;
+  }
+
+
+  .FileListItem-Path
+  {
+    display: none;
+  }

@@ -1,0 +1,36 @@
+
+  HTML,
+  BODY
+  {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+  }
+
+  BODY
+  {
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-size: small;
+  }
+
+  .BasisNotSupported
+  {
+    padding: 1em;
+    color: #555;
+  }
+
+  /*#Layout
+  {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }*/
+
+
+
+
+
+
