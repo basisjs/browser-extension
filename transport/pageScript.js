@@ -1,5 +1,6 @@
 
   var func = function(){
+    basis.require('basis.dom');
     basis.require('basis.ui');
     basis.require('basis.ui.popup');
     basis.require('basis.dom.wrapper');
@@ -16,17 +17,16 @@
     var transferDataEvent = document.createEvent('Event');
     transferDataEvent.initEvent('transferData', true, true);
 
-    var transferDiv = document.createElement('pre');
-    transferDiv.style.position = 'absolute';
-    transferDiv.style.left = '-2000px';
-    transferDiv.id = 'transferDiv';
-    document.body.appendChild(transferDiv);
+    var transferDiv = document.body.appendChild(
+      DOM.createElement('pre#transferDiv[style="position: absolute; left: -2000px"]')
+    );
 
     function sendData(action, data){
       transferDiv.setAttribute('action', action);
-      transferDiv.innerText = JSON.stringify(data || {});
+      transferDiv.innerHTML = '';
+      transferDiv.appendChild(document.createTextNode(JSON.stringify(data || {})));
       transferDiv.dispatchEvent(transferDataEvent);
-      transferDiv.innerText = '';
+      transferDiv.innerHTML = '';
     }
 
     //
@@ -75,43 +75,52 @@
     var inspectMode;
     var elements = [];
 
-    var overlay = DOM.createElement('DIV[style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(128,128,128,.0.05)"]');
-    overlay.addEventListener('click', clickHandler);
+    var overlay = DOM.createElement({
+      description: 'DIV[style="position: absolute; top: 0; bottom: 0; left: 0; right: 0; z-index: 10000; background: rgba(128,128,128,.0.05)"]',
+      click: function(event){
+        var sender = basis.dom.event.sender(event);
 
-    function clickHandler(event){
-      var sender = basis.dom.event.sender(event);
+        var token = sender.token;
+        if (token)
+        {
+          endInspect();
+          loadToken(token);
+        } 
+      }
+    });
 
-      var token = sender.token;
-      if (token)
-      {
-        endInspect();
-        loadToken(token);
-      } 
-    }
+    // dom mutation observer
 
-    // mutant event observer
     var observerConfig = {
       subtree: true,
       attributes: true,
       characterData: true
     };
-    var observer = new WebKitMutationObserver(function(mutations) {
-      unhighlight();
-      highlight();  
-    });
+    var observer = (function(){
+      var names = ['MutationObserver', 'WebKitMutationObserver'];
+      
+      for (var i = 0, name; name = names[i]; i++)
+        if (name in global)
+          return new global[name](function(mutations){
+            unhighlight();
+            highlight();  
+          });
+    })();
 
     function startInspect(){ 
       if (!inspectMode)
       {
-        highlight();
         inspectMode = true;
-        observer.observe(document.body, observerConfig);
+        highlight();
+        if (observer)
+          observer.observe(document.body, observerConfig);
       }
     }
     function endInspect(){
       if (inspectMode)
       {
-        observer.disconnect();
+        if (observer)
+          observer.disconnect();
         unhighlight();
         inspectMode = false;
       }
@@ -123,19 +132,18 @@
     }
 
     function unhighlight(){
-      DOM.remove(overlay);
-      for (var i = 0, node; node = elements[i]; i++)
+      var node;
+
+      while (node = elements.pop())
       {
-        delete node.token;
+        node.token = null;
         DOM.remove(node);
       }
-      elements = [];
+
+      DOM.remove(overlay);
     }
 
     function domTreeHighlight(root){
-      var node;
-      var bindings;
-      var element;
       var range = document.createRange();
 
       for (var i = 0, child; child = root.childNodes[i]; i++)
@@ -144,10 +152,10 @@
         {
           if (child.basisObjectId)
           {
-            node = basis.template.resolveObjectById(child.basisObjectId);
+            var node = basis.template.resolveObjectById(child.basisObjectId);
             if (node)
             {
-              bindings = (node.tmpl.set.debug && node.tmpl.set.debug()) || [];
+              var bindings = (node.tmpl.set.debug && node.tmpl.set.debug()) || [];
               for (var j = 0, binding; binding = bindings[j]; j++)
               {
                 if (binding.attachment && binding.dom.nodeType == basis.dom.TEXT_NODE/* && child.contains(binding.dom)*/)
@@ -160,12 +168,19 @@
                     var color = getColorForDictionary(binding.attachment.dictionary.namespace);
                     var bgColor = 'rgba(' + color.join(',') + ', .3)';
                     var borderColor = 'rgba(' + color.join(',') + ', .6)';
-                    element = overlay.appendChild(basis.dom.createElement('DIV[style="background-color:' + bgColor + ';outline:1px solid ' + borderColor + ';z-index:65000;position:fixed;cursor:pointer;top:' + 
-                      rect.top + 'px;left:' + 
-                      rect.left + 'px;width:' + 
-                      rect.width + 'px;height:' +
-                      rect.height +
-                    'px"]'));
+                    var element = overlay.appendChild(basis.dom.createElement({
+                      css: {
+                        backgroundColor: bgColor,
+                        outline: '1px solid ' + borderColor,
+                        zIndex: 65000,
+                        position: 'fixed',
+                        cursor: 'pointer',
+                        top: rect.top + 'px',
+                        left: rect.left + 'px',
+                        width: rect.width + 'px', 
+                        height: rect.height + 'px'
+                      }
+                    }));
 
                     element.token = binding.attachment;
 
@@ -203,14 +218,14 @@
 
     function loadDictionaryList(){
       var dictionaries = basis.l10n.getDictionaries();
-
       var data = [];
 
       for (var dictionaryName in dictionaries)
-      {
         if (dictionaries[dictionaryName].location)
-          data.push({ Dictionary: dictionaryName, Location: dictionaries[dictionaryName].location });
-      }
+          data.push({
+            Dictionary: dictionaryName,
+            Location: dictionaries[dictionaryName].location
+          });
 
       sendData('dictionaryList', data);
     }
@@ -225,6 +240,7 @@
           dictionaryName: dictionaryName,
           tokens: {}
         };
+
         for (var tokenName in dict.resources['base'])
         {
           if (!data.tokens[tokenName])
@@ -251,12 +267,12 @@
         tokens: {}
       };
 
-      for (var i in dictionary.tokens){
-        var tkn = dictionary.tokens[i];
+      for (var key in dictionary.tokens)
+      {
+        var tkn = dictionary.tokens[key];
         data.tokens[tkn.name] = {};
-        for (var j = 0, culture; culture = cultureList[j]; j++){
+        for (var j = 0, culture; culture = cultureList[j]; j++)
           data.tokens[tkn.name][culture] = dictionary.getCultureValue(culture, tkn.name);
-        }
       }
       
       sendData('token', data);        
@@ -297,11 +313,9 @@
               sendData('saveDictionary', { result: 'error', dictionaryName: dictionaryName, errorText: this.state.data });
 
             if (this.state == STATE.READY || this.state == STATE.ERROR)
-            {
               setTimeout(function(){
                 fileDataObjectSet.destroy();
               }, 0);
-            }
           }
         }
       });
@@ -501,7 +515,7 @@
         nodeInfoPopup().setDelegate(node);
       }
 
-      var nodeInfoPopup = Function.lazyInit(function(){
+      var nodeInfoPopup = basis.fn.lazyInit(function(){
         var panel = new basis.ui.Node({
           template: '<div>{title}</div>',
           binding: {
@@ -554,18 +568,19 @@
       function clickHandler(event){
         basis.dom.event.kill(event);
 
-        if (pickupTarget.value)
+        var node = pickupTarget.value;
+        if (node)
         {
-          var url = pickupTarget.value.template.source.url;
+          var url = node.template.source.url;
+
           if (url)
-          {
-            var filename = url.substr((location.protocol + '//' + location.host).length);
-            sendData('pickTemplate', { filename: filename });
-          }
+            sendData('pickTemplate', {
+              filename: url.substr((location.protocol + '//' + location.host).length)
+            });
           else
-          { 
-            sendData('pickTemplate', { content: pickupTarget.value.template.source });
-          }
+            sendData('pickTemplate', {
+              content: node.template.source
+            });
         } 
       }
 
@@ -588,14 +603,14 @@
       var body = document.body;
       var docElem = document.documentElement;
 
-      var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop
-      var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft
+      var scrollTop = window.pageYOffset || docElem.scrollTop || body.scrollTop;
+      var scrollLeft = window.pageXOffset || docElem.scrollLeft || body.scrollLeft;
 
-      var clientTop = docElem.clientTop || body.clientTop || 0
-      var clientLeft = docElem.clientLeft || body.clientLeft || 0
+      var clientTop = docElem.clientTop || body.clientTop || 0;
+      var clientLeft = docElem.clientLeft || body.clientLeft || 0;
 
-      var top  = box.top +  scrollTop - clientTop
-      var left = box.left + scrollLeft - clientLeft
+      var top  = box.top + scrollTop - clientTop;
+      var left = box.left + scrollLeft - clientLeft;
 
       return { 
         top: Math.round(top), 
@@ -611,22 +626,23 @@
     //
     function getFileList(){
       if (basis.devtools)
-      {
-        var files = basis.devtools.files; 
         sendData('filesChanged', { 
-          inserted: files.getItems().map(function(file){ 
-            return { filename: file.data.filename }
+          inserted: basis.devtools.files.getItems().map(function(file){ 
+            return {
+              filename: file.data.filename
+            };
           }) 
         });
-      }
     }
     function sendFile(file){
-      var data = basis.object.extend({}, file.data);
+      var data = basis.object.slice(file.data);
 
-      if (/tmpl$/.test(file.data.filename) && file.data.content)
+      if (basis.path.extname(file.data.filename) == '.tmpl' && file.data.content)
       {
         data.declaration = basis.template.makeDeclaration(file.data.content, basis.path.dirname(basis.path.resolve(file.data.filename)) + '/');
-        data.resources = data.declaration.resources.map(function(item){ return item.substr((location.protocol + '//' + location.host).length)/*'/' + basis.path.relative(item)*/ });
+        data.resources = data.declaration.resources.map(function(item){
+          return item.substr((location.protocol + '//' + location.host).length)/*'/' + basis.path.relative(item)*/
+        });
       }  
         
       sendData('updateFile', data);
@@ -660,7 +676,7 @@
       update: function(object, delta){
         sendFile(object);
       }
-    }
+    };
     var FILE_LIST_HANDLER = {
       datasetChanged: function(dataset, delta){
         var data = {};
@@ -672,7 +688,7 @@
           {
             if (/\.(tmpl|css)$/.test(object.data.filename))
             {
-              fileData = basis.object.extend({}, object.data);
+              fileData = basis.object.slice(object.data);
               delete fileData.content;
 
               data.inserted.push(fileData);
@@ -704,7 +720,9 @@
     {
       var files = basis.devtools.files;
       files.addHandler(FILE_LIST_HANDLER);
-      FILE_LIST_HANDLER.datasetChanged.call(files, files, { inserted: files.getItems() });
+      FILE_LIST_HANDLER.datasetChanged.call(files, files, {
+        inserted: files.getItems()
+      });
     }
 
     //
@@ -714,13 +732,17 @@
     var serverStateChangedHandler = {
       update: function(object, delta){
         if ('isOnline' in delta)
-          sendData('fsobserverState', { state: this.data.isOnline });
+          sendData('fsobserverState', {
+            state: this.data.isOnline
+          });
       } 
     }
 
     function checkFsObserverState(){
       if (basis.devtools)
-        sendData('fsobserverState', { state: basis.devtools.serverState.data.isOnline });
+        sendData('fsobserverState', {
+          state: basis.devtools.serverState.data.isOnline
+        });
     }
     
     if (basis.devtools)
@@ -738,8 +760,7 @@
 
       return hsv_to_rgb(h, 0.7, 0.95);
     }
-    function hsv_to_rgb(h, s, v)
-    {
+    function hsv_to_rgb(h, s, v){
       var h1 = h * 6;
       var c = v * s;
       var x = c * (1 - Math.abs(h1 % 2 - 1));
