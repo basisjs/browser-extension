@@ -42,19 +42,18 @@
 
   basis.ready(function(){
     // init transport
-    var nsTransport = resource('transport.js')();
 
     var transportClass;
     if (chrome && chrome.extension)
     {
-      transportClass = nsTransport.ChromePluginTransport;
+      transportClass = resource('transport/plugin.js')();
     }
-    else if (window.app_control_panel_server)
+    else if (window.appcp_server)
     {
-      transportClass = nsTransport.SocketTransport;
+      transportClass = resource('transport/server.js')();
     }
     else
-      transportClass = nsTransport.Transport;
+      transportClass = resource('transport/static.js')();
 
     app.transport = new transportClass({});
 

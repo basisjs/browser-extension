@@ -148,8 +148,8 @@
   //
   // listen page script
   //
-  if (chrome && chrome.extension)
-  {
+  /*if (chrome && chrome.extension)
+  {*/
     app.transport.ready(function(){
       for (var i in resourcesLoaded)
         delete resourcesLoaded[i];
@@ -208,7 +208,7 @@
       else 
         Dictionary(data.dictionaryName).setState(STATE.ERROR, data.errorText);
     });
-  }
+  /*}
   else
   {
     new basis.net.Transport({
@@ -229,7 +229,7 @@
         }
       }
     }).request();
-  }
+  }*/
 
   //
   // Layout

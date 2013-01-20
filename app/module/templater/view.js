@@ -124,12 +124,12 @@
     initFilelist();
   //});
 
-  if (chrome && chrome.extension)
-  {
+  /*if (chrome && chrome.extension)
+  {*/
     app.transport.ready(function(){
       app.transport.call('getFileList'); 
-    })
-  }
+    });
+  /*}
   else
   {
     app.type.file.File({
@@ -149,7 +149,7 @@
       content: 
         '{b:resource src="resource.css"}\n<li>{filename}</li>'
     });
-  }
+  } */
 
   app.transport.onMessage('pickTemplate', function(data){
     inspect(false);
