@@ -1,52 +1,48 @@
 
+  basis.require('basis.dom');
+
   var Transport = resource('transport.js')();
 
   var ServerSocketTransport = Transport.subclass({
     init: function(){
+      var self = this;
+
       Transport.prototype.init.call(this);
 
-      var scriptEl = document.createElement('script');
+      basis.dom.appendHead(basis.dom.createElement({
+        description: 'script[src="/socket.io/socket.io.js"]',
+        error: function(){
+          basis.dev.warn('Error on loading socket.io');
+        },
+        load: function(){
+          self.socket = io.connect('/');
+          self.socket.on('connect', function(){
+            self.injectScript();
+          });
+          self.socket.on('message', function(message){
+            if (message.action == 'clientConnected')
+              self.injectScript();
 
-      scriptEl.src = "/socket.io/socket.io.js";
-      scriptEl.onload = this.onLoad.bind(this);
-      scriptEl.onError = this.onError.bind(this);
-
-      document.getElementsByTagName('head')[0].appendChild(scriptEl);
-    },
-    onLoad: function(){
-      this.socket = io.connect('/');
-
-      var self = this;
-      this.socket.on('connect', function(){
-        self.injectScript();
-      });
-      this.socket.on('message', function(message){
-        if (message.action == 'clientConnected')
-          self.injectScript();
-
-        self.message(message);
-      });
-    },
-    onError: function(){
-      console.warn('Error on loading socket.io');
+            self.message(message);
+          })
+        }
+      }));
     },
     injectScript: function(){
-      var pageScript = resource('../pageScript.js')();
       this.socket.emit('message', { 
         action: 'injectScript', 
-        data: pageScript 
+        data: resource('../pageScript.js').fetch() 
       });
     },
     call: function(funcName){
       this.socket.emit('message', { 
         action: 'call', 
-        data : { 
+        data: { 
           method: funcName, 
           args: basis.array.from(arguments).slice(1)
         }
       });
     }
   });
-
 
   module.exports = ServerSocketTransport;
