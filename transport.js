@@ -98,28 +98,26 @@
 
       document.getElementsByTagName('head')[0].appendChild(scriptEl);
     },
-    call: function(funcName){
-      this.socket.emit('callAppFunction', funcName);
-    },
-
     onLoad: function(){
       this.socket = io.connect('localhost:8001');
 
+      var pageScript = resource('pageScript.js')();
+
       socket.on('connect', function(){
-        var pageScript = resource('pageScript.js')();
-
-        this.socket.emit('message', {
-          action: 'injectScript',
-          data: pageScript
-        });
+        this.socket.emit('injectScript', pageScript);
       });
-
+      socket.on('clientContected', function(){
+        this.socket.emit('injectScript', pageScript);
+      });
       socket.on('message', function(message){
         this.message(message);
       });
     },
     onError: function(){
       console.warn('Error on loading socket.io');
+    },
+    call: function(funcName){
+      this.socket.emit('call', funcName, basis.array.from(arguments).slice(1));
     }
   });
 
