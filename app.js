@@ -4,9 +4,9 @@
   basis.require('basis.data.property');
   basis.require('basis.ui');
 
-  function initMainMenu(){
-    var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
+  var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
 
+  function initMainMenu(){
     var mainMenu = basis.resource('app/module/mainmenu/mainmenu.js')();
     
     mainMenu.setChildNodes([
@@ -21,6 +21,7 @@
       if (tab)
         tab.select();
     }
+
     mainMenu.selection.addHandler({
       datasetChanged: function(){
         var tab = this.pick();
@@ -29,7 +30,7 @@
       }
     });
 
-    app.transport.onMessage('contextMenuTranslate',function(){
+    app.transport.onMessage('contextMenuTranslate', function(){
       mainMenu.item('Localization').select();
       app.transport.call('getTokenByContextMenu');
     });
@@ -41,21 +42,17 @@
   //
 
   basis.ready(function(){
-    // init transport
+    // default transport
+    var transport = resource('transport/static.js');
 
-    var transportClass;
-    if (chrome && chrome.extension)
-    {
-      transportClass = resource('transport/plugin.js')();
-    }
-    else if (window.appcp_server)
-    {
-      transportClass = resource('transport/server.js')();
-    }
-    else
-      transportClass = resource('transport/static.js')();
+    // choose suitable transport
+    if (global.chrome && global.chrome.extension)
+      transport = resource('transport/plugin.js');
+    else if (global.appcp_server)
+      transport = resource('transport/server.js');
 
-    app.transport = new transportClass({});
+    // create transport
+    app.transport = transport.fetch();
 
     // init interfaces
     initMainMenu();

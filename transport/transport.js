@@ -1,5 +1,6 @@
 
   var Transport = basis.Class(null, {
+    extendConstructor_: true,
     isReady: false,
 
     init: function(){
@@ -19,10 +20,8 @@
 
       var handlers = this.handlers[message.action];
       if (handlers)
-      {
         for (var i = 0, handler; handler = handlers[i]; i++)
           handler.handler.call(handler.context, message.data && message.data.toObject());
-      }
     },
     onMessage: function(message, handler, handlerContext){
       if (!this.handlers[message])
@@ -34,7 +33,8 @@
       });
     },
     
-    call: Function.$undef
+    call: function(){
+    }
   });
 
   module.exports = Transport;

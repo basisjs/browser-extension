@@ -1,9 +1,9 @@
 
   basis.require('basis.dom');
 
-  var Transport = resource('transport.js')();
+  var Transport = resource('transport.js').fetch();
 
-  var ServerSocketTransport = Transport.subclass({
+  module.exports = new Transport({
     init: function(){
       var self = this;
 
@@ -31,7 +31,7 @@
     injectScript: function(){
       this.socket.emit('message', { 
         action: 'injectScript', 
-        data: resource('../pageScript.js').fetch() 
+        data: resource('pageScript.js').fetch() 
       });
     },
     call: function(funcName){
@@ -44,5 +44,3 @@
       });
     }
   });
-
-  module.exports = ServerSocketTransport;
