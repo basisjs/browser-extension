@@ -2,6 +2,7 @@
   basis.require('basis.dom');
 
   var Transport = resource('transport.js').fetch();
+  var inspectedWindow = chrome.devtools.inspectedWindow;
 
   module.exports = new Transport({
     port: null,
@@ -15,7 +16,7 @@
       this.port.onMessage.addListener(this.message.bind(this));
       this.port.postMessage({
         action: 'extensionInited',
-        tabId: chrome.devtools.inspectedWindow.tabId
+        tabId: inspectedWindow.tabId
       });
 
       this.onMessage('contentScriptInited', this.injectScript, this);
@@ -25,7 +26,7 @@
     call: function(funcName){
       var args = basis.array.from(arguments, 1).map(JSON.stringify);
 
-      chrome.devtools.inspectedWindow.eval(
+      inspectedWindow.eval(
         '(function(){\n' +
         '  try {\n' +
         '    if (basis.appCP)\n' +
@@ -38,7 +39,7 @@
     injectScript: function(){
       var port = this.port;
 
-      chrome.devtools.inspectedWindow.eval(resource('pageScript.js').fetch(), function(result){
+      inspectedWindow.eval(resource('pageScript.js').fetch(), function(result){
         if (result)
           port.postMessage({
             action: 'pageScriptInited'

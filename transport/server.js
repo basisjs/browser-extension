@@ -4,6 +4,8 @@
   var Transport = resource('transport.js').fetch();
 
   module.exports = new Transport({
+    socket: null,
+
     init: function(){
       var self = this;
 
@@ -39,7 +41,7 @@
         action: 'call', 
         data: { 
           method: funcName, 
-          args: basis.array.from(arguments).slice(1)
+          args: basis.array.from(arguments, 1)
         }
       });
     }
