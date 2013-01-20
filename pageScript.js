@@ -1,5 +1,5 @@
-//window.pageScript = function(){
-  var pageScriptFunction = function(){
+
+  var func = function(){
     basis.require('basis.ui');
     basis.require('basis.ui.popup');
     basis.require('basis.dom.wrapper');
@@ -17,6 +17,8 @@
     transferDataEvent.initEvent('transferData', true, true);
 
     var transferDiv = document.createElement('pre');
+    transferDiv.style.position = 'absolute';
+    transferDiv.style.left = '-2000px';
     transferDiv.id = 'transferDiv';
     document.body.appendChild(transferDiv);
 
@@ -759,7 +761,7 @@
       ];
     }
 
-    return {
+    basis.appCP = {
       checkFsObserverState: checkFsObserverState,
 
       loadDictionaryList: loadDictionaryList,
@@ -782,16 +784,15 @@
   }
 
   module.exports = "(function(){" +
-      "if (window.basis){" +
-        "if (!window.pageScript){" +
-          "try{" +
-            "window.pageScript = (" + pageScriptFunction.toString() + ")();" +
-          "}catch(e){" +
-            "console.warn(e.toString())" +
-          "}" +
+    "if (basis){" +
+      "if (!basis.appCP){" +
+        "try{" +
+          "(" + func.toString() + ")();" +
+        "}catch(e){" +
+          "console.warn(e.toString())" +
         "}" +
-        "return true;" +
       "}" +
-      "else return false;" +
-    "})()";
-//}
+      "return true;" +
+    "}" +
+    "else return false;"+
+  "})()";

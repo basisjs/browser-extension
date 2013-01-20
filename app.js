@@ -41,8 +41,24 @@
   //
 
   basis.ready(function(){
-    app.transport = resource('transport.js')();
+    // init transport
+    var nsTransport = resource('transport.js')();
 
+    var transportClass;
+    if (chrome && chrome.extension)
+    {
+      transportClass = nsTransport.ChromePluginTransport;
+    }
+    else if (window.app_control_panel_server)
+    {
+      transportClass = nsTransport.SocketTransport;
+    }
+    else
+      transportClass = nsTransport.Transport;
+
+    app.transport = new transportClass({});
+
+    // init interfaces
     initMainMenu();
   });
 

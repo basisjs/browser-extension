@@ -17,8 +17,12 @@
       if (message.action == 'ready')
         this.isReady = true;
 
-      for (var i = 0, handler; handler = this.handlers[message.action][i]; i++)
-        handler.handler.call(handler.context, message.data && message.data.toObject());
+      var handlers = this.handlers[message.action];
+      if (handlers)
+      {
+        for (var i = 0, handler; handler = handlers[i]; i++)
+          handler.handler.call(handler.context, message.data && message.data.toObject());
+      }
     },
     onMessage: function(message, handler, handlerContext){
       if (!this.handlers[message])
@@ -32,9 +36,10 @@
     
     call: Function.$undef
   });
-  
+
+
   //
-  // Plugin transport
+  // Chrome plugin transport
   //
   var ChromePluginTransport = Transport.subclass({
     port: null,
@@ -46,9 +51,6 @@
       this.port.onMessage.addListener(this.message.bind(this));
       this.port.postMessage({ action: 'extensionInited', tabId: chrome.devtools.inspectedWindow.tabId});
 
-      this.onMessage('transportInited', function(){
-        this.message({ action: 'ready' });
-      }, this);
       this.onMessage('contentScriptInited', this.injectScript, this);
 
       this.injectScript();
@@ -57,7 +59,7 @@
       var args = Array.from(arguments).slice(1).map(JSON.stringify);
 
       chrome.devtools.inspectedWindow.eval(
-        '(function(){ try { if (window.pageScript) window.pageScript.' + funcName + "(" + (args.length ? args.join(", ") : '') + "); return true;} catch(e){ console.warn(e.toString()) }})();"
+        '(function(){ try { if (basis.appCP) basis.appCP.' + funcName + "(" + (args.length ? args.join(", ") : '') + "); return true;} catch(e){ console.warn(e.toString()) }})();"
       );
     },
     injectScript: function(){
@@ -81,6 +83,51 @@
     }
   });
 
-  var transportClass = chrome && chrome.extension ? ChromePluginTransport : Transport;
+  //
+  // SocketTransport
+  //
+  var SocketTransport = Transport.subclass({
+    init: function(){
+      Transport.prototype.init.call(this);
 
-  module.exports = new transportClass({});
+      var scriptEl = document.createElement('script');
+
+      scriptEl.src = "/socket.io/socket.io.js";
+      scriptEl.onload = this.onLoad.bind(this);
+      scriptEl.onError = this.onError.bind(this);
+
+      document.getElementsByTagName('head')[0].appendChild(scriptEl);
+    },
+    call: function(funcName){
+      this.socket.emit('callAppFunction', funcName);
+    },
+
+    onLoad: function(){
+      this.socket = io.connect('localhost:8001');
+
+      socket.on('connect', function(){
+        var pageScript = resource('pageScript.js')();
+
+        this.socket.emit('message', {
+          action: 'injectScript',
+          data: pageScript
+        });
+      });
+
+      socket.on('message', function(message){
+        this.message(message);
+      });
+    },
+    onError: function(){
+      console.warn('Error on loading socket.io');
+    }
+  });
+
+  //
+  
+  module.exports = {
+    Transport: Transport,
+    ChromePluginTransport: ChromePluginTransport,
+    SocketTransport: SocketTransport
+  };
+  
