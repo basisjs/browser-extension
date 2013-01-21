@@ -23,17 +23,8 @@
   //
 
   basis.ready(function(){
-    // default transport
-    var transport = resource('app/transport/static.js');
-
-    // choose suitable transport
-    if (global.chrome && global.chrome.extension)
-      transport = resource('app/transport/plugin.js');
-    else if (global.appcp_server)
-      transport = resource('app/transport/server.js');
-
     // create transport
-    app.transport = transport.fetch();
+    app.transport = resource('app/transport/transport.js').fetch();
 
     // init interfaces
     initMainMenu();

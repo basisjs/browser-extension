@@ -1,15 +1,9 @@
 
   basis.require('basis.dom');
 
-  var Transport = resource('transport.js').fetch();
-
-  module.exports = new Transport({
-    socket: null,
-
+  module.exports = {
     init: function(){
       var self = this;
-
-      Transport.prototype.init.call(this);
 
       basis.dom.appendHead(basis.dom.createElement({
         description: 'script[src="/socket.io/socket.io.js"]',
@@ -30,12 +24,14 @@
         }
       }));
     },
+
     injectScript: function(){
       this.socket.emit('message', { 
         action: 'injectScript', 
         data: resource('pageScript.js').fetch() 
       });
     },
+
     call: function(funcName){
       this.socket.emit('message', { 
         action: 'call', 
@@ -45,4 +41,4 @@
         }
       });
     }
-  });
+  };

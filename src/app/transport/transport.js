@@ -1,11 +1,19 @@
 
-  var Transport = basis.Class(null, {
-    extendConstructor_: true,
-    isReady: false,
+  // default
+  var config = resource('static.js');
 
-    init: function(){
-      this.handlers = {};
-    },
+  // choose suitable config
+  if (global.chrome && global.chrome.extension)
+    config = resource('plugin.js');
+  else if (global.appcp_server)
+    config = resource('server.js');
+
+ /**
+  * transport
+  */
+  (module.exports = basis.object.complete(config(), {
+    isReady: false,
+    handlers: {},
 
     ready: function(handler, context){
       if (this.isReady)
@@ -35,6 +43,4 @@
     
     call: function(){
     }
-  });
-
-  module.exports = Transport;
+  })).init();

@@ -1,13 +1,7 @@
 
-  var Transport = resource('transport.js').fetch();
+  module.exports = {
+    isReady: true,
 
-  module.exports = new Transport({
-    isReady: true/*,
-
-    call: function(funcName){
-      switch(funcName){
-        case 'getCultureList':
-        break;
-      }
-    }*/
-  });
+    init: function(){
+    }
+  };

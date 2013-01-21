@@ -1,15 +1,10 @@
 
   basis.require('basis.dom');
 
-  var Transport = resource('transport.js').fetch();
   var inspectedWindow = chrome.devtools.inspectedWindow;
 
-  module.exports = new Transport({
-    port: null,
-
+  module.exports = {
     init: function(){
-      Transport.prototype.init.call(this);
-
       this.port = chrome.extension.connect({
         name: 'extensionUIPort'
       });
@@ -23,6 +18,22 @@
 
       this.injectScript();
     },
+
+    injectScript: function(){
+      var self = this;
+
+      inspectedWindow.eval(resource('pageScript.js').fetch(), function(result){
+        if (result)
+          self.port.postMessage({
+            action: 'pageScriptInited'
+          });
+        else
+          document.body.appendChild(
+            basis.dom.createElement('.BasisNotSupported', 'basis.js not found')
+          );
+      });
+    },
+
     call: function(funcName){
       var args = basis.array.from(arguments, 1).map(JSON.stringify);
 
@@ -35,19 +46,5 @@
         '  } catch(e){ console.warn(e.message, e); }\n' +
         '})();'
       );
-    },
-    injectScript: function(){
-      var port = this.port;
-
-      inspectedWindow.eval(resource('pageScript.js').fetch(), function(result){
-        if (result)
-          port.postMessage({
-            action: 'pageScriptInited'
-          });
-        else
-          document.body.appendChild(
-            basis.dom.createElement('.BasisNotSupported', 'basis.js not found')
-          );
-      });
-    }
-  });
+    }    
+  };
