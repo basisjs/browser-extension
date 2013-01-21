@@ -1,81 +1,35 @@
 
   basis.require('basis.ui.field');
-  
-  /*module.exports = new basis.ui.field.Combobox({
-    title: 'Culture: ',
-    cssClassName: 'CultureList',
 
-    childClass: {
-      template:
-        '<div class="CultureList-Item Basis-Combobox-Item {selected} {disabled}" event-click="select"><img{imgElement} src="" event-error="error" event-load="load"/>{title}</div>',
-
-      action: {
-        load: function(){
-          basis.cssom.show(this.tmpl.imgElement);
-        },
-        error: function(){
-          basis.cssom.hide(this.tmpl.imgElement);
-        }
-      },
-
-      titleGetter: getter('title'),
-      valueGetter: getter('value'),
-
-      templateUpdate: function(){
-        var culture = this.getValue();
-        if (culture)
-        {
-          var country = culture.substr(culture.indexOf('-') + 1).toLowerCase();
-
-          var object = this;
-          var img = new Image();
-          img.onload = function(){ 
-            object.tmpl.imgElement.src = img.src; 
-            basis.cssom.show(object.tmpl.imgElement) 
-          }
-          img.onerror = function(){ 
-            basis.cssom.hide(object.tmpl.imgElement) 
-          }
-          img.src = FLAG_PATH + '/' + country + '.png';
-        }
-      }
-    }
-  }); */
+  function getCoord(node, y){
+    var code = (node.data.Culture || '').split('-')[1];
+    return code ? code.charCodeAt(y) - 65 : -1;
+  }
 
   module.exports = new basis.ui.field.Combobox({
     title: 'Culture:',
-    cssClassName: 'CultureList',
-    childClass: {
-      template: resource('template/cultureComboboxItem.tmpl'),
 
-      titleGetter: Function.getter('data.Culture || ""'),
-      valueGetter: Function.getter('data.Culture || ""'),
+    template: resource('template/cultureList.tmpl'),
+
+    childClass: {
+      template: resource('template/cultureListItem.tmpl'),
+
+      titleGetter: basis.getter('data.Culture || ""'),
+      valueGetter: basis.getter('data.Culture || ""'),
       
       binding: {
         spriteX: {
           events: 'update delegateChanged',
-          getter: function(object){
-            var value = object.data.Culture;
-            if (value)
-            {
-              var code = value.split('-')[1];
-              return code ? 16 * (code.charCodeAt(0) - 65) : 1000;
-            }
+          getter: function(node){
+            return 16 * getCoord(node, 0);
           }
         },
         spriteY: {
           events: 'update delegateChanged',
-          getter: function(object){
-            var value = object.data.Culture;
-            if (value)
-            {
-              var code = value.split('-')[1];
-              return code ? 11 * (code.charCodeAt(1) - 65) : 1000;
-            }
+          getter: function(node){
+            return 11 * getCoord(node, 1);
           }
         }
       }
     }
   });
-
-

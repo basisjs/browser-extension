@@ -1,0 +1,18 @@
+
+  .CultureList
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .CultureList .Basis-Field-Title,
+  .CultureList .Basis-Field-Container
+  {
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .CultureList .Basis-Field-Title
+  {
+    margin-right: 0.5em;
+  }
