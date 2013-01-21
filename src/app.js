@@ -3,11 +3,11 @@
   basis.require('basis.ui');
 
   function initMainMenu(){
-    var mainMenu = basis.resource('app/module/mainmenu/mainmenu.js').fetch();
+    var mainMenu = resource('module/mainmenu/mainmenu.js').fetch();
     
     mainMenu.setChildNodes([
-      basis.resource('app/module/localization/localization.js')(),
-      basis.resource('app/module/templater/templater.js')()
+      resource('module/localization/localization.js')(),
+      resource('module/templater/templater.js')()
     ]);
 
     mainMenu.selectPage();
@@ -24,13 +24,13 @@
 
   basis.ready(function(){
     // default transport
-    var transport = resource('transport/static.js');
+    var transport = resource('app/transport/static.js');
 
     // choose suitable transport
     if (global.chrome && global.chrome.extension)
-      transport = resource('transport/plugin.js');
+      transport = resource('app/transport/plugin.js');
     else if (global.appcp_server)
-      transport = resource('transport/server.js');
+      transport = resource('app/transport/server.js');
 
     // create transport
     app.transport = transport.fetch();

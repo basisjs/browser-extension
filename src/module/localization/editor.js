@@ -3,12 +3,13 @@
   basis.require('basis.dom.event');
   basis.require('basis.cssom');
   basis.require('basis.data.dataset');
+  basis.require('app.ext.livememo');
 
   var getter = Function.getter;
 
   var Event = basis.dom.event;
 
-  var livememo = basis.resource('app/ext/livememo/livememo.js')();
+  var livememo = app.ext.livememo;
   var l10nType = resource('type.js')();
 
 
