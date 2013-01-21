@@ -1,17 +1,13 @@
 
-  /*.App-MainMenu-Page
+ 
+  .App-MainMenu-Page,
+  .App-MainMenu-Page__Content
   {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 20px;
-    z-index: 1;
-    overflow: hidden;
-    overflow-y: auto;
-  }*/
-  .App-MainMenu-Page__unselected
+    height: 100%;
+    padding: 0;
+  }
+
+  .App-MainMenu-Page_unselected
   {
     display: none;
   }
