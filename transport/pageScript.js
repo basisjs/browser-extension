@@ -804,7 +804,7 @@
     }
   }
 
-  module.exports = "(function(){" +
+  module.exports = "(function(global){" +
     "if (basis){" +
       "if (!basis.appCP){" +
         "try{" +
@@ -816,4 +816,4 @@
       "return true;" +
     "}" +
     "else return false;"+
-  "})()";
+  "})(this)";
