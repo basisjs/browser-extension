@@ -67,12 +67,6 @@
     /*-webkit-box-flex: 1;*/
   }
 
-  .DictionaryList
-  {
-    height: 100%;
-    overflow: auto;
-  }
-
   .DictionaryMatchInput
   {
     display: inline-block;
@@ -142,34 +136,6 @@
     box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
   }
 
-  /*.DictionaryList
-  {
-    display: inline-block;
-    vertical-align: middle;
-    margin-right: 0.5em;
-  }
-
-
-  .DictionaryList-Item.modified
-  {
-  }
-
-  .DictionaryList-Item .modifiedMarker
-  {
-    display: none;
-    float: right;
-    width: 5px;
-    height: 5px;
-    border-radius: 5px;
-    margin: 4px;
-    background: #006699;
-  }
-
-  .DictionaryList-Item.modified .modifiedMarker
-  {
-    display: block;
-  }*/
-
   .CultureList
   {
     display: inline-block;
@@ -177,16 +143,13 @@
   }
 
   .CultureList .Basis-Field-Title,
-  .DictionaryList .Basis-Field-Title,
-  .DictionaryList .Basis-Field-Container,
   .CultureList .Basis-Field-Container
   {
     display: inline-block;
     vertical-align: middle;
   }
 
-  .CultureList .Basis-Field-Title,
-  .DictionaryList .Basis-Field-Title
+  .CultureList .Basis-Field-Title
   {
     margin-right: 0.5em;
   }
