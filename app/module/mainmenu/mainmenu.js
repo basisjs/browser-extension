@@ -1,22 +1,51 @@
 
-  basis.require('basis.l10n');
-  basis.require('basis.dom.wrapper');
-  basis.require('basis.data.dataset');
   basis.require('basis.ui.tabs');
 
-  var mainMenu = new basis.ui.tabs.PageControl({
+
+  var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
+  var localStorage = global.localStorage;
+
+  module.exports = new basis.ui.tabs.PageControl({
     container: document.body,
 
     template: resource('template/pages.tmpl'),
-
     binding: {
-      tabs: 'satellite:',
-      pageSelected: function(control){
-        return control.selection.pick() ? 'pageSelected' : '';
-      }
-    },
+      tabs: new basis.ui.tabs.TabControl({
+        template: resource('template/tabs.tmpl'),
 
-    autoSelectChild: false,
+        handler: {
+          ownerChanged: function(){
+            this.setDataSource(this.owner && this.owner.getChildNodesDataset());
+          }
+        },
+
+        autoSelectChild: false,
+        childClass: {
+          template: resource('template/tab.tmpl'),
+          binding: {
+            title: 'delegate.title',
+            name: 'delegate.name'
+          },
+          action: {
+            select: function(event){                       
+              this.select();
+            }
+          },
+
+          event_select: function(){
+            basis.ui.tabs.Tab.prototype.event_select.call(this);
+            this.delegate.select();
+          },
+          listen: {
+            delegate: {
+              select: function(){
+                this.select();
+              }
+            }
+          }
+        }
+      })
+    },
 
     childClass: {
       template: resource('template/page.tmpl'),
@@ -32,73 +61,19 @@
       }
     },
 
-    listen: {
-      selection: {
+    autoSelectChild: false,
+    selection: {
+      handler: {
         datasetChanged: function(selection){
-          this.updateBind('pageSelected');
+          var page = this.pick();
+          if (page && localStorage)
+            localStorage[EXTENSION_LAST_TAB_STORAGE_KEY] = page.name;        
         }
       }
     },
-
-    satelliteConfig: {
-      tabs: {
-        hook: {},
-        dataSource: function(owner){
-          return new basis.data.dataset.Subset({
-            source: new basis.dom.wrapper.ChildNodesDataset({
-              sourceNode: owner
-            }),
-            rule: 'title'
-          })
-        },
-        instanceOf: basis.ui.tabs.TabControl.subclass({
-          template: resource('template/tabs.tmpl'),
-
-          autoSelectChild: false,
-
-          childClass: {
-            template: resource('template/tab.tmpl'),
-
-            listen: {
-              delegate: {
-                select: function(){
-                  this.select();
-                }
-              }
-            },
-
-            action: {
-              select: function(event){                       
-                this.select();
-                basis.dom.event.kill(event);
-              }
-            },
-
-            binding: {
-              title: {
-                events: 'delegateChanged',
-                getter: function(tab){
-                  return tab.delegate ? tab.delegate.title: '';
-                }
-              },
-              name: {
-                events: 'delegateChanged',
-                getter: function(tab){
-                  return tab.delegate ? tab.delegate.name: '';
-                }
-              }
-            },
-
-            event_select: function(){
-              basis.ui.tabs.Tab.prototype.event_select.call(this);
-
-              this.delegate.select();
-            }
-          }
-        })
-      }
+    selectPage: function(){
+      var page = this.item(localStorage && localStorage[EXTENSION_LAST_TAB_STORAGE_KEY]) || this.firstChild;
+      if (page)
+        page.select();
     }
   });
-
-  module.exports = mainMenu;
-
