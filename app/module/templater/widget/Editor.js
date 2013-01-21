@@ -13,6 +13,8 @@
   // import names
   //
 
+  var ace = resource('ace.min.js').fetch();
+
   var getter = Function.getter;
   var wrapper = Function.wrapper;
   var classList = basis.cssom.classList;
@@ -77,13 +79,12 @@
  /**
   *
   */
-  var Editor = nsField.Textarea.subclass({
+  var Editor = basis.ui.Node.subclass({
     cssClassName: 'SourceEditor',
 
     autoDelegate: DELEGATE.PARENT,
 
     template: resource('../templates/editor/editor.tmpl'),
-
     binding: {
       filename: {
         events: 'targetChanged update',
@@ -99,6 +100,22 @@
       }/*,
       createFilePanel: 'satellite:'*/
     },
+
+    templateSync: function(noRecreate){
+      basis.ui.Node.prototype.templateSync.call(this, noRecreate);
+
+      var editor = ace.edit(this.tmpl.editor);
+      var self = this;
+      this.editor = editor;
+      editor.setTheme("ace/theme/monokai");
+      editor.getSession().setMode("ace/mode/html");
+      editor.on('change', function(event){
+        /*self.update({
+          content: editor.getValue()
+        });*/
+      });
+    },
+
     listen: {
       target: {
         rollbackUpdate: function(){
@@ -106,17 +123,9 @@
         }
       }
     },
-    
-    /*listen: {
-      target: {
-        rollbackUpdate: function(){
-          this.updateBind('modified');
-        }
-      }
-    },*/
 
     handler: {
-      fieldInput: editorContentChangedHandler,
+      /*fieldInput: editorContentChangedHandler,
       fieldChange: editorContentChangedHandler,
       fieldKeyup: editorContentChangedHandler,
       fieldKeydown: function(sender, event){
@@ -145,12 +154,12 @@
 
         if (key == nsEvent.KEY.ENTER)
           onEnter(this);
-      },
+      },*/
       update: function(object, delta){
         if ('content' in delta)
         {
           var content = this.data.content || '';
-          this.setValue(content);
+          this.editor.setValue(content, -1);
 
           if (this.sourceProperty)
             this.sourceProperty.set(content);
@@ -160,16 +169,9 @@
         activityHandler.call(this);
       },
       targetChanged: function(){
-        classList(this.tmpl.field).bool('modified', this.target && this.target.modified);
+        classList(this.tmpl.content).bool('modified', this.target && this.target.modified);
 
         activityHandler.call(this);
-        /*if (this.target)
-          this.enable();
-        else
-        {
-          this.update({ content: '' });
-          this.disable();
-        }*/
       }
     }
   });
