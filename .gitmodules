@@ -1,3 +1,3 @@
-[submodule "basis"]
-	path = basis
+[submodule "lib/basisjs"]
+	path = lib/basisjs
 	url = https://github.com/lahmatiy/basisjs.git
