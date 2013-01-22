@@ -1,6 +1,5 @@
 
   basis.require('basis.data');
-  basis.require('basis.date');
   basis.require('basis.entity');
   basis.require('basis.data.dataset');
 
@@ -9,27 +8,24 @@
 
   var STATE = basis.data.STATE;
   
-  var namespace = 'app.type';
-
   var File = new nsEntity.EntityType({
-    name: namespace + '.File',
+    name: 'File',
     fields: {
       filename: nsEntity.StringId,
       type: String,
       content: function(value){ 
         return value == null ? null : String(value);
       },
-
-      declaration: Function.$self,
-      resources: Function.$self
+      declaration: basis.fn.$self,
+      resources: basis.fn.$self
     }
   });
 
-  var FileClass = File.entityType.entityClass;
-
   File.createFile = function(filename){
     app.transport.call('createFile', filename);    
-  }
+  };
+
+  var FileClass = File.entityType.entityClass;
 
   FileClass.extend({
     read: function(){
@@ -48,8 +44,8 @@
   var fileHandler = function(){
     if (this.subscriberCount > 0 && (this.state == STATE.UNDEFINED || this.state == STATE.DEPRECATED))
       this.read();
-  }
-  Object.extend(FileClass.prototype, {
+  };
+  FileClass.extend({
     state: STATE.UNDEFINED,
     event_subscribersChanged: function(){
       FileClass.superClass_.prototype.event_subscribersChanged.call(this);

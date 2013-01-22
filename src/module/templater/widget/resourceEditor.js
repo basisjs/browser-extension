@@ -42,7 +42,6 @@
     autoDelegate: false,
 
     template: resource('../templates/resourceEditor/resourceEditor.tmpl'),
-
     binding: {
       title: 'data:filename',
       filename: function(object){
@@ -50,6 +49,21 @@
       },
       buttonPanel: 'satellite:',
       createFilePanel: 'satellite:'
+    },
+
+    editorMode: 'css',
+
+    init: function(){
+      Editor.prototype.init.call(this);
+      this.editor.on('change', this.resize.bind(this));
+    },
+
+    resize: function(){
+      var newHeight = this.editor.getSession().getScreenLength() * this.editor.renderer.lineHeight + this.editor.renderer.scrollBar.getWidth();
+
+      this.editorContainer.parentNode.style.height = newHeight.toString() + "px";
+
+      Editor.prototype.resize.call(this);
     },
 
     satelliteConfig: {
@@ -126,21 +140,6 @@
           }
         })
       }
-
-    },
-
-    init: function(config){
-      Editor.prototype.init.call(this, config);
-      if (this.data.content)
-        this.tmpl.field.textContent = this.data.content;
-    },
-
-    readFieldValue_: function(){
-      return this.tmpl && this.tmpl.field && this.tmpl.field.innerText;
-    },
-    writeFieldValue_: function(value){
-      if (this.tmpl && this.tmpl.field && this.tmpl.field.innerText != value)
-        this.tmpl.field.innerText = value;
     }
   });
 
@@ -151,24 +150,28 @@
 
     childClass: ResourceEditor,
 
-    dataSource: new basis.data.Dataset({}),
     handler: {
+      childNodesModifiy: function(delta){
+        delta.forEach(function(item){
+          item.resize();
+        })
+      },
       targetChanged: function(){
-        console.log('targetChanged: ', this.target && this.data.resources);
+        //console.log('targetChanged: ', this.target && this.data.resources);
         this.updateResources(this.target && this.data.resources);
       },
       rollbackUpdate: function(object){
         this.updateResource(this.data.resources);
       },
       update: function(object, delta){
-        console.log('update: ', object.data);
+        //console.log('update: ', object.data);
         if ('resources' in delta)
           this.updateResources(this.data.resources);
       }
     },
 
     updateResources: function(resources){
-      this.dataSource.set((resources || []).map(function(filename){
+      this.setChildNodes((resources || []).map(function(filename){
         return app.type.file.File.getSlot(filename);        
       }));
     }
@@ -194,7 +197,6 @@
           var resourceEditor = resourceEditorList.childNodes.search(this.data.filename, 'data.filename')
           if (resourceEditor)
             resourceEditor.element.scrollIntoView();
-          //this.select();
         }
       }
     },

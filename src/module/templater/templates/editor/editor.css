@@ -1,4 +1,11 @@
-
+  #TmplEditor .ace_editor
+  {
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+  
   .SourceEditor
   {
     /*position: absolute;

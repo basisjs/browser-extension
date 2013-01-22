@@ -1,4 +1,5 @@
 
+  basis.require('basis.dom');
   basis.require('basis.dom.event');
   basis.require('basis.cssom');
   basis.require('basis.data');
@@ -15,17 +16,10 @@
 
   var ace = resource('ace.min.js').fetch();
 
-  var getter = Function.getter;
-  var wrapper = Function.wrapper;
+  var getter = basis.fn.getter;
   var classList = basis.cssom.classList;
 
-  var DELEGATE = basis.dom.wrapper.DELEGATE;
-  var STATE = basis.data.STATE;
-
-  var UINode = basis.ui.Node;
-  var UIContainer = basis.ui.Container;
-
-  var nsTemplate = basis.template;
+  var dom = basis.dom;
   var nsEvent = basis.dom.event;
   var nsProperty = basis.data.property;
   var nsLayout = basis.layout;
@@ -33,47 +27,38 @@
   var nsForm = basis.ui.form;
   var nsField = basis.ui.field;
 
+  var STATE = basis.data.STATE;
+
+  var UINode = basis.ui.Node;
+  var UIContainer = basis.ui.Container;
+
+
   var KEY_S = 'S'.charCodeAt(0);
 
-  function onEnter(editor){
-    var textarea = editor.tmpl.field;
-    var curValue = editor.getValue();//textarea.value;
-    var insertPoint = basis.dom.getSelectionStart(textarea);
-    var chrPos = curValue.lastIndexOf('\n', insertPoint - 1) + 1;
-    var spaces = '';
-    var chr;
-
-    while (chrPos < insertPoint)
-    {
-      chr = curValue.charAt(chrPos++);
-      if (chr == ' ' || chr == '\t')
-        spaces += chr;
-      else
-        break;
-    }
-
-    if (spaces)
-    {
-      textarea.value = textarea.value.substr(0, insertPoint) + '\n' + spaces + textarea.value.substr(insertPoint);
-      insertPoint += spaces.length + 1;
-      basis.dom.setSelectionRange(textarea, insertPoint, insertPoint);
-      nsEvent.kill(event);
-    }
-  }
 
   //
   // Editor class
   //
 
   var editorContentChangedHandler = function(){
-    var value = this.getValue() || '';
-    var newContent = value.replace(/\r/g, '');
+    var newContent = this.editor.getValue().replace(/\r/g, '');
+                       // FIXME: it is hack
+    if (this.target && this.delegate.target == this.target)
+      this.target.update({
+        content: newContent
+      }, true);
+  }
 
-    if (this.target)
-      this.target.update({ content: newContent }, true);
+  function activityHandler(){
+    if (this.target && this.state != STATE.PROCESSING)
+      this.enable();
+    else
+    {
+      if (!this.target)
+        this.setValue('');
 
-    if (this.sourceProperty)
-      this.sourceProperty.set(newContent);
+      this.disable();
+    }    
   }
 
  /**
@@ -82,38 +67,58 @@
   var Editor = basis.ui.Node.subclass({
     cssClassName: 'SourceEditor',
 
-    autoDelegate: DELEGATE.PARENT,
+    autoDelegate: true,
 
     template: resource('../templates/editor/editor.tmpl'),
     binding: {
-      filename: {
-        events: 'targetChanged update',
-        getter: function(node){
-          return (node.target && node.target.data.filename) || '';
-        }
-      },
+      filename: 'data:filename || ""',
       modified: {
         events: 'targetChanged rollbackUpdate update',
         getter: function(node){
           return node.target && node.target.modified ? 'modified' : '';
         }
-      }/*,
-      createFilePanel: 'satellite:'*/
+      }
     },
 
+    editorMode: 'html',
+
+    init: function(){
+      var self = this;
+      var editorContainer = dom.createElement('');
+
+      this.editor = ace.edit(editorContainer);
+      this.editor.setTheme('ace/theme/monokai');
+      this.editor.getSession().setMode('ace/mode/' + this.editorMode);
+      this.editor.on('change', editorContentChangedHandler.bind(this));
+      this.editorContainer = editorContainer;
+
+      basis.ui.Node.prototype.init.call(this);
+
+      this.setValue(this.data.content)
+    },
     templateSync: function(noRecreate){
       basis.ui.Node.prototype.templateSync.call(this, noRecreate);
 
-      var editor = ace.edit(this.tmpl.editor);
-      var self = this;
-      this.editor = editor;
-      editor.setTheme("ace/theme/monokai");
-      editor.getSession().setMode("ace/mode/html");
-      editor.on('change', function(event){
-        /*self.update({
-          content: editor.getValue()
-        });*/
-      });
+      var container = this.tmpl.editor;
+      if (container)
+      {
+        dom.insert(container, this.editorContainer);
+        this.resizeRequest();
+      }
+    },
+
+    setValue: function(value){
+      value = value || '';
+      if (this.editor && this.editor.getValue() != value)
+        this.editor.setValue(value, -1);
+    },
+    resizeRequest: function(){
+      if (!this.timer_)
+        this.timer_ = setTimeout(this.resize.bind(this), 0);
+    },
+    resize: function(){
+      this.timer_ = clearTimeout(this.timer_);
+      this.editor.resize();
     },
 
     listen: {
@@ -125,10 +130,15 @@
     },
 
     handler: {
-      /*fieldInput: editorContentChangedHandler,
-      fieldChange: editorContentChangedHandler,
-      fieldKeyup: editorContentChangedHandler,
-      fieldKeydown: function(sender, event){
+      disable: function(){
+        if (this.editor)
+          this.editor.setReadOnly(true);
+      },
+      enable: function(){
+        if (this.editor)
+          this.editor.setReadOnly(false);
+      },
+      /*fieldKeydown: function(sender, event){
         var key = nsEvent.key(event);
 
         if (key == nsEvent.KEY.F2 || (event.ctrlKey && key == KEY_S))
@@ -136,8 +146,6 @@
           
           if (this.target)
             this.target.save();
-
-          nsEvent.kill(event);
 
           return;
         }
@@ -147,46 +155,34 @@
           if (this.target)
             this.target.rollback();
 
-          nsEvent.kill(event);
-
           return;
         }
-
-        if (key == nsEvent.KEY.ENTER)
-          onEnter(this);
       },*/
       update: function(object, delta){
         if ('content' in delta)
-        {
-          var content = this.data.content || '';
-          this.editor.setValue(content, -1);
-
-          if (this.sourceProperty)
-            this.sourceProperty.set(content);
-        }
+          this.setValue(this.data.content);
       },
-      stateChanged: function(){
-        activityHandler.call(this);
-      },
+      stateChanged: activityHandler,
       targetChanged: function(){
-        classList(this.tmpl.content).bool('modified', this.target && this.target.modified);
-
         activityHandler.call(this);
+
+        if (this.target)
+          this.setValue(this.data.content);
       }
+    },
+
+    destroy: function(){
+      var editor = this.editor;
+      this.editor = null;
+
+      clearTimeout(this.timer_);
+      this.timer_ = true;
+
+      basis.ui.Node.prototype.destroy.call(this);
+
+      editor.destroy();
     }
   });
-
-  function activityHandler(){
-    if (this.target && this.state != STATE.PROCESSING)
-      this.enable();
-    else
-    {
-      if (!this.target)
-        this.update({ content: '' });
-
-      this.disable();
-    }    
-  }
 
 
   //

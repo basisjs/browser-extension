@@ -50,7 +50,7 @@
     autoDelegate: DELEGATE.PARENT,
 
     id: 'TmplEditor',
-    sourceProperty: tmplSource,
+    //sourceProperty: tmplSource,
     fileExt: 'tmpl',
 
     disabled: true,
