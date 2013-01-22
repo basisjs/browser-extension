@@ -641,9 +641,11 @@
       {
         data.declaration = basis.template.makeDeclaration(file.data.content, basis.path.dirname(basis.path.resolve(file.data.filename)) + '/');
         data.resources = data.declaration.resources.map(function(item){
-          return item.substr((location.protocol + '//' + location.host).length)/*'/' + basis.path.relative(item)*/
+          return item.substr((location.protocol + '//' + location.host).length)
         });
-      }  
+        // delete deps as it can has resource and ResourceWrapper which can't be serialized
+        data.declaration.deps = [];
+      }
         
       sendData('updateFile', data);
     }
