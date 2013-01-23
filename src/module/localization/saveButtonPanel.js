@@ -28,14 +28,14 @@
         autoDelegate: true,
         caption: 'Save',
 
+        click: function(){
+          this.target.save();
+        },
+
         handler: {
           stateChanged: function(){
             this.setCaption(this.state == STATE.PROCESSING ? 'Saving...' : 'Save');
           }
-        },
-
-        click: function(){
-          this.target.save();
         }
       },
       {

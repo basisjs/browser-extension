@@ -59,10 +59,6 @@
 
   #ColumnBackgroundContainer .Table-Column
   {
-    /*position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;*/
     height: 100%;
   }
 
@@ -71,8 +67,8 @@
   {
     background: #F0F0F0;
   }
-  #DictionaryEditor-Header .Table-Column.even,
-  #ColumnBackgroundContainer .Table-Column.even
+  #DictionaryEditor-Header .Table-Column:nth-child(2n + 1),
+  #ColumnBackgroundContainer .Table-Column:nth-child(2n + 1)
   {
     background: #F8F8F8;
   }

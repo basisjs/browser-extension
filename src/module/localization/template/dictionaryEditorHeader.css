@@ -3,10 +3,12 @@
   {
     position: relative;
     overflow: hidden;
+    height: 2.5em;
     z-index: 200;
+    
+    background: #DDD;
     background: -webkit-linear-gradient(top, #E8E8E8, #DDD);
     border-bottom: 1px solid #CCC;
-    height: 2.5em;
   }
   #DictionaryEditor-Header-Wrapper
   {
