@@ -7,7 +7,16 @@
     background: -webkit-linear-gradient(top, #E8E8E8, #DDD);
     border-bottom: 1px solid #CCC;
     height: 2.5em;
-    padding-right: 17px;
+  }
+  #DictionaryEditor-Header-Wrapper
+  {
+    height: 100%;
+    visibility: hidden;
+    overflow-y: scroll;
+  }
+  #DictionaryEditor-Header .Table-Row
+  {
+    visibility: visible;
   }
 
   #DictionaryEditor-Header .Cultures
