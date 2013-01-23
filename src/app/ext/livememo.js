@@ -5,7 +5,7 @@
   var Event = basis.dom.event;
   
   var LiveMemo = basis.ui.Node.subclass({
-    template: resource('livememo.tmpl'),
+    template: resource('livememo/livememo.tmpl'),
 
     action: {
       change: function(event){ 
