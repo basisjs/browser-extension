@@ -135,17 +135,3 @@
       -moz-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
     box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
   }
-
-  .SaveButtonPanel
-  {
-    display: inline-block;
-    vertical-align: top;
-    margin-left: 0.5em;
-  }
-
-  .FileSaveErrorLabel
-  {
-    display: inline-block;
-    vertical-align: middle;
-    color: red;
-  }

@@ -6,66 +6,55 @@
 
   var STATE = basis.data.STATE;
 
-  var l10nType = resource('type.js')();
+  var activityHandler = function(){
+    if (!this.target.modified || this.state == STATE.PROCESSING)
+      this.disable();
+    else
+      this.enable();
+  };
 
-  var buttonPanel = new basis.ui.button.ButtonPanel({
-    cssClassName: 'SaveButtonPanel',
+  module.exports = new basis.ui.button.ButtonPanel({
+    template: resource('template/saveButtonPanel.tmpl'),
+
     disabled: true,
+
+    handler: {
+      stateChanged: activityHandler,
+      update: activityHandler
+    },
+
     childNodes: [
       {
-        autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
-        name: 'save',
+        autoDelegate: true,
         caption: 'Save',
-        cssClassName: 'SaveButton',
+
+        handler: {
+          stateChanged: function(){
+            this.setCaption(this.state == STATE.PROCESSING ? 'Saving...' : 'Save');
+          }
+        },
 
         click: function(){
           this.target.save();
-          //l10nType.saveDictionary(this.target.DictionaryId);
         }
       },
       {
-        autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
-        caption: 'Cancel Changes',
-        cssClassName: 'CancelButton',
+        autoDelegate: true,
+        caption: 'Rollback',
 
         click: function(){
           this.target.reset();
-          /*l10nType.Dictionary(this.target.DictionaryId).setState(STATE.READY);
-          l10nType.resourceModifiedDataset.getItems().forEach(getter('rollback()'));*/
         }
       }
-    ]
-  });
-  
-
-  new basis.ui.label.Error({
-    cssClassName: 'FileSaveErrorLabel',
-    owner: buttonPanel,
-    autoDelegate: basis.dom.wrapper.DELEGATE.OWNER,
-    handler: {
-      stateChanged: function(){
-        basis.dom.insert(basis.dom.clear(this.tmpl.element), this.state.data);
-      }
+    ],
+    satellite: {
+      saveButton: new basis.ui.label.Error({
+        autoDelegate: true,
+        handler: {
+          stateChanged: function(){
+            basis.dom.insert(basis.dom.clear(this.tmpl.element), this.state.data);
+          }
+        }
+      })
     }
   });
-
-  var activityHandler = function(){
-    if (!buttonPanel.target.modified || buttonPanel.state == STATE.PROCESSING)
-      buttonPanel.disable();
-    else
-      buttonPanel.enable(); 
-
-    var saveButtonCaption = buttonPanel.state == STATE.PROCESSING ? 'Saving...' : 'Save';
-    buttonPanel.getChildByName('save').setCaption(saveButtonCaption);
-  }
-  buttonPanel.addHandler({
-    stateChanged: activityHandler,
-    update: activityHandler
-  });
-
-  /*app.isServerOnline.addLink(buttonPanel, function(value){
-    basis.cssom.display(this.element, !!value);
-  });*/
-
-  module.exports = buttonPanel;
-
