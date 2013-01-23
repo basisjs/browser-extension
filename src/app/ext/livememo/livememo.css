@@ -1,12 +1,4 @@
 
-  /*livememo*/
-
-  .empty .livememo,
-  .empty .livememo TEXTAREA
-  {
-    background: #FEDADA;
-  }
-
   .livememo
   {
     font-family: Tahoma, Verdana, Arial, sans-serif;
@@ -46,11 +38,17 @@
     font-family: Tahoma, Verdana, Arial, sans-serif;
     font-size: 100%;
     outline: none;
-
+  }
+  .livememo__memo_focused
+  {
       -webkit-transition: height .12s;
       -moz-transition: height .12s;
       -o-transition: height .12s;
     transition: height .12s;
+  }
+  .livememo__memo_disabled
+  {
+    color: black;
   }
 
   .livememo__shadow

@@ -1,0 +1,11 @@
+
+  .l10nTokenEditor
+  {
+  	padding: 4px;
+  }
+
+  .l10nTokenEditor_empty .livememo
+  {
+  	border-color: #DDAA88;
+    background-color: #FEDADA;
+  }

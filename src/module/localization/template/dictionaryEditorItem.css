@@ -5,46 +5,22 @@
     overflow: hidden;
     position: relative;
   }
+  .DictionaryEditor-Item:hover
+  {
+    background: #EEE;
+    background: rgba(225, 225, 225, 0.5);
+  }
+  .DictionaryEditor-Item_selected,
+  .DictionaryEditor-Item_selected:hover
+  {
+    background: #FAF9D2;
+    background: rgba(250, 249, 210, 0.65);
+  }
 
   .DictionaryEditor-Item-Title
   {
-    font-weight: bold;
     overflow: hidden;
-    padding: 0.7em;
+    padding: 8px;
+      -o-text-overflow: ellipsis;
     text-overflow: ellipsis;
-  }
-
-  .DictionaryEditor-Item:hover
-  {
-    /*background: #EEE;*/
-    background: rgba(225, 225, 225, 0.5);
-  }
-  .DictionaryEditor-Item.selected
-  {
-    /*background: #FAF9D2;*/
-    background: rgba(250, 249, 210, 0.85);
-  }
-
-  .DictionaryEditor-Item .Resource-Wrapper
-  {
-    padding: 4px;
-  }
-  /*.Resource-Folder .empty TEXTAREA
-  {
-    background: #FEDADA;
-  }*/
-  .DictionaryEditor-Item INPUT,
-  .DictionaryEditor-Item TEXTAREA
-  {
-    width: 100%;
-  }
-  .DictionaryEditor-Item TEXTAREA.shadow 
-  {
-    height: 1px;
-    visibility: hidden;
-  }
-  .DictionaryEditor-Item TEXTAREA
-  {
-    /*height: 3em;*/
-    resize: none;
   }
