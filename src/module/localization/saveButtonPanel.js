@@ -56,7 +56,7 @@
       buttonPanel.enable(); 
 
     var saveButtonCaption = buttonPanel.state == STATE.PROCESSING ? 'Saving...' : 'Save';
-    buttonPanel.getButtonByName('save').setCaption(saveButtonCaption);
+    buttonPanel.getChildByName('save').setCaption(saveButtonCaption);
   }
   buttonPanel.addHandler({
     stateChanged: activityHandler,
