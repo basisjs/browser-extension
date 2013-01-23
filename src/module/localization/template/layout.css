@@ -13,7 +13,6 @@
   .Editor-Toolbar
   {
     border-bottom: 1px solid #B6BAC0;
-    /*box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.15);*/
     padding: 0.5em;
     overflow: hidden;
     position: relative;
@@ -23,12 +22,6 @@
   {
     -webkit-box-flex: 1;
     position: relative;
-    /*display: -webkit-box;
-    overflow: auto;
-    position: relative;*/
-    /*height: 100%;
-    overflow: hidden;
-    position: relative;*/
   }
 
   .Editor-Box-Wrapper
@@ -45,17 +38,15 @@
     width: 20%;
     float: left;
     height: 100%;
-    border-right: 4px solid #B6BAC0;
+    border-right: 1px solid #B6BAC0;
     position: relative;
-    /*height: 100%;
-    overflow: auto;*/
   }
 
   .Editor-Sidebar .Basis-Resizer
   {
     top: 0;
     bottom: 0;
-    right: -5px;
+    right: -3px;
     width: 5px;
   }
 
@@ -63,8 +54,7 @@
   {
     overflow: hidden;
     height: 100%;
-    position: relative;    
-    /*-webkit-box-flex: 1;*/
+    position: relative;
   }
 
 
