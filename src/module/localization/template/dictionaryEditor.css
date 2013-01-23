@@ -49,26 +49,11 @@
   }
 
 
-  #ColumnBackgroundContainer
-  {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-  }
-
-  #ColumnBackgroundContainer .Table-Column
-  {
-    height: 100%;
-  }
-
-  #DictionaryEditor-Header .Table-Column,
-  #ColumnBackgroundContainer .Table-Column
+  #DictionaryEditor-Header .Table-Column
   {
     background: #F0F0F0;
   }
-  #DictionaryEditor-Header .Table-Column:nth-child(2n + 1),
-  #ColumnBackgroundContainer .Table-Column:nth-child(2n + 1)
+  #DictionaryEditor-Header .Table-Column:nth-child(2n + 1)
   {
     background: #F8F8F8;
   }

@@ -1,17 +1,16 @@
 
+  basis.require('basis.dom');
   basis.require('basis.ui');
   basis.require('basis.dom.event');
   basis.require('basis.cssom');
   basis.require('basis.data.dataset');
   basis.require('app.ext.livememo');
 
-  var getter = Function.getter;
 
+  var getter = basis.getter;
   var Event = basis.dom.event;
-
   var livememo = app.ext.livememo;
-  var l10nType = resource('type.js')();
-
+  var l10nType = resource('type.js').fetch();
 
   var Culture = l10nType.Culture;
   var Dictionary = l10nType.Dictionary;
@@ -20,6 +19,7 @@
   var dictionaryCultureDataset = l10nType.dictionaryCultureDataset;
   var resourceSplit = l10nType.resourceSplit;
   var tokenDataset = l10nType.tokenDataset;
+
 
   //header
   var addCulturePanel = new basis.ui.Node({
@@ -60,11 +60,9 @@
       },
 
       action: {
-        addCulture: function(event){
-          //addCulture(this.data.culture);
+        addCulture: function(){
           if (!this.isDisabled())
             l10nType.addCulture(this.data.Culture);
-          //usedCulturesDataset.add([Culture(this.data.Culture)]);
         }
       }
     }
@@ -82,33 +80,25 @@
 
   var dictionaryEditorHeader = new basis.ui.Node({
     template: resource('template/dictionaryEditorHeader.tmpl'), 
+    binding: {
+      addCulturePanel: 'satellite:'
+    },
 
     satellite: {
       addCulturePanel: addCulturePanel
     },
 
-    binding: {
-      addCulturePanel: 'satellite:'
-    },
-
+    dataSource: dictionaryCultureDataset,
     sorting: getter('data.Position'),
 
-    dataSource: dictionaryCultureDataset,
     childClass: {
       template: resource('template/dictionaryEditorHeaderItem.tmpl'), 
-
       binding: {
         title: 'data:Culture',
         isBase: {
           events: 'update',
           getter: function(object){
             return object.data.Culture == 'base' ? 'isBase' : '';
-          }
-        },
-        even: {
-          events: 'update',
-          getter: function(object){
-            return object.data.Position % 2 == 0 ? 'even' : '';
           }
         },
         spriteX: {
@@ -134,12 +124,9 @@
           }
         }
       },
-
       action: {
         deleteCulture: function(event){
           l10nType.deleteCulture(this.data.Culture);
-          //deleteCulture(this.data.Culture, this.data.Dictionary);
-          //usedCulturesDataset.remove([app.type.l10n.Culture(this.data.Culture)]);
         } 
       }
     }
@@ -148,27 +135,17 @@
     
   //columns
   var columnsContainer = new basis.ui.Node({
-    id: 'ColumnBackgroundContainer',
-
-    cssClassName: 'Table-Row',
+    template: resource('template/columnBackgroundContainer.tmpl'),
     
-    childClass: {
-      template: resource('template/column.tmpl'),
-      binding: {
-        even: {
-          events: 'update',
-          getter: function(node){
-            return node.data.Position % 2 == 0 ? 'even' : '';
-          } 
-        }
-      }
-    },
     dataSource: dictionaryCultureDataset,
     sorting: 'data.Position',
+
+    childClass: {
+      template: resource('template/column.tmpl')
+    },
+
     handler: {
-      childNodesModified: function(){
-        livememo.syncAll();
-      }
+      childNodesModified: livememo.syncAll
     }
   });
 
@@ -234,9 +211,8 @@
         memo: 'satellite:',
         empty: {
           events: 'update',
-          getter: function(object){
-            debugger;
-            return object.data.Value ? '' : 'empty';
+          getter: function(node){
+            return node.data.Value ? '' : 'empty';
           }
         }
       },
@@ -248,8 +224,12 @@
 
     grouping: {
       groupGetter: function(item){ 
-        return DictionaryCulture({ Culture: item.data.Culture, Dictionary: item.data.Dictionary });
+        return DictionaryCulture({
+          Culture: item.data.Culture,
+          Dictionary: item.data.Dictionary
+        });
       },
+
       dataSource: dictionaryCultureDataset,
       sorting: getter('data.Position'),
       
@@ -266,22 +246,28 @@
 
   //result
   var dictionaryEditor = new basis.ui.Node({
-    selection: {},
     template: resource('template/dictionaryEditor.tmpl'),
-
-    satellite: {
+    binding: {
       header: dictionaryEditorHeader,
       columns: columnsContainer
     },
 
-    binding: {
-      header: 'satellite:',
-      columns: 'satellite:'
-    },
+    selection: true,
 
     dataSource: tokenDataset,
+    sorting: 'data.Position',
     childClass: DictionaryEditorItem,
-    sorting: 'data.Position'
+
+    selectResource: function(tokenName, culture){
+      var tokenItem = this.childNodes.search(tokenName, 'data.Token');
+      if (tokenItem)
+      {
+        tokenItem.select();
+        var resourceNode = tokenItem.childNodes.search(culture, 'data.Culture');
+        if (resourceNode)
+          resourceNode.satellite.memo.focus();
+      }
+    }
   });
 
   usedCulturesDataset.addHandler({
@@ -289,39 +275,5 @@
       dictionaryEditor.tmpl.set('columnCount', object.itemCount + 1);
     }
   });
-  
-  /*dictionaryCultureDataSource.addHandler({
-    datasetChanged: function(object, delta){
-      var items = object.getItems();
-      var oldCount = items.length + (delta.deleted ? delta.deleted.length : 0) - (delta.inserted ? delta.inserted.length : 0);
-      oldCount += (oldCount < CULTURE_LIST.length ? 1 : 0);
-      var newCount = items.length + (items.length < CULTURE_LIST.length ? 1 : 0);
-      classList(dictionaryEditor.element).replace(oldCount, newCount, 'childCount_');
-    }
-  });*/
-  
-  dictionaryEditor.selectResource = function(tokenName, culture){
-    var tokenItem = this.childNodes.search(tokenName, getter('data.Token'));
-    if (tokenItem)
-    {
-      tokenItem.select();
-      var resourceNode = tokenItem.childNodes.search(culture, getter('data.Culture'));
-      if (resourceNode)
-      {
-        window.focus();
-
-        var memo = resourceNode.satellite.memo.tmpl.memo;
-        memo.selectionStart = memo.value.length;
-        memo.selectionEnd = memo.value.length;
-        memo.focus();
-      }
-    }
-  }
-
-  /*property_CurrentDictionary.addLink(dictionaryEditor, function(value){
-    basis.cssom.display(this.element, !!value);
-  });*/
 
   module.exports = dictionaryEditor;
-
-
