@@ -227,7 +227,7 @@
   }
 
   var inspectButton = new basis.ui.button.Button({
-    cssClassName: 'Localization-InspectButton',
+    template: resource('template/inspectButton.tmpl'),
     caption: 'Start Inspect',
     click: function(){
       inspect(!inspectMode);
@@ -236,13 +236,13 @@
 
 
   //save button
-  var saveButtonPanel = resource('saveButtonPanel.js')();
+  var saveButtonPanel = resource('saveButtonPanel.js').fetch();
   property_CurrentDictionary.addLink(saveButtonPanel, function(value){
     this.setDelegate(Dictionary(value));
   });
 
   //culture list
-  var cultureList = resource('cultureList.js')();
+  var cultureList = resource('cultureList.js').fetch();
   cultureList.setDataSource(Culture.all);
   property_CurrentCulture.addLink(cultureList, function(value){
     this.setValue(value);
@@ -254,7 +254,7 @@
   });
 
   //dictionary list
-  var dictionaryList = resource('dictionaryList.js')();
+  var dictionaryList = resource('dictionaryList.js').fetch();
   dictionaryList.setDataSource(Dictionary.all);
   property_CurrentDictionary.addLink(dictionaryList, function(value){
     this.setValue(value);
@@ -267,36 +267,30 @@
   });
 
   var dictionaryListMatchInput = new basis.ui.field.MatchInput({
-    cssClassName: 'DictionaryMatchInput',
+    template: resource('template/dictionaryListMatchInput.tmpl'),
     matchFilter: {
       node: dictionaryList,
       startPoints: '^|\\.',
       textNodeGetter: 'tmpl.title'
+    },
+    binding: {
+      example: cancelFilterButton
     }
   });
   
   var cancelFilterButton = new basis.ui.Node({
-    template: '<div class="CancelFilterButton" event-click="click"/>',
+    container: dictionaryListMatchInput.element,
+    template: resource('template/cancelFilterButton.tmpl'),
     action: {
       click: function(){
         dictionaryListMatchInput.setValue('');
       }
-    },
-    container: dictionaryListMatchInput.element
+    }
   });
   dictionaryListMatchInput.matchFilter.addLink(cancelFilterButton, function(value){
     basis.cssom.display(this.element, !!value);
   });
- 
 
-  /*property_CurrentDictionary.addLink(dictionaryList, function(value){
-    this.setValue(value);
-  });
-  dictionaryList.addHandler({
-    change: function(){
-      property_CurrentDictionary.set(this.getValue());
-    }
-  });*/
 
   //dictionary editor 
 
@@ -311,15 +305,6 @@
     template: resource('template/layout.tmpl'),
 
     binding: {
-      matchInput: 'satellite:',
-      inspectButton: 'satellite:',
-      dictionaryList: 'satellite:',
-      dictionaryEditor: 'satellite:',
-      cultureList: 'satellite:',
-      saveButtonPanel: 'satellite:'
-    },
-
-    satellite: {
       matchInput: dictionaryListMatchInput,
       inspectButton: inspectButton,
       dictionaryList: dictionaryList,
