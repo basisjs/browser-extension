@@ -41,7 +41,7 @@
   //
 
   var editorContentChangedHandler = function(){
-    var newContent = this.editor.getValue().replace(/\r/g, '');
+    var newContent = this.editor.getValue();
                        // FIXME: it is hack
     if (this.target && this.delegate.target == this.target)
       this.target.update({
