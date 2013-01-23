@@ -15,8 +15,10 @@
   //
 
   var memos = [];
+  var syncAllTimer;
 
   function syncAll(){
+    syncAllTimer = null;
     memos.forEach(function(memo){
       memo.syncHeight();
     });
@@ -53,14 +55,14 @@
         this.focused = true;
         this.updateBind('focused');
 
-        if (!this.intervalTimer)
-          this.intervalTimer = setInterval(this.sync.bind(this), 100);
+        if (!this.timer)
+          this.timer = setInterval(this.sync.bind(this), 100);
       },
       blur: function(event){
         this.focused = false;
         this.updateBind('focused');
-        
-        this.intervalTimer = clearInterval(this.intervalTimer);
+
+        this.timer = clearInterval(this.timer);
       },
       resetScroll: function(event){
         domEvent.sender(event).scrollTop = 0;
@@ -69,15 +71,14 @@
 
     value: '',
     focused: false,
-    timeoutTimer: null,
-    intervalTimer: null,
+    timer: null,
 
-    init: function(config){
-      basis.ui.Node.prototype.init.call(this, config);
+    init: function(){
+      basis.ui.Node.prototype.init.call(this);
 
       memos.push(this);
-
-      this.timeoutTimer = setTimeout(this.syncHeight.bind(this), 0);
+      if (!syncAllTimer)
+        syncAllTimer = setTimeout(syncAll, 0);
     },
     setText: function(text){
       this.value = text;
@@ -93,9 +94,7 @@
 
     destroy: function(){
       memos.remove(this);
-
-      clearInterval(this.intervalTimer);
-      clearTimeout(this.timeoutTimer);
+      clearInterval(this.timer);
 
       basis.ui.Node.prototype.destroy.call(this);
     }
