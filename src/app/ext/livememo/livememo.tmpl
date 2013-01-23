@@ -1,7 +1,17 @@
 
   <b:resource src="livememo.css"/>
   
-  <div class="livememo">
-    <textarea{memo} disabled="{disabled}" event-focus="focus" event-blur="blur" event-keyup="keyup" event-keydown="keydown" event-change="change"/>
-    <textarea{shadowMemo} class="shadow"/>
+  <div class="livememo livememo_{disabled} livememo_{focused}" event-scroll="resetScroll">
+    <textarea{memo|focus} class="livememo__memo" style="height: {height}"
+      value="{value}"
+      disabled="{disabled}"
+      event-focus="focus"
+      event-blur="blur"
+      event-keyup="keyup"
+      event-keydown="keydown"
+      event-change="change"
+    />
+    <textarea{shadowMemo} class="livememo__shadow"
+      value="{value}"
+    />
   </div>

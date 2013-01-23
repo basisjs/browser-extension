@@ -1,83 +1,114 @@
 
   basis.require('basis.ui');
   basis.require('basis.dom.event');
+  basis.require('basis.timer');
 
-  var Event = basis.dom.event;
+
+  // 
+  // import names
+  //
+  var domEvent = basis.dom.event;
+
+
+  //
+  // main part
+  //
+
+  var memos = [];
+
+  function syncAll(){
+    memos.forEach(function(memo){
+      memo.syncHeight();
+    });
+  }
+
+  function sync(){
+    this.value = this.tmpl.memo.value;
+    this.updateBind('value');
+
+    this.syncHeight();
+  }
   
   var LiveMemo = basis.ui.Node.subclass({
     template: resource('livememo/livememo.tmpl'),
-
+    binding: {
+      value: 'value',
+      height: function(node){
+        return node.height ? node.height + 'px' : '1.2em';
+      },
+      focused: function(node){
+        return node.focused ? 'focused' : '';
+      }
+    },
     action: {
-      change: function(event){ 
-        this.updateMemo(); 
-      },
-      keyup: function(event){
-        this.updateMemo();
-      },
+      change: sync,
+      keyup: sync,
       keydown: function(event){
-        if (Event.key(event) == Event.KEY.ENTER)
-          Event.kill(event);
+        if (domEvent.key(event) == domEvent.KEY.ENTER)
+          domEvent.kill(event);
+        else
+          this.sync();
       },
       focus: function(event){
-        if (!this.timer)
-          this.timer = setInterval(this.updateMemo.bind(this), 100);
+        this.focused = true;
+        this.updateBind('focused');
+
+        if (!this.intervalTimer)
+          this.intervalTimer = setInterval(this.sync.bind(this), 100);
       },
       blur: function(event){
-        clearTimeout(this.timer);
-        delete this.timer;
+        this.focused = false;
+        this.updateBind('focused');
+        
+        this.intervalTimer = clearInterval(this.intervalTimer);
+      },
+      resetScroll: function(event){
+        domEvent.sender(event).scrollTop = 0;
       }
     },
 
+    value: '',
+    focused: false,
+    timeoutTimer: null,
+    intervalTimer: null,
+
     init: function(config){
       basis.ui.Node.prototype.init.call(this, config);
-      //this.inherit(config);
 
-      memos[this.basisObjectId] = this;
+      memos.push(this);
 
-      basis.dom.event.addHandler(this.element, 'scroll', function(){
-        this.element.scrollTop = 0;
-      });
-
-      this.cachedValue = undefined;
-      this.tmpl.memo.value = this.tmpl.shadowMemo.value = this.text || '';
-      this.cachedScrollHeight = this.tmpl.shadowMemo.scrollHeight;
-
-      this.updateMemo();
-      setTimeout(this.updateMemo.bind(this), 0);
+      this.timeoutTimer = setTimeout(this.syncHeight.bind(this), 0);
     },
     setText: function(text){
-      this.tmpl.memo.value = this.tmpl.shadowMemo.value = text;
-      this.updateMemo();        
-    },
-    updateMemo: function(){
-      var newValue = this.tmpl.memo.value;
-      if (newValue !== this.cachedValue)
-        this.tmpl.shadowMemo.value = this.cachedValue = newValue;
+      this.value = text;
+      this.updateBind('value');
 
-      var scrollHeight = this.tmpl.shadowMemo.scrollHeight;
-      basis.cssom.setStyle(this.tmpl.memo, {
-        height: scrollHeight ? scrollHeight + 'px' : '1.2em'
-      });
+      this.syncHeight(this);
     },
+    sync: sync,
+    syncHeight: function(){
+      this.height = this.tmpl.shadowMemo.scrollHeight;
+      this.updateBind('height');
+    },
+
     destroy: function(){
-      delete memos[this.basisObjectId];
+      memos.remove(this);
 
-      clearInterval(this.timer);
-      delete this.timer;
+      clearInterval(this.intervalTimer);
+      clearTimeout(this.timeoutTimer);
 
       basis.ui.Node.prototype.destroy.call(this);
     }
   });
 
-  var memos = {};
-  function updateMemos(){
-    for (var i in memos)
-      memos[i].updateMemo();
-  }
-  basis.dom.event.addHandler(window, 'resize', updateMemos);
+  domEvent.addHandler(window, 'resize', syncAll);
+
+  //
+  // export names
+  //
 
   module.exports = {
     LiveMemo: LiveMemo,
-    updateMemos: updateMemos
-  }
+    syncAll: syncAll
+  };
 

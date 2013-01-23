@@ -157,8 +157,8 @@
       binding: {
         even: {
           events: 'update',
-          getter: function(object){
-            return object.data.Position % 2 == 0 ? 'even' : '';
+          getter: function(node){
+            return node.data.Position % 2 == 0 ? 'even' : '';
           } 
         }
       }
@@ -167,7 +167,7 @@
     sorting: 'data.Position',
     handler: {
       childNodesModified: function(){
-        livememo.updateMemos();
+        livememo.syncAll();
       }
     }
   });
@@ -189,10 +189,9 @@
       satelliteConfig: {
         memo: {
           instanceOf: livememo.LiveMemo.subclass({
-            autoDelegate: basis.dom.wrapper.DELEGATE.OWNER,
-            event_ownerChanged: function(oldOwner){
-              livememo.LiveMemo.prototype.event_ownerChanged.call(this, oldOwner);
-              if (this.owner && this.owner.data.Culture == 'base')
+            autoDelegate: true,
+            templateUpdate: function(){
+              if (this.data.Culture == 'base')
                 this.disable();
             },
             action: {
@@ -205,31 +204,26 @@
                 livememo.LiveMemo.prototype.action.blur.call(this, event);
                 var memo = Event.sender(event);
                 this.owner.parentNode.unselect();
-                this.owner.target.set('Value', this.tmpl.memo.value, true);        
+                this.target.set('Value', this.value, true);        
               },
               keyup: function(event){
                 livememo.LiveMemo.prototype.action.keyup.call(this, event);
 
                 this.action.change.call(this, event);
                 if (Event.key(event) == Event.KEY.F2)
-                {
                   Dictionary(this.data.Dictionary).save();
-                  //saveDictionary(property_CurrentDictionary.value);
-                  
-                }
               },
               change: function(){
                 livememo.LiveMemo.prototype.action.change.call(this, event);
 
-                var value = this.tmpl.memo.value;
-
+                var value = this.value;
                 var tokenName = this.data.Token;
                 var dictionaryName = this.data.Dictionary;
                 var culture = this.data.Culture;
 
-                this.owner.target.set('Value', value, true);
+                this.target.set('Value', value, true);
 
-                app.transport.call('setTokenCultureValue', dictionaryName, tokenName, culture, value)  ;
+                app.transport.call('setTokenCultureValue', dictionaryName, tokenName, culture, value);
               }
             }
           })
@@ -241,6 +235,7 @@
         empty: {
           events: 'update',
           getter: function(object){
+            debugger;
             return object.data.Value ? '' : 'empty';
           }
         }
