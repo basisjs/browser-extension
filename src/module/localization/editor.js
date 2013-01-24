@@ -20,6 +20,8 @@
   var resourceSplit = l10nType.resourceSplit;
   var tokenDataset = l10nType.tokenDataset;
 
+  var KEY_S = 'S'.charCodeAt(0);
+
 
   //header
   var addCulturePanel = new basis.ui.Node({
@@ -183,12 +185,19 @@
                 this.owner.parentNode.unselect();
                 this.target.set('Value', this.value, true);        
               },
-              keyup: function(event){
-                livememo.LiveMemo.prototype.action.keyup.call(this, event);
+              keydown: function(event){
+                livememo.LiveMemo.prototype.action.keydown.call(this, event);
 
-                this.action.change.call(this, event);
-                if (Event.key(event) == Event.KEY.F2)
+                var key = Event.key(event);
+                if (key == Event.KEY.F2 || ((event.ctrlKey || event.metaKey) && key == KEY_S))
+                {
+                  Event.kill(event);
                   Dictionary(this.data.Dictionary).save();
+                }
+              },
+              keyup: function(event){ // live update
+                livememo.LiveMemo.prototype.action.keyup.call(this, event);
+                this.action.change.call(this, event);
               },
               change: function(){
                 livememo.LiveMemo.prototype.action.change.call(this, event);

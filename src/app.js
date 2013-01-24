@@ -1,6 +1,8 @@
 
-  basis.require('basis.data.property');
-  basis.require('basis.ui');
+  basis.require('basis.dom.event');
+  basis.require('basis.ui'); // ??
+
+  var domEvent = basis.dom.event;
 
   function initMainMenu(){
     var mainMenu = resource('module/mainmenu/mainmenu.js').fetch();
@@ -28,5 +30,13 @@
 
     // init interfaces
     initMainMenu();
+
+    // add global key bindings
+    domEvent.addGlobalHandler('keydown', function(event){
+      var key = domEvent.key(event);
+      var sender = domEvent.sender(event);
+      if (key == domEvent.KEY.BACKSPACE && sender.tagName != 'INPUT' && sender.tagName != 'TEXTAREA')
+        domEvent.cancelDefault(event);
+    })
   });
 

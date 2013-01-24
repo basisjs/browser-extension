@@ -79,6 +79,28 @@
         }
       }
     },
+    action: {
+      fieldKeydown: function(event){
+        var key = nsEvent.key(event);
+
+        if (key == nsEvent.KEY.F2 || ((event.ctrlKey || event.metaKey) && key == KEY_S))
+        {
+          nsEvent.kill(event);
+          if (this.target)
+            this.target.save();
+
+          return;
+        }
+
+        if (key == nsEvent.KEY.ESC)
+        {
+          if (this.target)
+            this.target.rollback();
+
+          return;
+        }
+      }
+    },
 
     editorMode: 'html',
 
@@ -138,26 +160,7 @@
         if (this.editor)
           this.editor.setReadOnly(false);
       },
-      /*fieldKeydown: function(sender, event){
-        var key = nsEvent.key(event);
 
-        if (key == nsEvent.KEY.F2 || (event.ctrlKey && key == KEY_S))
-        {
-          
-          if (this.target)
-            this.target.save();
-
-          return;
-        }
-
-        if (key == nsEvent.KEY.ESC)
-        {
-          if (this.target)
-            this.target.rollback();
-
-          return;
-        }
-      },*/
       update: function(object, delta){
         if ('content' in delta)
           this.setValue(this.data.content);
