@@ -1,4 +1,4 @@
-
+	
   basis.require('basis.dom.event');
   basis.require('basis.cssom');
   basis.require('basis.data');
@@ -146,7 +146,7 @@
   var resourceEditorList = new basis.ui.Node({
     autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
 
-    cssClassName: 'ResourceEditorList',
+    template: resource('../templates/resourceEditor/resourceEditorList.tmpl'),
 
     childClass: ResourceEditor,
 
@@ -179,8 +179,7 @@
 
 
   var resourceList = new basis.ui.Node({
-    //template: resource('../templates/resourceEditor/resourceList.tmpl')
-    cssClassName: 'ResourceList',
+    template: resource('../templates/resourceEditor/resourceList.tmpl'),
 
     autoDelegate: basis.dom.wrapper.DELEGATE.PARENT, 
 

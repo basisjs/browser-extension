@@ -1,0 +1,14 @@
+
+  .TemplaterPage .InspectButton
+  {
+    float: left;
+  }
+  .TemplaterPage .InspectButton.active .Basis-Button-Back
+  {
+    background-color: #BCD7F2;
+    border-color: #888;
+
+      -webkit-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+      -moz-box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+    box-shadow: 0 0 3px 1px rgba(0, 0, 0, 0.15) inset;
+  }

@@ -105,7 +105,7 @@
   //
 
   var fileList = new basis.ui.Node({
-    cssClassName: 'FileList',
+    template: resource('../templates/filelist/fileList.tmpl'),
     dataSource: filterFileSubset, //app.type.file.File.all,
 
     selection: {},
@@ -158,17 +158,10 @@
 
   var widget = new basis.ui.Node({//new nsLayout.VerticalPanelStack({
     id: 'TemplateList',
-    //cssClassName: 'not-active',
     childNodes: [
       fileListMatchInput,
       fileList
     ]
-    /*childNodes: [
-      {
-        //flex: 1,
-        childNodes: fileList
-      }
-    ]*/
   });
 
   new nsResizer.Resizer({

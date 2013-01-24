@@ -65,8 +65,6 @@
   *
   */
   var Editor = basis.ui.Node.subclass({
-    cssClassName: 'SourceEditor',
-
     autoDelegate: true,
 
     template: resource('../templates/editor/editor.tmpl'),

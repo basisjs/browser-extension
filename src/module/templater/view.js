@@ -54,7 +54,7 @@
   // Inspect button
   //
   var inspectButton = new nsButton.Button({
-    cssClassName: 'InspectButton',
+    template: resource('templates/inspectButton.tmpl'),
     caption: 'Start Inspect',
     click: function(){
       inspect(!inspectMode);
