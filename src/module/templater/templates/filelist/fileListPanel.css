@@ -7,28 +7,16 @@
     min-width: 200px;
     position: relative;
     height: 100%;
-    /*overflow: auto;*/
     border-right: 5px solid #B6BAC0;
 
     -webkit-box-orient: vertical;
     display: -webkit-box;
-
-     
-    /*  -webkit-transition: width .5s, opacity 1.5s; 
-    transition: width .5s, opacity 1.5s;*/
   }
   #TemplateList.focus
   {
     border-color: #ACF;
     background: white;
   }
-
-  /*#TemplateList.not-active
-  {
-    width: 0;
-    min-width: 0;
-    opacity: 0;
-  }*/
 
   #TemplateList .devtools-fileNode-modified
   {
@@ -48,17 +36,3 @@
     bottom: 0;
     width: 5px;
   }
-
-  /*#TemplateList .devtools-templateFileList
-  {
-    outline: none;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  #TemplateList .fileType-tmpl .Basis-TreeNode-Caption
-  {
-    background-image: url(../../img/file-tmpl.png);
-  }*/
-

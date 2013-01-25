@@ -14,8 +14,8 @@
   // import names
   //
 
-  var getter = Function.getter;
-  var wrapper = Function.wrapper;
+  var getter = basis.getter;
+  var wrapper = basis.fn.wrapper;
   var classList = basis.cssom.classList;
 
   var DELEGATE = basis.dom.wrapper.DELEGATE;
@@ -25,11 +25,8 @@
 
   var nsTemplate = basis.template;
   var nsEvent = basis.dom.event;
-  var nsProperty = basis.data.property;
   var nsLayout = basis.layout;
   var nsButton = basis.ui.button;
-  var nsForm = basis.ui.form;
-  var nsField = basis.ui.field;
 
   //
   // Main part
@@ -39,18 +36,10 @@
   var tokenView = resource('tokenView.js');
 
 
-  resource('../templates/editor/style.css')().startUse();
-
-
-  var tmplSource = new nsProperty.Property('');
-  //var cssSource = new nsProperty.Property('');
-
   // .tmpl
   var tmplEditor = new Editor({
     autoDelegate: DELEGATE.PARENT,
 
-    id: 'TmplEditor',
-    //sourceProperty: tmplSource,
     fileExt: 'tmpl',
 
     disabled: true,
@@ -71,26 +60,22 @@
       </li>'*/
   });
 
-  // .css
-  /*var cssEditor = new Editor({
-    id: 'CssEditor',
-    sourceProperty: cssSource,
-    fileExt: 'css',
-    active: true
-  });*/
-
-
 
   //
   // Editor
   //
 
-  var widget = new basis.ui.Node({//new nsLayout.VerticalPanelStack({
-    id: 'Editor',
+  var widget = new basis.ui.Node({
+    template: resource('../templates/editor/view.tmpl'),
+
+    setSource: function(source){
+      tmplEditor.setDelegate();
+      tmplEditor.update({ content: source });
+    },
 
     childNodes: [
       {
-        id: 'EditorToolbar',
+        template: resource('../templates/editor/toolbar.tmpl'),
         childNodes: [
           new nsButton.ButtonPanel({
             delegate: tmplEditor,
@@ -133,50 +118,14 @@
         ]
       },
       tmplEditor,
-      tokenView()	
-      /*{
-        flex: 1,
-        autoDelegate: DELEGATE.PARENT,
-        childNodes: tmplEditor
-      },
-      {
-        flex: 1,
-        //autoDelegate: DELEGATE.PARENT,
-        childNodes: tokenView()//cssEditor
-      }*/
+      tokenView()
     ]
   });
+
 
   //
   // export names
   //
 
-  exports = module.exports = widget;
-  //exports.tmplSource = tmplSource;
-  //exports.tmplEditor = tmplEditor;
-  exports.setSource = function(source){
-    tmplEditor.setDelegate();
-    tmplEditor.update({ content: source });
-  }
-  /*exports.setSourceFile = function(file){
-    var filename;
-
-    if (file instanceof basis.data.DataObject)
-      filename = file.data.filename;
-    else
-      filename = file;
-
-    if (filename && /.tmpl$/.test(filename))
-    {
-      var tmplFilename = filename;
-      //var tmplFilename = filename.replace(/\.[a-z0-9]+$/, '.tmpl');
-      //var cssFilename = filename.replace(/\.[a-z0-9]+$/, '.css');
-      tmplEditor.setDelegate(app.type.file.File.getSlot({ filename: filename, content: '' }));
-      //cssEditor.setDelegate(app.type.File.getSlot({ filename: cssFilename, content: '' }));
-    }
-    else
-    {
-      tmplEditor.setDelegate();
-      //cssEditor.setDelegate();
-    }
-  }*/
+  module.exports = widget;
+  

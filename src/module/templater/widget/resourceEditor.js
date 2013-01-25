@@ -7,7 +7,6 @@
   basis.require('basis.ui.tabs');
   basis.require('basis.ui.resizer');
 
-  resource('../templates/resourceEditor/style.css')().startUse();
 
   //
   // import names
@@ -218,7 +217,7 @@
 
 
   var widget = new nsLayout.VerticalPanelStack({
-    id: 'Resources',
+    template: resource('../templates/resourceEditor/view.tmpl'),
     childNodes: [
       {
         autoDelegate: basis.dom.wrapper.DELEGATE.PARENT, 
@@ -231,37 +230,6 @@
       }
     ]
   });
-
-
-
-
-  /*var cssEditor = new Editor({
-    id: 'CssEditor',
-    sourceProperty: cssSource,
-    fileExt: 'css',
-    active: true
-  });
-
-  resourceList.selection.addHandler({
-    datasetChanged: function(selection, delta){
-      var item = selection.pick();
-      cssEditor.setDelegate(item && app.type.File.get(item.data.path + item.data.filename));
-    }
-  });
-
-
-  var widget = new nsLayout.VerticalPanelStack({
-    id: 'ResourceEditor',
-    childNodes: [
-      {
-        childNodes: resourceList
-      },
-      {
-        flex: 1,
-        childNodes: cssEditor
-      }
-    ]
-  });*/
 
 
  /**
@@ -278,14 +246,3 @@
   //
 
   exports = module.exports = widget;
-  /*exports.editor = resourseEditorList;
-  exports.setSource = function(decl, path){
-    if (decl)
-    {
-      resourceFilesDataset.set(decl.resources.map(function(res){ 
-        return app.type.file.File.getSlot(path + basis.path.basename(res));
-      }));
-    }
-    else
-      resourceFilesDataset.set([]);
-  }*/

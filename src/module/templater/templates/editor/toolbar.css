@@ -1,0 +1,13 @@
+
+  #EditorToolbar
+  {
+    padding: 5px;
+    border-bottom: 1px solid #CCC;
+    background: #F4F4F4;
+    text-align: right;
+  }
+
+  #EditorToolbar .Basis-ButtonPanel
+  {
+    float: right;
+  }

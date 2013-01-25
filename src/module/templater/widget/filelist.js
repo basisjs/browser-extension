@@ -1,6 +1,4 @@
 
-  'use strict';
-
   basis.require('basis.cssom');
   basis.require('basis.data');
   basis.require('basis.data.property');
@@ -8,13 +6,11 @@
   basis.require('basis.ui.field');
 
 
-  resource('../templates/filelist/style.css')().startUse();
-
   //
   // import names
   //
-  var getter = Function.getter;
-  var wrapper = Function.wrapper;
+  var getter = basis.getter;
+  var wrapper = basis.fn.wrapper;
 
   var classList = basis.cssom.classList;
   var fsobserver = basis.devtools;
@@ -39,7 +35,7 @@
 
   var filterFileSubset = new basis.data.dataset.Subset({
     source: fileSubset,
-    rule: Function.$true
+    rule: basis.fn.$true
   });
 
 
@@ -86,19 +82,6 @@
       filterFileSubset.setRule(Function.$true);
   });
 
-  
-  /*var cancelFilterButton = new basis.ui.Node({
-    template: '<div class="FileListMatch-CancelButton" event-click="click"/>',
-    action: {
-      click: function(){
-        fileListMatchInput.setValue('');
-      }
-    },
-    container: fileListMatchInput.element
-  });
-  matchProperty.addLink(cancelFilterButton, function(value){
-    basis.cssom.display(this.element, !!value);
-  });*/
 
   //
   // list
@@ -161,8 +144,8 @@
   // main control
   //
 
-  var widget = new basis.ui.Node({//new nsLayout.VerticalPanelStack({
-    id: 'TemplateList',
+  var widget = new basis.ui.Node({
+    template: resource('../templates/filelist/fileListPanel.tmpl'),
     childNodes: [
       fileListMatchInput,
       fileList
