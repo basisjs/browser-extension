@@ -14,8 +14,9 @@
     childClass: {
       template: resource('template/cultureListItem.tmpl'),
 
-      titleGetter: basis.getter('data.Culture || ""'),
-      valueGetter: basis.getter('data.Culture || ""'),
+      valueGetter: function(field){
+        return field.data.Culture || "";
+      },
       
       binding: {
         spriteX: {

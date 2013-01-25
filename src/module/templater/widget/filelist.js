@@ -115,7 +115,12 @@
       template: resource('../templates/filelist/fileListItem.tmpl'),
       binding: {
         path: 'data:filename',
-        filename: 'data:filename.split("/").slice(-1)',
+        filename: {
+          events: 'update',
+          getter: function(node){
+            return node.data.filename.split("/").slice(-1)
+          }
+        },
         modified: {
           events: 'targetChanged',
           getter: function(node){

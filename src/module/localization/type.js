@@ -239,7 +239,9 @@
     },
     reset: function(){
       this.setState(STATE.READY);
-      resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(getter('rollback()'));
+      resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
+        token.rollback();
+      });
     }
   })
 

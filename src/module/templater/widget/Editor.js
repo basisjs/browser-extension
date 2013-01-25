@@ -69,7 +69,12 @@
 
     template: resource('../templates/editor/editor.tmpl'),
     binding: {
-      filename: 'data:filename || ""',
+      filename: {
+        events: 'update',
+        getter: function(node){
+          return node.data.filename || '';
+        }
+      },
       modified: {
         events: 'targetChanged rollbackUpdate update',
         getter: function(node){
