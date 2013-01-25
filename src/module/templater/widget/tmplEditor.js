@@ -21,7 +21,6 @@
   var DELEGATE = basis.dom.wrapper.DELEGATE;
 
   var UINode = basis.ui.Node;
-  var UIContainer = basis.ui.Container;
 
   var nsTemplate = basis.template;
   var nsEvent = basis.dom.event;

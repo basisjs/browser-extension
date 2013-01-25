@@ -30,7 +30,6 @@
   var STATE = basis.data.STATE;
 
   var UINode = basis.ui.Node;
-  var UIContainer = basis.ui.Container;
 
 
   var KEY_S = 'S'.charCodeAt(0);

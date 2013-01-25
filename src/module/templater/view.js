@@ -78,7 +78,7 @@
   //
   // result
   //
-  var templater = new basis.ui.Container({
+  var templater = new basis.ui.Node({
     template:
       '<div class="TemplaterPage">' +
         '<!--{inspectButton}-->' +

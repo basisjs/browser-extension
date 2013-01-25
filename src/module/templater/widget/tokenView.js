@@ -19,7 +19,6 @@
   var classList = basis.cssom.classList;
 
   var UINode = basis.ui.Node;
-  var UIContainer = basis.ui.Container;
 
   var nsTemplate = basis.template;
   var nsLayout = basis.layout;
@@ -74,7 +73,7 @@
         existsIf: function(object){
           return object.data[TOKEN_REFS];
         },
-        instanceOf: UIContainer.subclass({
+        instanceOf: UINode.subclass({
           template: resource('../templates/tokenView/referenceList.tmpl'),
 
           childClass: {
@@ -126,7 +125,7 @@
  /**
   * @class
   */
-  var Attribute = UIContainer.subclass({
+  var Attribute = UINode.subclass({
     template: resource('../templates/tokenView/attribute.tmpl'),
 
     binding: {
@@ -235,7 +234,7 @@
 
       this.childNodes = attrParts;
 
-      UIContainer.prototype.init.call(this);
+      UINode.prototype.init.call(this);
     }
   });
 
@@ -243,15 +242,10 @@
  /**
   * @class
   */
-  var AttributeList = UIContainer.subclass({
+  var AttributeList = UINode.subclass({
     template: resource('../templates/tokenView/attributeList.tmpl'),
 
-    childClass: Attribute/*,
-
-    init: function(){
-      UIContainer.prototype.init.call(this);
-      this.setChildNodes(this.data[ELEMENT_ATTRS]);
-    }*/
+    childClass: Attribute
   });
 
 
@@ -342,7 +336,6 @@
     autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
 
     template: resource('../templates/tokenView/tree.tmpl'),
-
     action: {
       focus: function(){
         classList(this.element.parentNode.parentNode).add('focus');
@@ -382,24 +375,6 @@
     },
 
     childFactory: nodeFactory,
-
-    selection: {
-      handler: {
-        datasetChanged: function(object, delta){
-          /*var selected = this.pick();
-          var start = DOM.getSelectionStart(sourceField.tmpl.field);
-          var end = start;
-
-          if (selected)
-          {
-            start = buildOffset(selected, tree).length;
-            end = start + buildSource(selected).length;
-          }
-
-          DOM.setSelectionRange(sourceField.tmpl.field, start, end);*/
-        }
-      }
-    },
 
     handler: {
       childNodesModified: function(object, delta){
@@ -443,37 +418,10 @@
     
     childNodes: tree
   });
-  /*var widget = new nsLayout.VerticalPanelStack({
-    id: 'Viewer',
-    childNodes: [
-      {
-        childNodes: resourceList
-      },
-      {
-        flex: 1,
-        childNodes: tree
-      }
-    ]
-  });*/
-
-
- /**
-  * resizer
-  */
-  /*new nsResizer.Resizer({
-    element: widget.element,
-    property: 'height'
-  });*/
 
 
   //
   // export names
   //
 
-  exports = module.exports = widget;
-  //exports.tree = tree;
-  /*exports.setSource = function(decl){
-    //var decl = nsTemplate.makeDeclaration(source);
-    tree.setChildNodes(decl && decl.tokens || []);
-    //resourceList.setChildNodes(decl.resources.map(function(res){ return { data: { filename: res }}}));
-  }*/
+  module.exports = widget;
