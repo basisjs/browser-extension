@@ -142,7 +142,7 @@
   });
 
   var resourceEditorList = new basis.ui.Node({
-    autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
+    autoDelegate: true,
 
     template: resource('../templates/resourceEditor/resourceEditorList.tmpl'),
 
@@ -155,16 +155,19 @@
         })
       },
       targetChanged: function(){
-        //console.log('targetChanged: ', this.target && this.data.resources);
         this.updateResources(this.target && this.data.resources);
       },
-      rollbackUpdate: function(object){
-        this.updateResource(this.data.resources);
-      },
       update: function(object, delta){
-        //console.log('update: ', object.data);
         if ('resources' in delta)
           this.updateResources(this.data.resources);
+      }
+    },
+
+    listen: {
+      target: {
+        rollbackUpdate: function(object){
+          this.updateResources(this.data.resources);
+        }
       }
     },
 

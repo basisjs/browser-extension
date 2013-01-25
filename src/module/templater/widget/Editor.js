@@ -75,7 +75,7 @@
         }
       },
       modified: {
-        events: 'targetChanged rollbackUpdate update',
+        events: 'targetChanged update',
         getter: function(node){
           return node.target && node.target.modified ? 'modified' : '';
         }
