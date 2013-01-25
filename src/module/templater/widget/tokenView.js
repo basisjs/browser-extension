@@ -146,7 +146,7 @@
 
     childClass: AttributeValuePart,
 
-    init: function(config){
+    init: function(){
       var attrParts = [];
       var attrValue = this[ATTR_VALUE];
       var attrName = this[ATTR_NAME];
@@ -235,7 +235,7 @@
 
       this.childNodes = attrParts;
 
-      UIContainer.prototype.init.call(this, config);
+      UIContainer.prototype.init.call(this);
     }
   });
 
