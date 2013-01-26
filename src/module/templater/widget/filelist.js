@@ -3,7 +3,9 @@
   basis.require('basis.data.property');
   basis.require('basis.ui');
   basis.require('basis.ui.resizer');
-  basis.require('app.type.file');
+  //basis.require('app.type.file');
+
+  var File = basis.resource('src/app/type/file.js')().File;
 
 
   //
@@ -11,7 +13,7 @@
   //
 
   var cssAndTemplates = new basis.data.dataset.Subset({
-    source: app.type.file.File.all,
+    source: File.all,
     rule: function(object){
       var extname = basis.path.extname(object.data.filename);
       return (extname == '.tmpl' || extname == '.css');

@@ -1,5 +1,8 @@
 
-  var func = function(){
+  var func = function(global){
+    var basis = global.basis;
+    var document = global.document;
+
     basis.require('basis.dom');
     basis.require('basis.ui');
     basis.require('basis.ui.popup');
@@ -807,10 +810,10 @@
   }
 
   module.exports = "(function(global){" +
-    "if (basis){" +
-      "if (!basis.appCP){" +
+    "if (global.basis){" +
+      "if (!global.basis.appCP){" +
         "try{" +
-          "(" + func.toString() + ")();" +
+          "(" + func.toString() + ")(global);" +
         "}catch(e){" +
           "console.warn(e.toString())" +
         "}" +

@@ -4,6 +4,7 @@
   basis.require('basis.ui.button');
   basis.require('basis.ui.resizer');
 
+  var File = basis.resource('src/app/type/file.js')().File;
 
   //
   // import names
@@ -124,7 +125,7 @@
               autoDelegate: true,
               caption: 'Create a file',
               click: function(){
-                app.type.file.File.createFile(this.data.filename);
+                File.createFile(this.data.filename);
               }
             })
           }
@@ -158,7 +159,7 @@
         var child = this.getChild(filename, 'data.filename');
         if (!child)
         {
-          child = app.type.file.File.getSlot(filename);
+          child = File.getSlot(filename);
           reset = true;
         }
         children.push(child)
