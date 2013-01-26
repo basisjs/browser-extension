@@ -2,7 +2,8 @@
   basis.require('basis.data.dataset');
   basis.require('basis.data.property');
   basis.require('basis.ui');
-  //basis.require('app.type');
+  basis.require('basis.ui.resizer');
+  basis.require('app.type.file');
 
 
   //
