@@ -41,6 +41,11 @@
     init: function(){
       Editor.prototype.init.call(this);
       this.editor.on('change', this.resize.bind(this));
+      //console.log('editor created');
+    },
+    destroy: function(){
+      //console.log('editor destroy');
+      Editor.prototype.destroy.call(this);
     },
 
     resize: function(){
@@ -134,28 +139,32 @@
     template: resource('../templates/resourceEditor/resourceList.tmpl'),
 
     handler: {
-      targetChanged: function(){
-        this.updateResources(this.target && this.data.resources);
-      },
       update: function(object, delta){
         if ('resources' in delta)
-          this.updateResources(this.data.resources);
-      }
-    },
+        {
+          var resources = this.data.resources || [];
+          var children = [];
+          var reset = false;
 
-    listen: {
-      target: {
-        rollbackUpdate: function(object, delta){
-          if ('resources' in delta)
-            this.updateResources(this.data.resources);
+          for (var i = 0, filename; filename = resources[i]; i++)
+          {
+            var child = this.getChild(filename, 'data.filename');
+            if (!child)
+            {
+              child = app.type.file.File.getSlot(filename);
+              reset = true;
+            }
+            children.push(child)
+          }
+
+          if (reset || children.length != this.childNodes.length)
+            this.setChildNodes(children);
         }
       }
     },
 
     updateResources: function(resources){
-      this.setChildNodes((resources || []).map(function(filename){
-        return app.type.file.File.getSlot(filename);
-      }, this), true);
+
     },
 
     childClass: {
