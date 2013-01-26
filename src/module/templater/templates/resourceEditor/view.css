@@ -7,14 +7,14 @@
     min-width: 200px;
     max-width: 50%;
     overflow: visible !important;
-    border-left: 5px solid #B6BAC0;
+    border-left: 1px solid #B6BAC0;
   }
 
   #Resources .Basis-Resizer
   {
     position: absolute;
     top: 0;
-    left: -5px;
+    left: -3px;
     bottom: 0;
     width: 5px;
   }

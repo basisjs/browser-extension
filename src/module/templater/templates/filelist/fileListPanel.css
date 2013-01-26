@@ -5,9 +5,10 @@
     float: left;
     width: 15%;
     min-width: 200px;
+    max-width: 35%;
     position: relative;
     height: 100%;
-    border-right: 5px solid #B6BAC0;
+    border-right: 1px solid #B6BAC0;
 
     -webkit-box-orient: vertical;
     display: -webkit-box;
@@ -32,7 +33,7 @@
   {
     position: absolute;
     top: 0;
-    right: -5px;
+    right: -3px;
     bottom: 0;
     width: 5px;
   }

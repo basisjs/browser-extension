@@ -1,7 +1,7 @@
 
   .FileList-MatchInput
   {
-    padding: 5px;
+    padding: 3px;
     border-bottom: 1px solid #B6BAC0;
     background: #F4F4F4;
   }
@@ -10,9 +10,9 @@
     width: 100%;
     margin: 0;
     border: 1px solid #BAB6C0;
-    padding: 2px 20px;
+    padding: 4px 20px;
     box-sizing: border-box;
-    background: white url(img/input_search_16x16.png) no-repeat left center;
+    background: white url(img/input_search_16x16.png) no-repeat 3px center;
   }
 
   .FileList-MatchInput-CancelButton
