@@ -1,31 +1,15 @@
 
-  basis.require('basis.cssom');
-  basis.require('basis.data');
+  basis.require('basis.data.dataset');
   basis.require('basis.data.property');
   basis.require('basis.ui');
-  basis.require('basis.ui.field');
+  //basis.require('app.type');
 
-
-  //
-  // import names
-  //
-  var getter = basis.getter;
-  var wrapper = basis.fn.wrapper;
-
-  var classList = basis.cssom.classList;
-  var fsobserver = basis.devtools;
-
-  var nsData = basis.data;
-  var nsDataset = basis.data.dataset;
-  var nsLayout = basis.layout;
-  var nsTree = basis.ui.tree;
-  var nsResizer = basis.ui.resizer;
 
   //
   // Datasets
   //
 
-  var fileSubset = new basis.data.dataset.Subset({
+  var cssAndTemplates = new basis.data.dataset.Subset({
     source: app.type.file.File.all,
     rule: function(object){
       var extname = basis.path.extname(object.data.filename);
@@ -33,9 +17,8 @@
     }
   });
 
-  var filterFileSubset = new basis.data.dataset.Subset({
-    source: fileSubset,
-    rule: basis.fn.$true
+  var filenameFilteredSubset = new basis.data.dataset.Subset({
+    source: cssAndTemplates
   });
 
 
@@ -43,18 +26,20 @@
   // filter
   //
 
-  var matchProperty = new basis.data.property.Property('');
   var fileListMatchInput = new basis.ui.Node({
-    template: resource('../templates/filelist/matchInput.tmpl'),
+    empty: false,
 
+    template: resource('../templates/filelist/matchInput.tmpl'),
     binding: {
-      clean: function(object){
-        return object.clean ? 'clean' : '';
+      empty: function(node){
+        return node.empty ? 'empty' : '';
       }
     },
-
     action: {
-      keyup: function(){
+      keyup: function(event){
+        if (basis.dom.event.key(event) == basis.dom.event.KEY.ESC)
+          this.tmpl.input.value = '';
+
         matchProperty.set(this.tmpl.input.value);
       },
       change: function(){
@@ -63,23 +48,26 @@
       clear: function(){
         this.tmpl.input.value = '';
         matchProperty.set('');
+        this.focus();
       }
     }
   });
-  matchProperty.addLink(null, function(value){
-    fileListMatchInput.clean = !value;
-    fileListMatchInput.updateBind('clean');
+
+  var matchProperty = new basis.data.property.Property('');
+  matchProperty.addLink(fileListMatchInput, function(value){
+    this.empty = !value;
+    this.updateBind('empty');
   });
-  matchProperty.addLink(null, function(value){
+  matchProperty.addLink(filenameFilteredSubset, function(value){
     if (value)
     {
       var regExp = new RegExp('(^|\/)' + value.forRegExp(), 'i');
-      filterFileSubset.setRule(function(object){ 
+      this.setRule(function(object){ 
         return regExp.test(object.data.filename) 
       });
     }
     else
-      filterFileSubset.setRule(Function.$true);
+      this.setRule(basis.fn.$true);
   });
 
 
@@ -88,10 +76,10 @@
   //
 
   var fileList = new basis.ui.Node({
+    dataSource: filenameFilteredSubset,
     template: resource('../templates/filelist/fileList.tmpl'),
-    dataSource: filterFileSubset, //app.type.file.File.all,
 
-    selection: {},
+    selection: true,
     sorting: 'data.filename',
 
     childClass: {
@@ -101,7 +89,7 @@
         filename: {
           events: 'update',
           getter: function(node){
-            return node.data.filename.split("/").slice(-1)
+            return node.data.filename.split("/").slice(-1);
           }
         },
         modified: {
@@ -121,7 +109,7 @@
       listen: {
         target: {
           rollbackUpdate: function(){
-            this.tmpl.set('modified', this.binding.modified.getter(this));
+            this.updateBind('modified');
           }
         }
       }
@@ -132,10 +120,10 @@
         var filename = object.data.filename;
         return filename.substr(1, filename.lastIndexOf('/'));
       },
+      sorting: 'data.id',
       childClass: {
         template: resource('../templates/filelist/fileListGroup.tmpl')
-      },
-      sorting: 'data.id'
+      }
     }
   });
 
@@ -146,13 +134,14 @@
 
   var widget = new basis.ui.Node({
     template: resource('../templates/filelist/fileListPanel.tmpl'),
+    tree: fileList,
     childNodes: [
       fileListMatchInput,
       fileList
     ]
   });
 
-  new nsResizer.Resizer({
+  new basis.ui.resizer.Resizer({
     element: widget.element
   });
 
@@ -161,5 +150,5 @@
   // export names
   //
 
-  exports = module.exports = widget;
-  exports.tree = fileList;
+  module.exports = widget;
+
