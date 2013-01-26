@@ -29,7 +29,7 @@
       var handlers = this.handlers[message.action];
       if (handlers)
         for (var i = 0, handler; handler = handlers[i]; i++)
-          handler.handler.call(handler.context, message.data && message.data.toObject());
+          handler.handler.call(handler.context, message.data && JSON.parse(message.data));
     },
     onMessage: function(message, handler, handlerContext){
       if (!this.handlers[message])
