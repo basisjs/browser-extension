@@ -65,32 +65,32 @@
   // Datasets
   //
   var resourceDictionaryCultureSplit = new Split({
+    source: Resource.all,
     rule: function(object){
       return object.data.Dictionary + '_' + object.data.Culture;
-    },
-    source: Resource.all
+    }
   });
   var resourceDictionaryCultureMerge = new Merge({});
   var resourceSplit = new Split({
+    source: resourceDictionaryCultureMerge,
     rule: function(object){
       return object.data.Dictionary + '_' + object.data.Token;
-    },
-    source: resourceDictionaryCultureMerge
+    }
   });
 
   // dictionary culture
   var dictionaryCultureSplit = new Split({
-    rule: getter('data.Dictionary'),
-    source: DictionaryCulture.all
+    source: DictionaryCulture.all,
+    rule: getter('data.Dictionary')
   });
   var dictionaryCultureDataset = new Subset({
     rule: Function.$true
   });
 
   var tokenSplit = new nsEntity.Grouping({
+    source: Token.all,
     rule: getter('data.Dictionary'),
-    wrapper: Token,
-    source: Token.all
+    wrapper: Token
   });
   var tokenDataset = new Subset({});
 
@@ -117,7 +117,7 @@
     rule: getter('data.Dictionary')
   });
   var resourceModifiedDataset = new Subset({
-    rule: Function.$true
+    rule: basis.fn.$true
   });
 
   var usedCulturesDataset = new basis.data.Dataset({});
@@ -126,25 +126,7 @@
   function processDictionaryData(dictionary, data){
     var resource;
     var tokens = [];
-    /*for (var token in data)
-    {
-      Token({ 
-        Dictionary: dictionary, 
-        Token: token 
-      });
-      for (var culture in data[token])
-      {
-        resource = Resource({ 
-          Dictionary: dictionary, 
-          Token: token,
-          Culture: culture
-        });
 
-        resource.commit({
-          Value: data[token][culture]
-        });
-      }
-    }*/
     for (var token in data)
     {
       tokens.push(Token({ 
@@ -162,8 +144,6 @@
         resource.commit({
           Value: data[token][culture]
         });
-
-        //resources.push(resource);
       }
     }
 
@@ -189,7 +169,10 @@
 
     var culturePosition;
     if (dictionaries[0])
-       culturePosition = DictionaryCulture({ Culture: culture, Dictionary: dictionaries[0].data.Dictionary }).data.Position;
+      culturePosition = DictionaryCulture({
+        Culture: culture,
+        Dictionary: dictionaries[0].data.Dictionary
+      }).data.Position;
 
     for (var i = 0, dictionary; dictionary = dictionaries[i]; i++)
     {
