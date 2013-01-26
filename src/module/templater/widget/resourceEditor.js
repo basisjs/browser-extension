@@ -139,32 +139,33 @@
     template: resource('../templates/resourceEditor/resourceList.tmpl'),
 
     handler: {
+      targetChanged: function(){
+        this.updateResources(this.target ? this.data.resources : null);
+      },
       update: function(object, delta){
         if ('resources' in delta)
-        {
-          var resources = this.data.resources || [];
-          var children = [];
-          var reset = false;
-
-          for (var i = 0, filename; filename = resources[i]; i++)
-          {
-            var child = this.getChild(filename, 'data.filename');
-            if (!child)
-            {
-              child = app.type.file.File.getSlot(filename);
-              reset = true;
-            }
-            children.push(child)
-          }
-
-          if (reset || children.length != this.childNodes.length)
-            this.setChildNodes(children);
-        }
+          this.updateResources(this.data.resources);
       }
     },
 
-    updateResources: function(resources){
+    updateResources: function(res){
+      var resources = res || [];
+      var children = [];
+      var reset = false;
 
+      for (var i = 0, filename; filename = resources[i]; i++)
+      {
+        var child = this.getChild(filename, 'data.filename');
+        if (!child)
+        {
+          child = app.type.file.File.getSlot(filename);
+          reset = true;
+        }
+        children.push(child)
+      }
+
+      if (reset || children.length != this.childNodes.length)
+        this.setChildNodes(children);
     },
 
     childClass: {
