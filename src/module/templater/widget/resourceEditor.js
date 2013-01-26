@@ -1,10 +1,7 @@
 	
-  basis.require('basis.dom.event');
-  basis.require('basis.cssom');
-  basis.require('basis.data');
   basis.require('basis.layout');
   basis.require('basis.ui');
-  basis.require('basis.ui.tabs');
+  basis.require('basis.ui.button');
   basis.require('basis.ui.resizer');
 
 
@@ -12,20 +9,10 @@
   // import names
   //
 
-  var wrapper = Function.wrapper;
-
-  var DOM = basis.dom;
-  var domEvent = basis.dom.event;
-  var classList = basis.cssom.classList;
-  var DELEGATE = basis.dom.wrapper.DELEGATE;
-
   var UINode = basis.ui.Node;
 
-  var nsTemplate = basis.template;
   var nsLayout = basis.layout;
-  var nsTree = basis.ui.tree;
   var nsResizer = basis.ui.resizer;
-  var nsProperty = basis.data.property;
   var nsButton = basis.ui.button;
 
 
@@ -33,7 +20,7 @@
   // Main part
   //
 
-  var Editor = resource('Editor.js')();
+  var Editor = resource('Editor.js').fetch();
 
   var ResourceEditor = Editor.subclass({
     active: true,
@@ -42,8 +29,8 @@
     template: resource('../templates/resourceEditor/resourceEditor.tmpl'),
     binding: {
       title: 'data:filename',
-      filename: function(object){
-        return basis.path.basename(object.data.filename);
+      filename: function(node){
+        return basis.path.basename(node.data.filename);
       },
       buttonPanel: 'satellite:',
       createFilePanel: 'satellite:'
@@ -68,18 +55,18 @@
       buttonPanel: {
         instanceOf: nsButton.ButtonPanel,
         config: {  
-          autoDelegate: DELEGATE.OWNER,
+          autoDelegate: true,
           disabled: true,
           childNodes: [
             {
-              autoDelegate: DELEGATE.PARENT,
+              autoDelegate: true,
               caption: 'Save',
               click: function(){
                 this.target.save();
               }
             },
             {
-              autoDelegate: DELEGATE.PARENT,
+              autoDelegate: true,
               caption: 'Rollback',
               click: function(){
                 this.target.rollback();
@@ -115,7 +102,7 @@
           targetChanged: true
         },
         instanceOf: UINode.subclass({
-          autoDelegate: DELEGATE.OWNER,
+          autoDelegate: true,
 
           template: resource('../templates/resourceEditor/createFilePanel.tmpl'),
 
@@ -128,8 +115,8 @@
           },
 
           satelliteConfig: {
-            button: basis.ui.button.Button.subclass({
-              autoDelegate: DELEGATE.OWNER,
+            button: nsButton.Button.subclass({
+              autoDelegate: true,
               caption: 'Create a file',
               click: function(){
                 app.type.file.File.createFile(this.data.filename);
@@ -141,19 +128,12 @@
     }
   });
 
-  var resourceEditorList = new basis.ui.Node({
+  var resourceList = new basis.ui.Node({
     autoDelegate: true,
 
-    template: resource('../templates/resourceEditor/resourceEditorList.tmpl'),
-
-    childClass: ResourceEditor,
+    template: resource('../templates/resourceEditor/resourceList.tmpl'),
 
     handler: {
-      childNodesModifiy: function(delta){
-        delta.forEach(function(item){
-          item.resize();
-        })
-      },
       targetChanged: function(){
         this.updateResources(this.target && this.data.resources);
       },
@@ -165,70 +145,56 @@
 
     listen: {
       target: {
-        rollbackUpdate: function(object){
-          this.updateResources(this.data.resources);
+        rollbackUpdate: function(object, delta){
+          if ('resources' in delta)
+            this.updateResources(this.data.resources);
         }
       }
     },
 
     updateResources: function(resources){
       this.setChildNodes((resources || []).map(function(filename){
-        return app.type.file.File.getSlot(filename);        
-      }));
-    }
-  });
-
-
-  var resourceList = new basis.ui.Node({
-    template: resource('../templates/resourceEditor/resourceList.tmpl'),
-
-    autoDelegate: basis.dom.wrapper.DELEGATE.PARENT, 
+        return app.type.file.File.getSlot(filename);
+      }, this), true);
+    },
 
     childClass: {
       template: resource('../templates/resourceEditor/resourceListItem.tmpl'),
       binding: {
+        title: 'data:filename',
         filename: function(object){
           return basis.path.basename(object.data.filename);
-        },
-        title: 'data:filename'
+        }
       },
       action: {
         click: function(){
-          var resourceEditor = resourceEditorList.childNodes.search(this.data.filename, 'data.filename')
+          var resourceEditor = resourceEditorList.getChild(this.data.filename, 'data.filename')
           if (resourceEditor)
-            resourceEditor.element.scrollIntoView();
+            resourceEditor.element.scrollIntoView(true);
         }
       }
-    },
-
-    handler: {
-      update: function(object, delta){
-        if ('resources' in delta)
-          this.updateResources(this.data.resources);
-      },
-      targetChanged: function(){
-        this.updateResources(this.target && this.data.resources);
-      }
-    },
-    updateResources: function(resources){
-      this.setChildNodes((resources || []).map(function(filename){
-        return { data: { filename: filename } };
-      }));
     }
   });
 
+  var resourceEditorList = new basis.ui.Node({
+    dataSource: resourceList.getChildNodesDataset(),
+
+    template: resource('../templates/resourceEditor/resourceEditorList.tmpl'),
+
+    childClass: ResourceEditor
+  });
 
   var widget = new nsLayout.VerticalPanelStack({
     template: resource('../templates/resourceEditor/view.tmpl'),
     childNodes: [
       {
-        autoDelegate: basis.dom.wrapper.DELEGATE.PARENT, 
+        autoDelegate: true, 
         childNodes: resourceList
       },
       {
-        autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
+        autoDelegate: true,
         flex: 1,
-        childNodes: resourceEditorList//cssEditor
+        childNodes: resourceEditorList
       }
     ]
   });
@@ -238,8 +204,7 @@
   * resizer
   */
   new nsResizer.Resizer({
-    element: widget.element,
-    property: 'width'
+    element: widget.element
   });
 
 
