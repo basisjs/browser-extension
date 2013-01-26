@@ -1,11 +1,5 @@
 
-  basis.require('basis.dom.event');
-  basis.require('basis.cssom');
-  basis.require('basis.data');
-  basis.require('basis.data.property');
-  basis.require('basis.layout');
   basis.require('basis.ui');
-  basis.require('basis.ui.form');
   basis.require('basis.ui.field');
   basis.require('basis.ui.button');
 
@@ -14,30 +8,20 @@
   // import names
   //
 
-  var getter = basis.getter;
-  var wrapper = basis.fn.wrapper;
-  var classList = basis.cssom.classList;
-
-  var DELEGATE = basis.dom.wrapper.DELEGATE;
-
   var UINode = basis.ui.Node;
-
-  var nsTemplate = basis.template;
-  var nsEvent = basis.dom.event;
-  var nsLayout = basis.layout;
   var nsButton = basis.ui.button;
 
   //
   // Main part
   //
 
-  var Editor = resource('Editor.js')();
+  var Editor = resource('Editor.js').fetch();
   var tokenView = resource('tokenView.js');
 
 
   // .tmpl
   var tmplEditor = new Editor({
-    autoDelegate: DELEGATE.PARENT,
+    autoDelegate: true,
 
     fileExt: 'tmpl',
 
