@@ -807,7 +807,7 @@
       endTemplateInspect: endTemplateInspect,
       getTokenByContextMenu: getTokenByContextMenu
     }
-  }
+  };
 
   module.exports = "(function(global){" +
     "if (global.basis){" +
@@ -820,5 +820,5 @@
       "}" +
       "return true;" +
     "}" +
-    "else return false;"+
-  "})(this)";
+    "else return false;" +
+  "})(window);//@ sourceURL=/basis.appcp/pageScript.js";
