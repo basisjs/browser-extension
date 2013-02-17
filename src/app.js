@@ -13,11 +13,6 @@
     ]);
 
     mainMenu.selectPage();
-
-    app.transport.onMessage('contextMenuTranslate', function(){
-      mainMenu.item('Localization').select();
-      app.transport.call('getTokenByContextMenu');
-    });
   }
 
   //
@@ -27,9 +22,10 @@
   basis.ready(function(){
     // create transport
     app.transport = resource('app/transport/transport.js').fetch();
+    app.type = resource('app/type.js').fetch();
 
     // init interfaces
-    initMainMenu();
+    app.transport.ready(basis.fn.runOnce(initMainMenu));
 
     // add global key bindings
     domEvent.addGlobalHandler('keydown', function(event){

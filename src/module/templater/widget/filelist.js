@@ -5,7 +5,7 @@
   basis.require('basis.ui.resizer');
   //basis.require('app.type.file');
 
-  var File = basis.resource('src/app/type/file.js')().File;
+  var File = app.type.File;
 
 
   //

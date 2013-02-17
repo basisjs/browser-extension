@@ -4,7 +4,7 @@
   basis.require('basis.ui.button');
   basis.require('basis.ui.resizer');
 
-  var File = basis.resource('src/app/type/file.js')().File;
+  var File = app.type.File;
 
   //
   // import names

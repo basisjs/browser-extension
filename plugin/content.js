@@ -1,12 +1,19 @@
 (function(){
   var port = chrome.extension.connect({name: "contentScriptPort"});
   port.onMessage.addListener(function(msg) {
-    if (msg.action == 'pageScriptInited')
+    if (msg.action == 'appcpReady')
       initTransport();
   });
-  port.postMessage({ action: 'contentScriptInited' });
+
+  var transportInited = false;
 
   function initTransport(){
+    if (transportInited)
+    {
+      sendMessage('ready');
+      return;
+    }  
+
     var transferDiv = document.getElementById('transferDiv');
     if (transferDiv)
     {
@@ -17,15 +24,26 @@
         console.log('transfer data action:', action);
         //console.log('transfer data:', data);
 
-        sendMessage({ action: action, data: data });
+        sendMessage(action, data);
       });
-      sendMessage({ action: 'ready' });
+      
+      sendMessage('ready');
+      transportInited = true;
+    }
+    else
+    {
+      console.warn('basis devpanel not found');
     }
   }
 
-  function sendMessage(message){
-    port.postMessage(message);
+  function sendMessage(action, data){
+    port.postMessage({
+      action: action,
+      data: data
+    });
   }
+
+  sendMessage('contentScriptInited');
 
   console.log('content script inited');
 })();

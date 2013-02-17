@@ -109,4 +109,4 @@
   });
 
 
-  exports.File = File;
+  module.exports = File;

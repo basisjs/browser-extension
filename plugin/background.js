@@ -19,7 +19,7 @@
       if (extensionUIPorts[tabId])
         extensionUIPorts[tabId].postMessage({ action: msg.action, data: msg.data });
 
-      if (msg.action == 'token' && extensionTabIdTab[tabId])
+      if ((msg.action == 'token' || msg.action == 'pickTemplate') && extensionTabIdTab[tabId])
         chrome.tabs.update(extensionTabIdTab[tabId], { active: true });
     });
 
@@ -63,11 +63,11 @@
     type: 'separator'
   });*/
 
-  chrome.contextMenus.create({
+  /*chrome.contextMenus.create({
     title: 'Translate',
     contexts: ["all"],
     onclick: function(info, tab){
       if (extensionUIPorts[tab.id])
         extensionUIPorts[tab.id].postMessage({ action: 'contextMenuTranslate' });
     }
-  });
+  });*/

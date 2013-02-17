@@ -14,24 +14,11 @@
         tabId: inspectedWindow.tabId
       });
 
-      this.onMessage('contentScriptInited', this.injectScript, this);
+      this.onMessage('contentScriptInited', function(){
+        this.port.postMessage({ action: 'appcpReady' });
+      }, this);
 
-      this.injectScript();
-    },
-
-    injectScript: function(){
-      var self = this;
-
-      inspectedWindow.eval(resource('pageScript.js').fetch(), function(result){
-        if (result)
-          self.port.postMessage({
-            action: 'pageScriptInited'
-          });
-        else
-          document.body.appendChild(
-            basis.dom.createElement('.BasisNotSupported', 'basis.js not found')
-          );
-      });
+      this.port.postMessage({ action: 'appcpReady' });
     },
 
     call: function(funcName){

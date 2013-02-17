@@ -33,7 +33,7 @@
 
   property_CurrentCulture.addHandler({
     change: function(property){
-      app.transport.call('setCulture', property.value);
+      //app.transport.call('setCulture', property.value);
     }
   });
 
@@ -195,7 +195,7 @@
     property_CurrentToken.set(data.selectedToken);
     dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
 
-    inspect(false);
+    //inspect(false);
   })
 
   app.transport.onMessage('saveDictionary', function(data){
@@ -214,7 +214,7 @@
   //
 
   // inspect button
-  var inspectMode = false;
+  /*var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     
@@ -232,7 +232,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });
+  });*/
 
 
   //save button
@@ -242,7 +242,7 @@
   });
 
   //culture list
-  var cultureList = resource('cultureList.js').fetch();
+  /*var cultureList = resource('cultureList.js').fetch();
   cultureList.setDataSource(Culture.all);
   property_CurrentCulture.addLink(cultureList, function(value){
     this.setValue(value);
@@ -251,7 +251,7 @@
     change: function(){
       property_CurrentCulture.set(this.getValue());
     }
-  });
+  });*/
 
   //dictionary list
   var dictionaryList = resource('dictionaryList.js').fetch();
@@ -306,10 +306,10 @@
 
     binding: {
       matchInput: dictionaryListMatchInput,
-      inspectButton: inspectButton,
+      //inspectButton: inspectButton,
       dictionaryList: dictionaryList,
       dictionaryEditor: dictionaryEditor,
-      cultureList: cultureList,
+      //cultureList: cultureList,
       saveButtonPanel: saveButtonPanel
     }
   });

@@ -13,23 +13,16 @@
         load: function(){
           self.socket = io.connect('/');
           self.socket.on('connect', function(){
-            self.injectScript();
+            this.socket.emit('message', { action: 'appcpReady' });
           });
           self.socket.on('message', function(message){
             if (message.action == 'clientConnected')
-              self.injectScript();
+              this.socket.emit('message', { action: 'appcpReady' });
 
             self.message(message);
           })
         }
       }));
-    },
-
-    injectScript: function(){
-      this.socket.emit('message', { 
-        action: 'injectScript', 
-        data: resource('pageScript.js').fetch() 
-      });
     },
 
     call: function(funcName){

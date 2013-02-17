@@ -19,7 +19,7 @@
   // Main part
   //
 
-  var inspectMode = false;
+  /*var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     inspectButton.updateBind('active');
@@ -49,7 +49,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });
+  });*/
   
     
   //
@@ -80,11 +80,12 @@
   });
  
   app.transport.ready(function(){
+    debugger;
     app.transport.call('getFileList'); 
   });
 
   app.transport.onMessage('pickTemplate', function(data){
-    inspect(false);
+    //inspect(false);
 
     if (data.filename)
     {
