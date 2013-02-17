@@ -13,11 +13,11 @@
         load: function(){
           self.socket = io.connect('/');
           self.socket.on('connect', function(){
-            this.socket.emit('message', { action: 'appcpReady' });
+            self.socket.emit('message', { action: 'appcpReady' });
           });
           self.socket.on('message', function(message){
             if (message.action == 'clientConnected')
-              this.socket.emit('message', { action: 'appcpReady' });
+              self.socket.emit('message', { action: 'appcpReady' });
 
             self.message(message);
           })
