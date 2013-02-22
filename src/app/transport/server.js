@@ -20,7 +20,10 @@
               self.socket.emit('message', { action: 'appcpReady' });
 
             self.message(message);
-          })
+          });
+          self.message({
+            action: 'ready'
+          });
         }
       }));
     },
