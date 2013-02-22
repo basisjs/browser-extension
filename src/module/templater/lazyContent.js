@@ -9,10 +9,10 @@
 
   var nsButton  = basis.ui.button;
 
-  var editor = resource('widget/tmplEditor.js');
-  var tokenView = resource('widget/tokenView.js');
-  var filelist = resource('widget/filelist.js');
-  var resourceEditor = resource('widget/resourceEditor.js');
+  var editor = resource('module/tmplEditor/index.js');
+  var tokenView = resource('module/tokenView/index.js');
+  var filelist = resource('module/filelist/index.js');
+  var resourceEditor = resource('module/resourceList/index.js');
 
 
   //
@@ -80,7 +80,6 @@
   });
  
   app.transport.ready(function(){
-    debugger;
     app.transport.call('getFileList'); 
   });
 

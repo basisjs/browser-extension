@@ -5,11 +5,11 @@
   var domEvent = basis.dom.event;
 
   function initMainMenu(){
-    var mainMenu = resource('module/mainmenu/mainmenu.js').fetch();
+    var mainMenu = resource('module/mainmenu/index.js').fetch();
     
     mainMenu.setChildNodes([
-      resource('module/localization/localization.js')(),
-      resource('module/templater/templater.js')()
+      resource('module/localization/index.js')(),
+      resource('module/templater/index.js')()
     ]);
 
     mainMenu.selectPage();

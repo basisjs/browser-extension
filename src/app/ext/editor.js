@@ -14,7 +14,7 @@
   // import names
   //
 
-  var ace = resource('ace.min.js').fetch();
+  var ace = resource('editor/ace.min.js').fetch();
 
   var getter = basis.fn.getter;
   var classList = basis.cssom.classList;
@@ -66,7 +66,7 @@
   var Editor = basis.ui.Node.subclass({
     autoDelegate: true,
 
-    template: resource('../templates/editor/editor.tmpl'),
+    template: resource('editor/editor.tmpl'),
     binding: {
       filename: {
         events: 'update',
@@ -194,4 +194,6 @@
   // export names
   //
 
-  exports = module.exports = Editor;
+  module.exports = {
+    Editor: Editor
+  };

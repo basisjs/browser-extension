@@ -2,5 +2,5 @@
   module.exports = {
     name: 'Templater',
     title: 'Templater',
-    lazyContent: resource('view.js')
+    lazyContent: resource('lazyContent.js')
   };

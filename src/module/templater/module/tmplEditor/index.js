@@ -2,6 +2,7 @@
   basis.require('basis.ui');
   basis.require('basis.ui.field');
   basis.require('basis.ui.button');
+  basis.require('app.ext.editor');
 
 
   //
@@ -15,8 +16,8 @@
   // Main part
   //
 
-  var Editor = resource('Editor.js').fetch();
-  var tokenView = resource('tokenView.js');
+  var Editor = app.ext.editor.Editor;
+  var tokenView = resource('../tokenView/index.js');
 
 
   // .tmpl
@@ -49,7 +50,7 @@
   //
 
   var widget = new basis.ui.Node({
-    template: resource('../templates/editor/view.tmpl'),
+    template: resource('templates/view.tmpl'),
 
     setSource: function(source){
       tmplEditor.setDelegate();
@@ -58,7 +59,7 @@
 
     childNodes: [
       {
-        template: resource('../templates/editor/toolbar.tmpl'),
+        template: resource('templates/toolbar.tmpl'),
         childNodes: [
           new nsButton.ButtonPanel({
             delegate: tmplEditor,

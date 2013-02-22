@@ -3,6 +3,7 @@
   basis.require('basis.ui');
   basis.require('basis.ui.button');
   basis.require('basis.ui.resizer');
+  basis.require('app.ext.editor');
 
   var File = app.type.File;
 
@@ -15,19 +16,17 @@
   var nsLayout = basis.layout;
   var nsResizer = basis.ui.resizer;
   var nsButton = basis.ui.button;
-
+  var Editor = app.ext.editor.Editor;
 
   //
   // Main part
   //
 
-  var Editor = resource('Editor.js').fetch();
-
   var ResourceEditor = Editor.subclass({
     active: true,
     autoDelegate: false,
 
-    template: resource('../templates/resourceEditor/resourceEditor.tmpl'),
+    template: resource('templates/resourceEditor.tmpl'),
     binding: {
       title: 'data:filename',
       filename: function(node){
@@ -110,7 +109,7 @@
         instanceOf: UINode.subclass({
           autoDelegate: true,
 
-          template: resource('../templates/resourceEditor/createFilePanel.tmpl'),
+          template: resource('templates/createFilePanel.tmpl'),
 
           binding: {
             filename: 'data:',
@@ -137,7 +136,7 @@
   var resourceList = new basis.ui.Node({
     autoDelegate: true,
 
-    template: resource('../templates/resourceEditor/resourceList.tmpl'),
+    template: resource('templates/resourceList.tmpl'),
 
     handler: {
       targetChanged: function(){
@@ -170,7 +169,7 @@
     },
 
     childClass: {
-      template: resource('../templates/resourceEditor/resourceListItem.tmpl'),
+      template: resource('templates/resourceListItem.tmpl'),
       binding: {
         title: 'data:filename',
         filename: function(object){
@@ -190,13 +189,13 @@
   var resourceEditorList = new basis.ui.Node({
     dataSource: resourceList.getChildNodesDataset(),
 
-    template: resource('../templates/resourceEditor/resourceEditorList.tmpl'),
+    template: resource('templates/resourceEditorList.tmpl'),
 
     childClass: ResourceEditor
   });
 
   var widget = new nsLayout.VerticalPanelStack({
-    template: resource('../templates/resourceEditor/view.tmpl'),
+    template: resource('templates/view.tmpl'),
     childNodes: [
       {
         autoDelegate: true, 

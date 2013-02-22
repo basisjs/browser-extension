@@ -44,7 +44,7 @@
   {
     display: inline-block;
     padding-right: 10px;
-    background: url(../../img/arrow_up.gif) no-repeat right center;
+    background: url(img/arrow_up.gif) no-repeat right center;
   }
 
   .TemplateDeclarationViewer-Content
@@ -75,7 +75,7 @@
 
   .TemplateDeclarationViewer_expanded .TemplateDeclarationViewer-Title SPAN
   {
-    background-image: url(../../img/arrow_down.gif);
+    background-image: url(img/arrow_down.gif);
   }
 
 
