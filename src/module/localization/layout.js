@@ -195,7 +195,7 @@
     property_CurrentToken.set(data.selectedToken);
     dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
 
-    //inspect(false);
+    inspect(false);
   })
 
   app.transport.onMessage('saveDictionary', function(data){
@@ -214,16 +214,16 @@
   //
 
   // inspect button
-  /*var inspectMode = false;
+  var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     
     basis.cssom.classList(inspectButton.element).bool('active', inspectMode);
 
     if (inspectMode)
-      app.transport.call('startInspect');
+      app.transport.call('l10nStartInspect');
     else
-      app.transport.call('endInspect');
+      app.transport.call('l10nEndInspect');
   }
 
   var inspectButton = new basis.ui.button.Button({
@@ -232,7 +232,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });*/
+  });
 
 
   //save button
@@ -306,7 +306,7 @@
 
     binding: {
       matchInput: dictionaryListMatchInput,
-      //inspectButton: inspectButton,
+      inspectButton: inspectButton,
       dictionaryList: dictionaryList,
       dictionaryEditor: dictionaryEditor,
       //cultureList: cultureList,

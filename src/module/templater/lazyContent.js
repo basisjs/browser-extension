@@ -19,15 +19,15 @@
   // Main part
   //
 
-  /*var inspectMode = false;
+  var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     inspectButton.updateBind('active');
 
     if (inspectMode)
-      app.transport.call('startTemplateInspect');
+      app.transport.call('templateStartInspect');
     else
-      app.transport.call('endTemplateInspect');
+      app.transport.call('templateEndInspect');
   }
 
    
@@ -49,7 +49,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });*/
+  });
   
     
   //
@@ -84,7 +84,7 @@
   });
 
   app.transport.onMessage('pickTemplate', function(data){
-    //inspect(false);
+    inspect(false);
 
     if (data.filename)
     {
