@@ -101,8 +101,8 @@
           })
         ]
       },
-      tmplEditor,
-      tokenView()
+      tmplEditor/*,
+      tokenView()*/
     ]
   });
 

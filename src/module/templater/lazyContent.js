@@ -75,7 +75,7 @@
 
       editor().setDelegate(item);
       resourceEditor().setDelegate(item);
-      tokenView().setDelegate(item);
+      //tokenView().setDelegate(item);
     }
   });
  
