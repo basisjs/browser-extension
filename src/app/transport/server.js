@@ -21,9 +21,6 @@
 
             self.message(message);
           });
-          self.message({
-            action: 'ready'
-          });
         }
       }));
     },

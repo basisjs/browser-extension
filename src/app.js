@@ -6,6 +6,13 @@
 
   function initMainMenu(){
     var mainMenu = resource('module/mainmenu/index.js').fetch();
+
+    app.transport.onMessage('token', function(){
+      mainMenu.item('Localization').select();
+    });
+    app.transport.onMessage('pickTemplate', function(){
+      mainMenu.item('Templater').select();
+    });    
     
     mainMenu.setChildNodes([
       resource('module/localization/index.js')(),

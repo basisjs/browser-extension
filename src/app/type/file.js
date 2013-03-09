@@ -22,7 +22,7 @@
   });
 
   File.createFile = function(filename){
-    app.transport.call('createFile', filename);    
+    app.transport.call('createFile', filename);
   };
 
   var FileClass = File.entityType.entityClass;
