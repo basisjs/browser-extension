@@ -7,5 +7,5 @@ module.exports = new basis.ui.Node({
 });
 
 app.transport.ready(basis.fn.runOnce(function(){
-  basis.dom.remove(notSupported);
+  basis.dom.remove(module.exports.element);
 }));
