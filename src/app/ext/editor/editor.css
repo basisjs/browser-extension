@@ -1,4 +1,4 @@
-  #Editor .ace_editor
+  .SourceEditor .ace_editor
   {
     top: 0;
     left: 0;
@@ -17,7 +17,32 @@
     -webkit-box-flex: 1;
     position: relative;
   }
-  .SourceEditor .fileInfo
+
+  .SourceEditor-Title
+  {
+    /*font-weight: bold;
+    font-size: 85%;*/
+    padding: 5px;
+    background: #F4F4F4;
+    border-bottom: 1px solid #CCC;
+    overflow: hidden;
+  }
+
+  .SourceEditor-Caption
+  {
+    padding-top: 0.2em;
+    font-weight: bold;
+    font-size: 85%;
+    text-shadow: 0 1px 0 white;
+    color: #555;
+  }
+
+  .SourceEditor .Basis-ButtonPanel
+  {
+    float: right;
+  }
+
+  /*.SourceEditor-Title
   {
     height: 1.2em;
     line-height: 1.1em;
@@ -26,20 +51,40 @@
     text-align: center;
     border-bottom: 1px solid #CCC;
     background: #F4F4F4;
-  }
-  .SourceEditor .Basis-Field-Container
+  }*/
+  .SourceEditor-Container
   {
     /*height: 100%;*/
     background: white;
     box-shadow: 0 0 3px 2px rgba(128, 128, 128, .25) inset;
     border-bottom: 1px solid #CCC;
     position: absolute;
-    top: 1.2em;
+    top: 2.2em;
     margin-top: 5px;
     right: 0;
     bottom: 0;
     left: 0;
   }
+
+  .SourceEditor-Content
+  {
+    margin: 0;
+    padding: 0;
+    border: none;
+    /*padding: 5px;
+    border: 3px solid transparent;*/
+    outline: none;
+      -webkit-user-modify: read-write;
+
+    font-family: Consolas, monospace;
+
+  }  
+
+  .SourceEditor.disabled .SourceEditor-Content
+  {
+    -webkit-user-modify: read-only;   
+  }  
+
   .SourceEditor TEXTAREA  
   {
     margin: 0;
@@ -67,7 +112,21 @@
 
     border-radius: 0 0 2px 2px;
   }
-  .SourceEditor TEXTAREA.modified
+  .SourceEdito.modified TEXTAREA
   {
     border-color: rgba(200, 0, 0, .5);
+  }
+
+  .SourceEditor-Title span
+  {
+    display: inline-block;
+  }
+  .SourceEditor.modified .SourceEditor-Title
+  {
+    background-color: #F5EAB3;
+  }
+  .SourceEditor.modified .SourceEditor-Caption span
+  {
+    padding-right: 16px;
+    background: url(img/modified.png) no-repeat right top;
   }

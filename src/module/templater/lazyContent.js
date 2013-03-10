@@ -19,7 +19,7 @@
   // Main part
   //
 
-  var inspectMode = false;
+ /* var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     inspectButton.updateBind('active');
@@ -49,7 +49,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });
+  });*/
   
     
   //

@@ -58,7 +58,7 @@
     },
 
     childNodes: [
-      {
+      /*{
         template: resource('templates/toolbar.tmpl'),
         childNodes: [
           new nsButton.ButtonPanel({
@@ -100,7 +100,7 @@
             }
           })
         ]
-      },
+      },*/
       tmplEditor/*,
       tokenView()*/
     ]

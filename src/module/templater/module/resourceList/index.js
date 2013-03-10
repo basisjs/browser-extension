@@ -28,11 +28,6 @@
 
     template: resource('templates/resourceEditor.tmpl'),
     binding: {
-      title: 'data:filename',
-      filename: function(node){
-        return basis.path.basename(node.data.filename);
-      },
-      buttonPanel: 'satellite:',
       createFilePanel: 'satellite:'
     },
 
@@ -57,7 +52,7 @@
     },
 
     satelliteConfig: {
-      buttonPanel: {
+      /*buttonPanel: {
         instanceOf: nsButton.ButtonPanel,
         config: {  
           autoDelegate: true,
@@ -97,7 +92,7 @@
             }
           }
         }
-      },
+      },*/
       createFilePanel: {
         existsIf: function(editor){
           return editor.data.filename && !editor.target;

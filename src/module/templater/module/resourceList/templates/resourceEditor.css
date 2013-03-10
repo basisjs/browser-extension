@@ -1,11 +1,4 @@
   
-  .ResourceEditor .ace_editor
-  {
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-  }
   .ResourceEditor .ace_scroller
   {
     right: 0 !important;
@@ -22,53 +15,20 @@
     position: relative;
   }
 
-  .ResourceEditor-Title
+  .ResourceEditor .SourceEditor-Container
   {
-    /*font-weight: bold;
-    font-size: 85%;*/
-    padding: 5px;
-    background: #F4F4F4;
-    border-bottom: 1px solid #CCC;
-    overflow: hidden;
+    position: static;
+    margin: 0;
   }
 
-  .ResourceEditor-Caption
+  .ResourceEditor .SourceEditor-Content
   {
-    padding-top: 0.2em;
-    font-weight: bold;
-    font-size: 85%;
-    text-shadow: 0 1px 0 white;
-    color: #555;
-  }
-
-  .ResourceEditor .Basis-ButtonPanel
-  {
-    float: right;
+    position: relative;
   }
 
   .ResourceEditor:first-child .ResourceEditor-Title
   {
     border-top: none;
-  }
-
-  .ResourceEditor-Container
-  {
-    box-shadow: 0 0 3px 2px rgba(128, 128, 128, .25) inset;
-    border-bottom: 1px solid #CCC;
-  }
-
-  .ResourceEditor-Content
-  {
-    margin: 0;
-    padding: 0;
-    border: none;
-    /*padding: 5px;
-    border: 3px solid transparent;*/
-    outline: none;
-      -webkit-user-modify: read-write;
-
-    font-family: Consolas, monospace;
-
   }
 
   .ResourceEditor .CreateFilePanel + .ResourceEditor-Content
@@ -81,14 +41,4 @@
     padding: 5px;
     text-align: center;
     background: #F7F7F7;
-  }
-
-  .ResourceEditor.modified .ResourceEditor-Content
-  {
-    border-color: rgba(200, 0, 0, .5);    
-  }
-
-  .ResourceEditor.disabled .ResourceEditor-Content
-  {
-    -webkit-user-modify: read-only;   
   }

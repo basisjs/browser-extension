@@ -1,13 +1,3 @@
+<b:style src="resourceEditor.css"/>
 
-<b:resource src="resourceEditor.css"/>
-
-<div class="ResourceEditor {modified} {disabled}">
-  <div class="ResourceEditor-Title">
-    <!--{buttonPanel}-->
-    <div class="ResourceEditor-Caption" title="{title}">{filename}</div>
-  </div>
-  <div class="ResourceEditor-Container {modified}">
-    <!--{createFilePanel}-->
-    <div{field|editor|content} class="ResourceEditor-Content" style="position: relative" event-keyup="fieldKeydown" event-keydown="fieldKeydown"/>
-  </div>
-</div>
+<b:include src="app.ext.editor.Editor" class="ResourceEditor"/>

@@ -98,7 +98,7 @@
         modified: {
           events: 'targetChanged',
           getter: function(node){
-            return node.target && node.target.modified ? 'modified' : '';
+            return node.target && node.target.modified;
           }
         }
       },

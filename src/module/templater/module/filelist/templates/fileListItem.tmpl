@@ -1,6 +1,7 @@
 
-  <b:resource src="fileListItem.css"/>
-
+  <b:style src="fileListItem.css"/>
+  <b:define name="modified" type="bool"/>
+  
   <div class="FileListItem FileListItem_{modified} FileListItem_{selected}" event-click="select">
     <div class="FileListItem-Filename">{filename}</div>
     <div class="FileListItem-Path">{path}</div>

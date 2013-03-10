@@ -1,12 +1,15 @@
+<b:style src="editor.css"/>
+<b:define name="modified" type="bool"/>  
+<b:define name="selected" type="bool"/>  
+<b:define name="disabled" type="bool"/>  
 
-  <b:resource src="editor.css"/>
-
-  <div class="Basis-Field SourceEditor {selected} {disabled}">
-    <div class="fileInfo">
-      {filename}
-    </div>
-    <div{content} class="Basis-Field-Container">
-      <div{editor} event-keyup="fieldKeydown" event-keydown="fieldKeydown"/>
-    </div>
-    <!--{createFilePanel}-->
+<div class="SourceEditor {modified} {selected} {disabled}">
+  <div class="SourceEditor-Title">
+    <!--{buttonPanel}-->
+    <div class="SourceEditor-Caption" title="{title}"><span>{filename}</span></div>
   </div>
+  <div class="SourceEditor-Container">
+    <!--{createFilePanel}-->
+    <div{field|editor|content} class="SourceEditor-Content" event-keyup="fieldKeydown" event-keydown="fieldKeydown"/>
+  </div>
+</div>

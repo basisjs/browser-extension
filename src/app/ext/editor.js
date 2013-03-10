@@ -60,24 +60,31 @@
     }    
   }
 
+
+  var templates = basis.template.define('app.ext.editor', {
+    Editor: resource('editor/editor.tmpl')
+  });
+
  /**
   *
   */
   var Editor = basis.ui.Node.subclass({
     autoDelegate: true,
 
-    template: resource('editor/editor.tmpl'),
+    template: templates.Editor,
     binding: {
+      buttonPanel: 'satellite:',
+      title: 'data:filename',
       filename: {
         events: 'update',
         getter: function(node){
-          return node.data.filename || '';
+          return node.data.filename ? basis.path.basename(node.data.filename) : '';
         }
       },
       modified: {
         events: 'targetChanged update',
         getter: function(node){
-          return node.target && node.target.modified ? 'modified' : '';
+          return node.target && node.target.modified;
         }
       }
     },
@@ -103,6 +110,49 @@
         }
       }
     },
+    satelliteConfig: {
+      buttonPanel: {
+        instanceOf: nsButton.ButtonPanel,
+        config: {  
+          autoDelegate: true,
+          disabled: true,
+          childNodes: [
+            {
+              autoDelegate: true,
+              caption: 'Save',
+              click: function(){
+                this.target.save();
+              }
+            },
+            {
+              autoDelegate: true,
+              caption: 'Rollback',
+              click: function(){
+                this.target.rollback();
+              }
+            }
+          ],
+          syncDisableState: function(){
+            if (this.target && this.target.modified)
+              this.enable();
+            else
+              this.disable();
+          },
+          handler: {
+            targetChanged: function(){
+              this.syncDisableState();
+            }
+          },
+          listen: {
+            target: {
+              rollbackUpdate: function(){
+                this.syncDisableState();
+              }
+            }
+          }
+        }
+      }
+    },    
 
     editorMode: 'html',
 
