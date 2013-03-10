@@ -1,0 +1,18 @@
+.file-graph-panel
+{
+  position: absolute;
+  left: 5px;
+  top: 5px;
+  z-index: 10000;
+}
+.file-graph-panel .error
+{
+  display: none;
+  color: red;
+  margin-top: 3px;
+  padding: 3px;
+}
+.file-graph-panel__state-error .error
+{
+  display: block;
+}
