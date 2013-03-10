@@ -18,6 +18,7 @@
 
   var Editor = app.ext.editor.Editor;
   var tokenView = resource('../tokenView/index.js');
+  var warnings = resource('../warnings/index.js');
 
 
   // .tmpl
@@ -58,50 +59,8 @@
     },
 
     childNodes: [
-      /*{
-        template: resource('templates/toolbar.tmpl'),
-        childNodes: [
-          new nsButton.ButtonPanel({
-            delegate: tmplEditor,
-            disabled: true,
-            childNodes: [
-              {
-                delegate: tmplEditor,
-                caption: 'Save',
-                click: function(){
-                  this.target.save();
-                }
-              },
-              {
-                delegate: tmplEditor,
-                caption: 'Rollback',
-                click: function(){
-                  this.target.rollback();
-                }
-              }
-            ],
-            syncDisableState: function(){
-              if (this.target && this.target.modified)
-                this.enable();
-              else
-                this.disable();
-            },
-            handler: {
-              targetChanged: function(){
-                this.syncDisableState();
-              }
-            },
-            listen: {
-              target: {
-                rollbackUpdate: function(){
-                  this.syncDisableState();
-                }
-              }
-            }
-          })
-        ]
-      },*/
-      tmplEditor/*,
+      tmplEditor,
+      warnings()/*,
       tokenView()*/
     ]
   });

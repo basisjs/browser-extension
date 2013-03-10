@@ -2,7 +2,7 @@ basis.require('basis.dom');
 basis.require('basis.ui');
 
 module.exports = new basis.ui.Node({
-  template: resource('template/notSupported.tmpl'),
+  template: resource('template/view.tmpl'),
   container: document.body
 });
 
