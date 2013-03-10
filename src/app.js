@@ -19,10 +19,11 @@
     mainMenu.selectPage();
   }
 
+
+
   //
   // init
   //
-
   basis.ready(function(){
     // create transport
     app.transport = resource('app/transport/transport.js').fetch();
@@ -37,6 +38,9 @@
       var sender = domEvent.sender(event);
       if (key == domEvent.KEY.BACKSPACE && sender.tagName != 'INPUT' && sender.tagName != 'TEXTAREA')
         domEvent.cancelDefault(event);
-    })
+    });
+
+    // notSupported panel
+    resource('module/notSupported/index.js').fetch();
   });
 
