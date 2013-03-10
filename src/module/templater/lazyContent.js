@@ -84,7 +84,7 @@
   });
 
   app.transport.onMessage('pickTemplate', function(data){
-    inspect(false);
+    //inspect(false);
 
     if (data.filename)
     {

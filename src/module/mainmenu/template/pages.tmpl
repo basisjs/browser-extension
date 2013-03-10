@@ -1,9 +1,15 @@
 
   <b:resource src="pages.css" />
+  <b:define name="disabled" type="bool"/>
 
-  <div class="App-MainMenu">
+  <div class="App-MainMenu {disabled}">
     <div class="App-MainMenu-Wrapper">
+      <!--{inspectPanel}-->
       <!--{tabs}-->
-      <div{childNodesElement} class="App-MainMenu-Pages" />
+      <div{childNodesElement} class="App-MainMenu-Pages">
+        <div class="blocker"/>
+        <!--{childNodesHere}-->
+      </div>
+      
     </div>
   </div>

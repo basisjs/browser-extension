@@ -17,3 +17,10 @@
     background: #7A7975;
     color: white;
   }
+
+  .App-MainMenu-Tab_disabled
+  {
+    background: none !important;
+    color: #AAA !important;
+    text-shadow: 0 1px 0 white;
+  }

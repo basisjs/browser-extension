@@ -195,7 +195,7 @@
     property_CurrentToken.set(data.selectedToken);
     dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
 
-    inspect(false);
+    //inspect(false);
   })
 
   app.transport.onMessage('saveDictionary', function(data){
@@ -214,7 +214,7 @@
   //
 
   // inspect button
-  var inspectMode = false;
+  /*var inspectMode = false;
   function inspect(mode){
     inspectMode = mode;
     
@@ -232,7 +232,7 @@
     click: function(){
       inspect(!inspectMode);
     }
-  });
+  });*/
 
 
   //save button
@@ -306,7 +306,7 @@
 
     binding: {
       matchInput: dictionaryListMatchInput,
-      inspectButton: inspectButton,
+      //inspectButton: inspectButton,
       dictionaryList: dictionaryList,
       dictionaryEditor: dictionaryEditor,
       //cultureList: cultureList,
