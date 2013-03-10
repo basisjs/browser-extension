@@ -24,5 +24,7 @@
 
       if (dict)
         dict.select();
+      else
+        this.selection.clear();
     }
   });

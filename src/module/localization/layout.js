@@ -148,11 +148,12 @@
   //
   // listen page script
   //
-  
+  var lastDictionary;
   app.transport.ready(function(){
     for (var i in resourcesLoaded)
       delete resourcesLoaded[i];
 
+    lastDictionary = property_CurrentDictionary.value;
     property_CurrentDictionary.set(null);
 
     app.transport.call('loadCultureList');
@@ -169,6 +170,12 @@
 
   app.transport.onMessage('dictionaryList', function(data){
     Dictionary.all.sync(data);
+    
+    if (lastDictionary)
+    {
+      property_CurrentDictionary.set(lastDictionary);
+      lastDictionary = null;
+    }
   });
 
   app.transport.onMessage('dictionaryResource', function(data){
@@ -194,9 +201,7 @@
 
     property_CurrentToken.set(data.selectedToken);
     dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
-
-    //inspect(false);
-  })
+  });
 
   app.transport.onMessage('saveDictionary', function(data){
     if (data.result == 'success')
@@ -213,45 +218,11 @@
   // Layout
   //
 
-  // inspect button
-  /*var inspectMode = false;
-  function inspect(mode){
-    inspectMode = mode;
-    
-    basis.cssom.classList(inspectButton.element).bool('active', inspectMode);
-
-    if (inspectMode)
-      app.transport.call('l10nStartInspect');
-    else
-      app.transport.call('l10nEndInspect');
-  }
-
-  var inspectButton = new basis.ui.button.Button({
-    template: resource('template/inspectButton.tmpl'),
-    caption: 'Start Inspect',
-    click: function(){
-      inspect(!inspectMode);
-    }
-  });*/
-
-
   //save button
   var saveButtonPanel = resource('saveButtonPanel.js').fetch();
   property_CurrentDictionary.addLink(saveButtonPanel, function(value){
     this.setDelegate(Dictionary(value));
   });
-
-  //culture list
-  /*var cultureList = resource('cultureList.js').fetch();
-  cultureList.setDataSource(Culture.all);
-  property_CurrentCulture.addLink(cultureList, function(value){
-    this.setValue(value);
-  });
-  cultureList.addHandler({
-    change: function(){
-      property_CurrentCulture.set(this.getValue());
-    }
-  });*/
 
   //dictionary list
   var dictionaryList = resource('dictionaryList.js').fetch();
@@ -306,10 +277,8 @@
 
     binding: {
       matchInput: dictionaryListMatchInput,
-      //inspectButton: inspectButton,
       dictionaryList: dictionaryList,
       dictionaryEditor: dictionaryEditor,
-      //cultureList: cultureList,
       saveButtonPanel: saveButtonPanel
     }
   });
