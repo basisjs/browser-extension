@@ -199,6 +199,8 @@
       target: {
         rollbackUpdate: function(){
           this.updateBind('modified');
+          if (!this.modified)
+            this.editor.focus();
         }
       }
     },
