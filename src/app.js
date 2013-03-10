@@ -12,8 +12,9 @@
     });
     
     mainMenu.setChildNodes([
-      resource('module/localization/index.js')(),
-      resource('module/templater/index.js')()
+      resource('module/localization/index.js').fetch(),
+      resource('module/templater/index.js').fetch(),
+      resource('module/fileGraph/index.js').fetch()
     ]);
 
     mainMenu.selectPage();
