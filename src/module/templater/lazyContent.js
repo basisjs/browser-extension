@@ -73,9 +73,12 @@
       if (item && !/\.tmpl$/.test(item.data.filename))
         item = null;
 
-      editor().setDelegate(item);
-      resourceEditor().setDelegate(item);
-      //tokenView().setDelegate(item);
+      if (item)
+      {
+        editor().setDelegate(item.target);
+        resourceEditor().setDelegate(item.target);
+        //tokenView().setDelegate(item);
+      }
     }
   });
  

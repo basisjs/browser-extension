@@ -184,7 +184,14 @@
     setValue: function(value){
       value = value || '';
       if (this.editor && this.editor.getValue() != value)
+      {
         this.editor.setValue(value, -1);
+        
+        var self = this;
+        setTimeout(function(){
+          self.editor.getSession().getUndoManager().reset();
+        }, 0);        
+      }
     },
     resizeRequest: function(){
       if (!this.timer_)
