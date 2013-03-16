@@ -26,7 +26,7 @@
     active: true,
     autoDelegate: false,
 
-    template: resource('templates/resourceEditor.tmpl'),
+    template: resource('template/resourceEditor.tmpl'),
     binding: {
       createFilePanel: 'satellite:'
     },
@@ -104,7 +104,7 @@
         instanceOf: UINode.subclass({
           autoDelegate: true,
 
-          template: resource('templates/createFilePanel.tmpl'),
+          template: resource('template/createFilePanel.tmpl'),
 
           binding: {
             filename: 'data:',
@@ -131,7 +131,7 @@
   var resourceList = new basis.ui.Node({
     autoDelegate: true,
 
-    template: resource('templates/resourceList.tmpl'),
+    template: resource('template/resourceList.tmpl'),
 
     handler: {
       targetChanged: function(){
@@ -164,7 +164,7 @@
     },
 
     childClass: {
-      template: resource('templates/resourceListItem.tmpl'),
+      template: resource('template/resourceListItem.tmpl'),
       binding: {
         title: 'data:filename',
         filename: function(object){
@@ -184,13 +184,13 @@
   var resourceEditorList = new basis.ui.Node({
     dataSource: resourceList.getChildNodesDataset(),
 
-    template: resource('templates/resourceEditorList.tmpl'),
+    template: resource('template/resourceEditorList.tmpl'),
 
     childClass: ResourceEditor
   });
 
   var widget = new nsLayout.VerticalPanelStack({
-    template: resource('templates/view.tmpl'),
+    template: resource('template/view.tmpl'),
     childNodes: [
       {
         autoDelegate: true, 

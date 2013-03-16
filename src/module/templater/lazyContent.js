@@ -18,46 +18,9 @@
   //
   // Main part
   //
-
- /* var inspectMode = false;
-  function inspect(mode){
-    inspectMode = mode;
-    inspectButton.updateBind('active');
-
-    if (inspectMode)
-      app.transport.call('templateStartInspect');
-    else
-      app.transport.call('templateEndInspect');
-  }
-
-   
-  //
-  // Inspect button
-  //
-
-  var inspectButton = new nsButton.Button({
-    container: editor().firstChild.element,
-
-    template: resource('templates/inspectButton.tmpl'),
-    binding: {
-      active: function(){
-        return inspectMode ? 'active' : '';
-      }
-    },
-
-    caption: 'Start Inspect',
-    click: function(){
-      inspect(!inspectMode);
-    }
-  });*/
-  
-    
-  //
-  // result
-  //
   
   var templater = new basis.ui.Node({
-    template: resource('templates/view.tmpl'),
+    template: resource('template/view.tmpl'),
 
     binding: {
       editor: editor(),

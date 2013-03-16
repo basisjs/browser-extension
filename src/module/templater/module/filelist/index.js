@@ -32,7 +32,7 @@
   var fileListMatchInput = new basis.ui.Node({
     empty: false,
 
-    template: resource('templates/matchInput.tmpl'),
+    template: resource('template/matchInput.tmpl'),
     binding: {
       empty: function(node){
         return node.empty ? 'empty' : '';
@@ -80,13 +80,13 @@
 
   var fileList = new basis.ui.Node({
     dataSource: filenameFilteredSubset,
-    template: resource('templates/fileList.tmpl'),
+    template: resource('template/fileList.tmpl'),
 
     selection: true,
     sorting: 'data.filename',
 
     childClass: {
-      template: resource('templates/fileListItem.tmpl'),
+      template: resource('template/fileListItem.tmpl'),
       binding: {
         path: 'data:filename',
         filename: {
@@ -125,7 +125,7 @@
       },
       sorting: 'data.id',
       childClass: {
-        template: resource('templates/fileListGroup.tmpl')
+        template: resource('template/fileListGroup.tmpl')
       }
     }
   });
@@ -136,7 +136,7 @@
   //
 
   var widget = new basis.ui.Node({
-    template: resource('templates/fileListPanel.tmpl'),
+    template: resource('template/fileListPanel.tmpl'),
     tree: fileList,
     childNodes: [
       fileListMatchInput,

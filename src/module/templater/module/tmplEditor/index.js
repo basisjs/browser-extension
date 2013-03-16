@@ -28,21 +28,7 @@
     fileExt: 'tmpl',
 
     disabled: true,
-    active: true/*,
-
-    value:
-      '{resource:1.css}\n' +
-      '<li class="devtools-templateNode {collapsed}">\n\
-        <div{content} class="devtools-templateNode-Title devtools-templateNode-CanHaveChildren {selected} {disabled}">\n\
-          <div class="devtools-templateNode-Expander" event-click="toggle" attr="{l10n:path.to.dict.token}"/>\n\
-          <span{titleElement} class="devtools-templateNode-Caption" event-click="select">\n\
-            {l10n:path.to.dict.token}\n\
-            <!--{preTitle} sdf-->{title} ({childCount})<!--just a comment-->\n\
-            <span{l10n:path.to.dict.token}/>\n\
-          </span>\n\
-        </div>\n\
-        <ul{childNodesElement} class="devtools-templateNode-Content"/>\n\
-      </li>'*/
+    active: true
   });
 
 
@@ -51,7 +37,7 @@
   //
 
   var widget = new basis.ui.Node({
-    template: resource('templates/view.tmpl'),
+    template: resource('template/view.tmpl'),
 
     setSource: function(source){
       tmplEditor.setDelegate();

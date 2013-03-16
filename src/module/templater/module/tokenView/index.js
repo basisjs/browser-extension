@@ -72,10 +72,10 @@
           return object.data[TOKEN_REFS];
         },
         instanceOf: UINode.subclass({
-          template: resource('templates/referenceList.tmpl'),
+          template: resource('template/referenceList.tmpl'),
 
           childClass: {
-            template: resource('templates/reference.tmpl'),
+            template: resource('template/reference.tmpl'),
 
             binding: {
               title: 'title'
@@ -96,7 +96,7 @@
   * @class
   */
   var AttributeValuePart = UINode.subclass({
-    template: resource('templates/attributeValuePart.tmpl'),
+    template: resource('template/attributeValuePart.tmpl'),
 
     binding: {
       text: 'data:'
@@ -108,7 +108,7 @@
   * @class
   */
   var AttributeClassBinding = AttributeValuePart.subclass({
-    template: resource('templates/attributeClassBinding.tmpl')
+    template: resource('template/attributeClassBinding.tmpl')
   });
 
 
@@ -116,7 +116,7 @@
   * @class
   */
   var AttributeValueBinding = AttributeValuePart.subclass({
-    template: resource('templates/attributeValueBinding.tmpl')
+    template: resource('template/attributeValueBinding.tmpl')
   });
 
 
@@ -124,7 +124,7 @@
   * @class
   */
   var Attribute = UINode.subclass({
-    template: resource('templates/attribute.tmpl'),
+    template: resource('template/attribute.tmpl'),
 
     binding: {
       name: function(object){
@@ -241,7 +241,7 @@
   * @class
   */
   var AttributeList = UINode.subclass({
-    template: resource('templates/attributeList.tmpl'),
+    template: resource('template/attributeList.tmpl'),
 
     childClass: Attribute
   });
@@ -251,7 +251,7 @@
   * @class
   */
   var TagNode = TemplateNode.subclass({
-    template: resource('templates/tag.tmpl'),
+    template: resource('template/tag.tmpl'),
 
     binding: {
       attributeList: 'satellite:',
@@ -282,7 +282,7 @@
   * @class
   */
   var TextNode = TemplateNode.subclass({
-    template: resource('templates/text.tmpl'),
+    template: resource('template/text.tmpl'),
 
     binding: {
       value: function(object){
@@ -296,7 +296,7 @@
   * @class
   */
   var CommentNode = TemplateNode.subclass({
-    template: resource('templates/comment.tmpl'),
+    template: resource('template/comment.tmpl'),
 
     binding: {
       title: function(object){
@@ -321,9 +321,9 @@
   }
 
   var resourceList = new basis.ui.Container({
-    template: resource('templates/resourceList.tmpl'),
+    template: resource('template/resourceList.tmpl'),
     childClass: {
-      template: resource('templates/resource.tmpl'),
+      template: resource('template/resource.tmpl'),
       binding: {
         filename: 'data:'
       }
@@ -333,7 +333,7 @@
   var tree = new nsTree.Tree({
     autoDelegate: basis.dom.wrapper.DELEGATE.PARENT,
 
-    template: resource('templates/tree.tmpl'),
+    template: resource('template/tree.tmpl'),
     action: {
       focus: function(){
         classList(this.element.parentNode.parentNode).add('focus');
@@ -398,7 +398,7 @@
   */
   var widget = new basis.ui.Node({
     expanded: false,
-    template: resource('templates/widget.tmpl'),
+    template: resource('template/widget.tmpl'),
 
     binding: {
       expanded: function(object){
