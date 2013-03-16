@@ -11,7 +11,7 @@
     });
     
     mainMenu.setChildNodes([
-      resource('module/localization/index.js').fetch(),
+      resource('module/l10n/index.js').fetch(),
       resource('module/templater/index.js').fetch(),
       resource('module/warnings/index.js').fetch(),
       resource('module/fileGraph/index.js').fetch()
