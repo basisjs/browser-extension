@@ -1,9 +1,11 @@
 .file-graph-panel
 {
-  position: absolute;
-  left: 5px;
-  top: 5px;
-  z-index: 10000;
+  float: right;
+  padding: 5px 5px;
+}
+.file-graph-panel .Basis-Button
+{
+  float: right;
 }
 .file-graph-panel .error
 {
@@ -14,5 +16,5 @@
 }
 .file-graph-panel__state-error .error
 {
-  display: block;
+  display: inline;
 }

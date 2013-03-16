@@ -1,8 +1,6 @@
 .App-InspectPanel
 {
-  position: absolute;
-  top: 0;
-  right: 0;
+  float: right;
   height: 2.5em;  
 }
 

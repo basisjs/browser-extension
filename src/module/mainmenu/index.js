@@ -1,5 +1,7 @@
-
+basis.require('basis.ui');
 basis.require('basis.ui.tabs');
+basis.require('basis.ui.button');
+basis.require('app.type');
 
 
 var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
@@ -53,6 +55,38 @@ app.transport.onMessage('endInspect', function(mode){
 });
 
 //
+// app profile control panel
+//
+var appProfilePanel = new basis.ui.Node({
+  active: true,
+  delegate: app.type.AppProfile(),
+  template: resource('template/appProfilePanel.tmpl'),
+  binding: {
+    refreshButton: new basis.ui.button.Button({
+      autoDelegate: true,
+      caption: 'Refresh app profile',
+      click: function(){
+        this.deprecate();
+      },
+      handler: {
+        stateChanged: function(){
+          if (this.state == basis.data.STATE.PROCESSING)
+            this.disable();
+          else
+            this.enable();
+        }
+      }
+    }),
+    error: {
+      events: 'stateChanged',
+      getter: function(node){
+        return node.state.data;
+      }
+    }
+  }
+});
+
+//
 // main
 //
 module.exports = new basis.ui.tabs.PageControl({
@@ -61,6 +95,7 @@ module.exports = new basis.ui.tabs.PageControl({
   template: resource('template/pages.tmpl'),
   binding: {
     inspectPanel: inspectPanel,
+    appProfilePanel: appProfilePanel,
     tabs: new basis.ui.tabs.TabControl({
       template: resource('template/tabs.tmpl'),
 

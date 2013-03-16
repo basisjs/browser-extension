@@ -17,8 +17,10 @@ var AppProfile = new basis.entity.EntityType({
 });
 
 var appProfile = AppProfile();
+var timer;
 
 app.transport.onMessage('fileGraph', function(data){
+  clearTimeout(timer);
   if (data && !data.err && data.data)
   {
     appProfile.setState(basis.data.STATE.READY);
@@ -30,7 +32,12 @@ app.transport.onMessage('fileGraph', function(data){
 
 appProfile.setState(basis.data.STATE.UNDEFINED);
 appProfile.setSyncAction(function(){
-  this.setState(basis.data.STATE.PROCESSING);
+  clearTimeout(timer);
+  timer = setTimeout(function(){
+    appProfile.setState(basis.data.STATE.ERROR, 'Timeout');
+  }, 10000); // 10 sec timeout
+
+  appProfile.setState(basis.data.STATE.PROCESSING);
   app.transport.call('getFileGraph');
 });
 
