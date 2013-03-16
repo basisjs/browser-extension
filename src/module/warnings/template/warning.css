@@ -2,6 +2,7 @@
 {
   margin: 1px;
   padding: 4px;
+  border-left: 3px solid #F0B0A0;
   background: #FFF0E8;
 }
 .app-warning__file

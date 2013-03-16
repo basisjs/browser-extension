@@ -7,6 +7,18 @@ module.exports = new basis.ui.Node({
 
   template: resource('template/view.tmpl'),
 
+  grouping: {
+    groupGetter: function(child){
+      return child.data.file || '[no file]';
+    },
+    sorting: 'data.title',
+    childClass: {
+      template: resource('template/group.tmpl'),
+      binding: {
+        title: 'data:'
+      }
+    }
+  },
   childClass: {
     template: resource('template/warning.tmpl'),
     binding: {

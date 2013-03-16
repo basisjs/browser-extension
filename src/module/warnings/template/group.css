@@ -1,0 +1,21 @@
+.app-warning-group
+{
+  
+}
+
+.app-warning-group__title
+{
+  background: #E0E0E0;
+  padding: .2em 4px;
+  margin: 1px;
+}
+
+.app-warning-group__items
+{
+
+}
+
+.app-warning-group__items .app-warning__file
+{
+  display: none;
+}
