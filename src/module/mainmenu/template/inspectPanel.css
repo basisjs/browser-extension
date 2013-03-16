@@ -1,7 +1,9 @@
 .App-InspectPanel
 {
+  position: relative;
   float: right;
-  height: 2.5em;  
+  height: 2.5em;
+  z-index: 2;
 }
 
 .App-InspectPanel-Button
