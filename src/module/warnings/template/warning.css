@@ -1,0 +1,21 @@
+.app-warning
+{
+  margin: 1px;
+  padding: 4px;
+  background: #FFF0E8;
+}
+.app-warning__file
+{
+  font-size: 85%;
+  padding: 0 0 .25em;
+  color: #444;
+}
+.app-warning__message
+{
+  color: #A00;
+  white-space: pre-wrap;
+}
+.app-warning__message_fatal
+{
+  font-weight: bold;
+}

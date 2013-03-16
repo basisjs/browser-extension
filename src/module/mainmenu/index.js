@@ -71,6 +71,11 @@ module.exports = new basis.ui.tabs.PageControl({
       },
 
       autoSelectChild: false,
+      childFactory: function(config){
+        if (config.delegate.tabExt)
+          config = [config.delegate.tabExt, config].merge()
+        return new this.childClass(config);
+      },
       childClass: {
         template: resource('template/tab.tmpl'),
         binding: {

@@ -1,13 +1,12 @@
+.App-MainMenu-Page,
+.App-MainMenu-Page__Content
+{
+  height: 100%;
+  padding: 0;
+  position: relative;
+}
 
- 
-  .App-MainMenu-Page,
-  .App-MainMenu-Page__Content
-  {
-    height: 100%;
-    padding: 0;
-  }
-
-  .App-MainMenu-Page_unselected
-  {
-    display: none;
-  }
+.App-MainMenu-Page_unselected
+{
+  display: none;
+}

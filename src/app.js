@@ -1,6 +1,5 @@
 
   basis.require('basis.dom.event');
-  basis.require('basis.ui'); // ??
 
   var domEvent = basis.dom.event;
 
@@ -14,12 +13,12 @@
     mainMenu.setChildNodes([
       resource('module/localization/index.js').fetch(),
       resource('module/templater/index.js').fetch(),
+      resource('module/warnings/index.js').fetch(),
       resource('module/fileGraph/index.js').fetch()
     ]);
 
     mainMenu.selectPage();
   }
-
 
 
   //
