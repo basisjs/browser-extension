@@ -2,13 +2,13 @@
   basis.require('basis.ui');
 
   module.exports = new basis.ui.Node({
-    template: resource('template/dictionaryList.tmpl'),
+    template: resource('template/list.tmpl'),
 
     selection: true,
     sorting: 'data.Dictionary',
 
     childClass: {
-      template: resource('template/dictionaryListItem.tmpl'),
+      template: resource('template/item.tmpl'),
       binding: {
         title: 'data:Dictionary'
       },

@@ -10,7 +10,7 @@
   var getter = basis.getter;
   var Event = basis.dom.event;
   var livememo = app.ext.livememo;
-  var l10nType = resource('type.js').fetch();
+  var l10nType = resource('../../type.js').fetch();
 
   var Culture = l10nType.Culture;
   var Dictionary = l10nType.Dictionary;

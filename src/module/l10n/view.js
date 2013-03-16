@@ -219,13 +219,13 @@
   //
 
   //save button
-  var saveButtonPanel = resource('saveButtonPanel.js').fetch();
+  var saveButtonPanel = resource('module/saveButtonPanel/index.js').fetch();
   property_CurrentDictionary.addLink(saveButtonPanel, function(value){
     this.setDelegate(Dictionary(value));
   });
 
   //dictionary list
-  var dictionaryList = resource('dictionaryList.js').fetch();
+  var dictionaryList = resource('module/dictionaryList/index.js').fetch();
   dictionaryList.setDataSource(Dictionary.all);
   property_CurrentDictionary.addLink(dictionaryList, function(value){
     this.setValue(value);
@@ -265,7 +265,7 @@
 
   //dictionary editor 
 
-  var dictionaryEditor = resource('editor.js')();
+  var dictionaryEditor = resource('module/editor/index.js')();
   property_CurrentDictionary.addLink(dictionaryEditor, function(value){
     basis.cssom.display(this.element, !!value);
   });
