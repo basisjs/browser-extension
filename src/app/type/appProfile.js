@@ -1,12 +1,18 @@
 basis.require('basis.entity');
 
+var arrayOrEmpty = function(value){
+  return Array.isArray(value)
+    ? value
+    : [];
+};
+
 var AppProfile = new basis.entity.EntityType({
   name: 'AppProfile',
   singleton: true,
   fields: {
-    files: Object,
-    links: Object,
-    warns: Object
+    files: arrayOrEmpty,
+    links: arrayOrEmpty,
+    warns: arrayOrEmpty
   }
 });
 

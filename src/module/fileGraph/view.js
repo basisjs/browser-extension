@@ -6,11 +6,13 @@ basis.require('app.type');
 var appProfile = app.type.AppProfile();
 
 var graphView = basis.resource('lib/file-graph-viewer/src/module/view/index.js').fetch();
-appProfile.addHandler({
+graphView.setActive(true);
+graphView.addHandler({
   update: function(sender){
-    graphView.dataType.loadMap(basis.object.slice(sender.data, ['files', 'links']));
+    this.dataType.loadMap(basis.object.slice(sender.data, ['files', 'links']));
   }
 });
+graphView.setDelegate(appProfile);
 
 var controlPanel = new basis.ui.Node({
   active: true,
