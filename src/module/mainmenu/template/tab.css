@@ -1,26 +1,31 @@
+.App-MainMenu-Tab
+{
+  float: left;
+  height: 100%;
+  cursor: pointer;
+}
+.App-MainMenu-Tab:hover
+{
+  background-color: #DDD;
+}
 
-  .App-MainMenu-Tab
-  {
-    float: left;
-    height: 100%;
-    cursor: pointer;
-  }
+.App-MainMenu-TabContent
+{
+  padding: 0.6em 1em;
+  display: block;
+}
 
-  .App-MainMenu-TabContent
-  {
-    padding: 0.6em 1.5em;
-    display: block;
-  }
+.App-MainMenu-Tab_selected
+{
+  cursor: default;
+  background: #7A7975 !important;
+  color: white;
+}
 
-  .App-MainMenu-Tab_selected
-  {
-    background: #7A7975;
-    color: white;
-  }
-
-  .App-MainMenu-Tab_disabled
-  {
-    background: none !important;
-    color: #AAA !important;
-    text-shadow: 0 1px 0 white;
-  }
+.App-MainMenu-Tab_disabled
+{
+  cursor: default;
+  background: none !important;
+  color: #AAA !important;
+  text-shadow: 0 1px 0 white;
+}

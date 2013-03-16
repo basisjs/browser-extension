@@ -3,25 +3,29 @@
   position: absolute;
   top: 0;
   right: 0;
-  height: 2.8em;  
+  height: 2.5em;  
 }
 
 .App-InspectPanel-Button
 {
   display: inline-block;
   height: 100%;
-  padding: 20px 10px 0 10px;
+  padding: 18px 16px 0 16px;
   box-sizing: border-box;
   
-  background: url(img/inspect.png) no-repeat center 5px;
+  background: url(img/inspect.png) no-repeat center 3px;
   border-left: 1px solid #CCC;
-  box-shadow: 1px 0 1px 0 rgba(255, 255, 255, 0.8) inset;
+  box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.5) inset;
  
   font-size: 80%;
   font-weight: bold;
   color: #666;
   text-shadow: 0 1px 0 white;
   cursor: pointer;
+}
+.App-InspectPanel-Button:hover
+{
+  background-color: #DDD;
 }
 
 .App-InspectPanel-InspectMode_template .App-InspectPanel-Button.template,

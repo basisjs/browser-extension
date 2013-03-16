@@ -1,6 +1,7 @@
-
-  .App-MainMenu-Tabs
-  {
-    height: 2.8em;
-    background: #F0F0F0;
-  }
+.App-MainMenu-Tabs
+{
+  height: 2.5em;
+  background: #F0F0F0;
+    -webkit-user-select: none;
+  user-select: none;
+}

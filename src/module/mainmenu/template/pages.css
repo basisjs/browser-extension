@@ -1,28 +1,26 @@
+.App-MainMenu
+{
+  height: 100%;
+}
 
-  .App-MainMenu
-  {
-    height: 100%;
-  }
+.App-MainMenu-Pages
+{
+  position: absolute;
+  top: 2.5em;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  border-top: 1px solid #B6BAC0;
+}
 
-  .App-MainMenu-Pages
-  {
-    position: absolute;
-    top: 2.8em;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    /*box-shadow: 0 0 10px 0px rgba(0,0,0,.15);*/
-    border-top: 1px solid #B6BAC0;
-  }
-
-  .App-MainMenu.disabled .blocker
-  {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 10000;
-    background: rgba(255, 255, 255, 0.7);
-  }
+.App-MainMenu.disabled .blocker
+{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 10000;
+  background: rgba(255, 255, 255, 0.7);
+}
 
