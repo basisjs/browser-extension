@@ -21,7 +21,7 @@
       this.port.postMessage({ action: 'appcpReady' });
     },
 
-    call: function(funcName){
+    invoke: function(funcName){
       var args = basis.array.from(arguments, 1).map(JSON.stringify);
 
       inspectedWindow.eval(

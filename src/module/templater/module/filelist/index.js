@@ -3,7 +3,7 @@
   basis.require('basis.data.property');
   basis.require('basis.ui');
   basis.require('basis.ui.resizer');
-  //basis.require('app.type.file');
+  basis.require('app.type');
 
   var File = app.type.File;
 

@@ -21,12 +21,12 @@ var inspectPanel = new basis.ui.Node({
     var opositeMode = mode == 'template' ? 'l10n' : 'template';
 
     if (this.inspectMode == opositeMode)
-      app.transport.call(opositeMode + 'EndInspect');
+      app.transport.invoke(opositeMode + 'EndInspect');
 
     if (inspected)
-      app.transport.call(mode + 'EndInspect')
+      app.transport.invoke(mode + 'EndInspect')
     else 
-      app.transport.call(mode + 'StartInspect');
+      app.transport.invoke(mode + 'StartInspect');
 
     this.inspectMode = !inspected ? mode : '';
     this.updateBind('inspectMode');

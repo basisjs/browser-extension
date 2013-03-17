@@ -209,7 +209,7 @@
 
                 this.target.set('Value', value, true);
 
-                app.transport.call('setTokenCultureValue', dictionaryName, tokenName, culture, value);
+                app.transport.invoke('setTokenCultureValue', dictionaryName, tokenName, culture, value);
               }
             }
           })

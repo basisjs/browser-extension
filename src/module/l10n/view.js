@@ -33,7 +33,7 @@
 
   property_CurrentCulture.addHandler({
     change: function(property){
-      //app.transport.call('setCulture', property.value);
+      //app.transport.invoke('setCulture', property.value);
     }
   });
 
@@ -138,7 +138,7 @@
           var key = dictCulture.data.Dictionary + '_' + dictCulture.data.Culture;
            if (!resourcesLoaded[key])
            {
-             app.transport.call('loadDictionaryResource', dictCulture.data.Dictionary, dictCulture.data.Culture);
+             app.transport.invoke('loadDictionaryResource', dictCulture.data.Dictionary, dictCulture.data.Culture);
              resourcesLoaded[key] = true;
            }
         }
@@ -156,8 +156,8 @@
     lastDictionary = property_CurrentDictionary.value;
     property_CurrentDictionary.set(null);
 
-    app.transport.call('loadCultureList');
-    app.transport.call('loadDictionaryList');
+    app.transport.invoke('loadCultureList');
+    app.transport.invoke('loadDictionaryList');
   });
 
   app.transport.onMessage('cultureList', function(data){

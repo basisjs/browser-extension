@@ -216,7 +216,7 @@
         for (var i in modifiedCultures)
           cultureList.push(i);
 
-        app.transport.call('saveDictionary', this.data.Dictionary, cultureList);
+        app.transport.invoke('saveDictionary', this.data.Dictionary, cultureList);
         this.setState(STATE.PROCESSING);
       }
     },

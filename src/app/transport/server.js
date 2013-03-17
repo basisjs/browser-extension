@@ -25,7 +25,7 @@
       }));
     },
 
-    call: function(funcName){
+    invoke: function(funcName){
       this.socket.emit('message', { 
         action: 'call', 
         data: { 

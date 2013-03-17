@@ -1,4 +1,5 @@
 basis.require('basis.entity');
+basis.require('app.transport');
 
 var arrayOrEmpty = function(value){
   return Array.isArray(value)
@@ -38,7 +39,7 @@ appProfile.setSyncAction(function(){
   }, 10000); // 10 sec timeout
 
   appProfile.setState(basis.data.STATE.PROCESSING);
-  app.transport.call('getFileGraph');
+  app.transport.invoke('getFileGraph');
 });
 
 module.exports = AppProfile;

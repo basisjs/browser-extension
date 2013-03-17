@@ -1,5 +1,6 @@
 
   basis.require('basis.dom.event');
+  basis.require('app.transport');
 
   var domEvent = basis.dom.event;
 
@@ -26,8 +27,7 @@
   //
   basis.ready(function(){
     // create transport
-    app.transport = resource('app/transport/transport.js').fetch();
-    app.type = resource('app/type.js').fetch();
+    app.transport.init();
 
     // init interfaces
     app.transport.ready(basis.fn.runOnce(initMainMenu));

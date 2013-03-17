@@ -46,7 +46,7 @@
   });
  
   app.transport.ready(function(){
-    app.transport.call('getFileList'); 
+    app.transport.invoke('getFileList'); 
   });
 
   app.transport.onMessage('pickTemplate', function(data){

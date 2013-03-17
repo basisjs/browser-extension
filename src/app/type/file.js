@@ -3,6 +3,8 @@
   basis.require('basis.entity');
   basis.require('basis.data.dataset');
 
+  basis.require('app.transport');
+
   var nsEntity = basis.entity;
   var nsDataset = basis.data.dataset;
 
@@ -22,7 +24,7 @@
   });
 
   File.createFile = function(filename){
-    app.transport.call('createFile', filename);
+    app.transport.invoke('createFile', filename);
   };
 
   var FileClass = File.entityType.entityClass;
@@ -30,13 +32,13 @@
   FileClass.extend({
     read: function(){
       this.setState(STATE.PROCESSING);
-      app.transport.call('readFile', this.data.filename);
+      app.transport.invoke('readFile', this.data.filename);
     },
     save: function(){
       if (this.modified)
       {
         this.setState(STATE.PROCESSING);
-        app.transport.call('saveFile', this.data.filename, this.data.content);
+        app.transport.invoke('saveFile', this.data.filename, this.data.content);
       }
     }
   });

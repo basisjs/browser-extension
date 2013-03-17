@@ -4,6 +4,7 @@
   basis.require('basis.ui.button');
   basis.require('basis.ui.resizer');
   basis.require('app.ext.editor');
+  basis.require('app.type');
 
   var File = app.type.File;
 
