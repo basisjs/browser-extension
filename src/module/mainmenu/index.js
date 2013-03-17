@@ -53,6 +53,12 @@ app.transport.onMessage('endInspect', function(mode){
   if (inspectPanel.inspectMode == mode)
     inspectPanel.inspect(mode);
 });
+app.transport.ready(function(){
+  if (inspectPanel.inspectMode)
+    app.transport.invoke(inspectPanel.inspectMode + 'StartInspect')
+  else
+    app.transport.invoke('getInspectMode');
+});
 
 //
 // app profile control panel

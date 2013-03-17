@@ -169,7 +169,6 @@
   });
 
   app.transport.onMessage('cultureChanged', function(data){  
-    debugger;
     property_CurrentCulture.set(data);
   });
 

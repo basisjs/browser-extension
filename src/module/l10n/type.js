@@ -2,6 +2,7 @@
   basis.require('basis.data');
   basis.require('basis.data.dataset');
   basis.require('basis.entity');
+  basis.require('app.type');
 
   var nsEntity = basis.entity;
   var EntityType = basis.entity.EntityType;
@@ -120,35 +121,35 @@
     rule: basis.fn.$true
   });
 
-  var usedCulturesDataset = new basis.data.Dataset({});
-
-  //process resources
-  function processDictionaryData(dictionary, data){
-    var resource;
-    var tokens = [];
-
-    for (var token in data)
-    {
-      tokens.push(Token({ 
-        Dictionary: dictionary, 
-        Token: token 
-      }));
-      for (var culture in data[token])
+  Object.extend(Dictionary.entityType.entityClass.prototype, {
+    save: function(){
+      if (this.modified && this.state != STATE.PROCESSING)
       {
-        resource = Resource({ 
-          Dictionary: dictionary, 
-          Token: token,
-          Culture: culture
-        });
+        var modifiedCultures = {};
+        var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
+        for (var i = 0, resource; resource = modifiedResources[i]; i++) 
+          modifiedCultures[resource.data.Culture] = true;
 
-        resource.commit({
-          Value: data[token][culture]
-        });
+        var cultureList = [];
+        for (var i in modifiedCultures)
+          cultureList.push(i);
+
+        app.transport.invoke('saveDictionary', this.data.Dictionary, cultureList);
+        this.setState(STATE.PROCESSING);
       }
+    },
+    reset: function(){
+      this.setState(STATE.READY);
+      resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
+        token.rollback();
+      });
     }
+  });  
 
-    tokenSplit.getSubset(dictionary, true).sync(tokens);
-  }
+  //
+  // add/remove culture
+  //
+  var usedCulturesDataset = new basis.data.Dataset({});  
 
   function addCulture(culture){
     var usedCulturesCount = usedCulturesDataset.getItems().length - 1;
@@ -202,32 +203,39 @@
     }
   });
 
+  //
+  // process resources
+  //
+  function processDictionaryData(dictionary, data){
+    var resource;
+    var tokens = [];
 
-  Object.extend(Dictionary.entityType.entityClass.prototype, {
-    save: function(){
-      if (this.modified && this.state != STATE.PROCESSING)
+    for (var token in data)
+    {
+      tokens.push(Token({ 
+        Dictionary: dictionary, 
+        Token: token 
+      }));
+      for (var culture in data[token])
       {
-        var modifiedCultures = {};
-        var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
-        for (var i = 0, resource; resource = modifiedResources[i]; i++) 
-          modifiedCultures[resource.data.Culture] = true;
+        resource = Resource({ 
+          Dictionary: dictionary, 
+          Token: token,
+          Culture: culture
+        });
 
-        var cultureList = [];
-        for (var i in modifiedCultures)
-          cultureList.push(i);
-
-        app.transport.invoke('saveDictionary', this.data.Dictionary, cultureList);
-        this.setState(STATE.PROCESSING);
+        resource.commit({
+          Value: data[token][culture]
+        });
       }
-    },
-    reset: function(){
-      this.setState(STATE.READY);
-      resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
-        token.rollback();
-      });
     }
-  })
 
+    tokenSplit.getSubset(dictionary, true).sync(tokens);
+  }
+
+  //
+  // exports
+  //
   module.exports = {
     Dictionary: Dictionary,
     Token: Token,

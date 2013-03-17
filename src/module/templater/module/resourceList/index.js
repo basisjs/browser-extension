@@ -53,47 +53,6 @@
     },
 
     satelliteConfig: {
-      /*buttonPanel: {
-        instanceOf: nsButton.ButtonPanel,
-        config: {  
-          autoDelegate: true,
-          disabled: true,
-          childNodes: [
-            {
-              autoDelegate: true,
-              caption: 'Save',
-              click: function(){
-                this.target.save();
-              }
-            },
-            {
-              autoDelegate: true,
-              caption: 'Rollback',
-              click: function(){
-                this.target.rollback();
-              }
-            }
-          ],
-          syncDisableState: function(){
-            if (this.target && this.target.modified)
-              this.enable();
-            else
-              this.disable();
-          },
-          handler: {
-            targetChanged: function(){
-              this.syncDisableState();
-            }
-          },
-          listen: {
-            target: {
-              rollbackUpdate: function(){
-                this.syncDisableState();
-              }
-            }
-          }
-        }
-      },*/
       createFilePanel: {
         existsIf: function(editor){
           return editor.data.filename && !editor.target;
@@ -133,6 +92,14 @@
     autoDelegate: true,
 
     template: resource('template/resourceList.tmpl'),
+    binding: {
+      single: {
+        events: 'childNodesModified',
+        getter: function(object){
+          return object.childNodes.length == 1;
+        }
+      }
+    },
 
     handler: {
       targetChanged: function(){
