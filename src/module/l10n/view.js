@@ -166,7 +166,12 @@
     Culture.all.sync(data.cultureList);
 
     property_CurrentCulture.set(data.currentCulture);
-  })
+  });
+
+  app.transport.onMessage('cultureChanged', function(data){  
+    debugger;
+    property_CurrentCulture.set(data);
+  });
 
   app.transport.onMessage('dictionaryList', function(data){
     Dictionary.all.sync(data);
