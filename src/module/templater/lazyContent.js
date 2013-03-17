@@ -14,15 +14,21 @@
   var filelist = resource('module/filelist/index.js');
   var resourceEditor = resource('module/resourceList/index.js');
 
-
   //
   // Main part
   //
   
   var templater = new basis.ui.Node({
+    inited: false,
     template: resource('template/view.tmpl'),
 
     binding: {
+      inited: {
+        events: 'targetChanged',
+        getter: function(object){
+          return !!object.target;
+        }
+      },
       editor: editor(),
       filelist: filelist(),
       resourceEditor: resourceEditor()
@@ -38,9 +44,9 @@
 
       if (item)
       {
+        templater.setDelegate(item.target);
         editor().setDelegate(item.target);
         resourceEditor().setDelegate(item.target);
-        //tokenView().setDelegate(item);
       }
     }
   });

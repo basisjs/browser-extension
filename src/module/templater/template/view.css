@@ -9,6 +9,50 @@
     position: relative;
   }
 
+  .TemplaterPage-Content
+  {
+    height: 100%;
+  }
+
+  .TemplaterPage-Splash
+  {
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+    
+    background: -webkit-linear-gradient(top, #F8F8F8, #EEE);
+    background: linear-gradient(top, #F8F8F8, #EEE);    
+  }
+
+  .TemplaterPage-Splash SPAN
+  {
+    position: absolute;
+    top: 45%;
+    padding: 0 20%;
+    left: 0;
+    right: 0;
+    
+    text-align: center;
+    font-size: 130%;
+    color: #999;
+    text-shadow: 0 1px 0 white;
+  }
+
+
+
+  .TemplaterPage_inited .TemplaterPage-Splash
+  {
+    display: none;
+  }
+  .TemplaterPage-Content
+  {
+    display: none;
+  }  
+  .TemplaterPage_inited .TemplaterPage-Content
+  {
+    display: block;
+  }
+
   .Basis-VerticalPanelStack
   {
     height: 100%;
