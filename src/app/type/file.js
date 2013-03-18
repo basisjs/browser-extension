@@ -13,7 +13,7 @@ var File = new nsEntity.EntityType({
   name: 'File',
   fields: {
     filename: nsEntity.StringId,
-    type: String,
+    lastUpdate: String,
     content: function(value){ 
       return value == null ? null : String(value);
     },
