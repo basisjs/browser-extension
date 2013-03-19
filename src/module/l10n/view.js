@@ -173,7 +173,7 @@
   });
 
   app.transport.onMessage('dictionaryList', function(data){
-    Dictionary.all.sync(data);
+    data.map(Dictionary);
     
     if (lastDictionary)
     {

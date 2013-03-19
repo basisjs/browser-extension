@@ -13,7 +13,8 @@ var AppProfile = new basis.entity.EntityType({
   fields: {
     files: arrayOrEmpty,
     links: arrayOrEmpty,
-    warns: arrayOrEmpty
+    warns: arrayOrEmpty,
+    l10n: basis.fn.$self
   }
 });
 

@@ -234,6 +234,35 @@
   }
 
   //
+  // get dictionaries list from appProfile
+  //
+  var appProfile = app.type.AppProfile();
+
+  appProfile.addHandler({
+    targetChanged: function(object){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    },
+    update: function(object, delta){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    }
+  });
+  
+  if (appProfile.data.l10n)
+    processDictionaries(appProfile.data.l10n);
+  
+  function processDictionaries(data){
+    for (var dirName in data) {
+      Dictionary({
+        Dictionary: dirName,
+        Location: data[dirName]
+      });
+    }
+  }
+
+
+  //
   // exports
   //
   module.exports = {
