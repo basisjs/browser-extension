@@ -253,11 +253,13 @@
     processDictionaries(appProfile.data.l10n);
   
   function processDictionaries(data){
-    for (var dirName in data) {
+    for (var dictName in data) {
       Dictionary({
-        Dictionary: dirName,
-        Location: data[dirName]
+        Dictionary: dictName,
+        Location: data[dictName].path
       });
+
+      processDictionaryData(dictName, data[dictName].tokens);
     }
   }
 
