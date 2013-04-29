@@ -160,61 +160,63 @@
     app.transport.invoke('loadDictionaryList');
   });
 
-  app.transport.onMessage('cultureList', function(data){
-    data.cultureList.push('base')
+  app.transport.onMessage({
+    cultureList: function(data){
+      data.cultureList.push('base')
 
-    Culture.all.sync(data.cultureList);
+      Culture.all.sync(data.cultureList);
 
-    property_CurrentCulture.set(data.currentCulture);
-  });
-
-  app.transport.onMessage('cultureChanged', function(data){  
-    property_CurrentCulture.set(data);
-  });
-
-  app.transport.onMessage('dictionaryList', function(data){
-    data.map(Dictionary);
+      property_CurrentCulture.set(data.currentCulture);
+    },
     
-    if (lastDictionary)
-    {
-      property_CurrentDictionary.set(lastDictionary);
-      lastDictionary = null;
-    }
-  });
+    cultureChanged: function(data){  
+      property_CurrentCulture.set(data);
+    },
+    
+    dictionaryList: function(data){
+      data.map(Dictionary);
+    
+      if (lastDictionary)
+      {
+        property_CurrentDictionary.set(lastDictionary);
+        lastDictionary = null;
+      }
+    },
 
-  app.transport.onMessage('dictionaryResource', function(data){
-    l10nType.processDictionaryData(data.dictionaryName, data.tokens);
-
-    if (property_CurrentToken.value)
-    {  
-      dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
-      property_CurrentToken.reset();
-    }
-  });
-
-  app.transport.onMessage('newDictionary', function(data){
-    Dictionary(data.dictionaryName);
-  });
-        
-  app.transport.onMessage('token', function(data){
-    property_CurrentDictionary.set(data.dictionaryName);
-
-    var dc = DictionaryCulture.get({ Dictionary: data.dictionaryName, Culture: property_CurrentCulture.value });
-    if (!dc)
-      l10nType.addCulture(property_CurrentCulture.value);
-
-    property_CurrentToken.set(data.selectedToken);
-    dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
-  });
-
-  app.transport.onMessage('saveDictionary', function(data){
-    if (data.result == 'success')
-    {
-      Dictionary(data.dictionaryName).setState(STATE.READY);
+    dictionaryResource: function(data){
       l10nType.processDictionaryData(data.dictionaryName, data.tokens);
+
+      if (property_CurrentToken.value)
+      {  
+        dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
+        property_CurrentToken.reset();
+      }
+    },
+
+    newDictionary: function(data){
+      Dictionary(data.dictionaryName);
+    },
+          
+    token: function(data){
+      property_CurrentDictionary.set(data.dictionaryName);
+
+      var dc = DictionaryCulture.get({ Dictionary: data.dictionaryName, Culture: property_CurrentCulture.value });
+      if (!dc)
+        l10nType.addCulture(property_CurrentCulture.value);
+
+      property_CurrentToken.set(data.selectedToken);
+      dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
+    },
+
+    saveDictionary: function(data){
+      if (data.result == 'success')
+      {
+        Dictionary(data.dictionaryName).setState(STATE.READY);
+        l10nType.processDictionaryData(data.dictionaryName, data.tokens);
+      }
+      else 
+        Dictionary(data.dictionaryName).setState(STATE.ERROR, data.errorText);
     }
-    else 
-      Dictionary(data.dictionaryName).setState(STATE.ERROR, data.errorText);
   });
 
 

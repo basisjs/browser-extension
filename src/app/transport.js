@@ -31,14 +31,32 @@
         for (var i = 0, handler; handler = handlers[i]; i++)
           handler.handler.call(handler.context, message.data && JSON.parse(message.data));
     },
-    onMessage: function(message, handler, handlerContext){
-      if (!this.handlers[message])
-        this.handlers[message] = [];
+    onMessage: function(messageNameOrHandlers, handlerOrContext, handlerContext){
+      var handlers;
+      var handlerContext;
+      
+      if (typeof messageNameOrHandlers == 'string')
+      {
+        handlers = {};
+        handlers[messageNameOrHandlers] = handlerOrContext;
+      }
+      else
+      {
+        handlers = messageNameOrHandlers;
+        handlerContext = handlerOrContext;
+      }
 
-      this.handlers[message].push({
-        handler: handler,
-        context: handlerContext
-      });
+      for (var message in handlers)
+      {
+        var handler = handlers[message];
+        if (!this.handlers[message])
+          this.handlers[message] = [];
+
+        this.handlers[message].push({
+          handler: handler,
+          context: handlerContext
+        });
+      }
     },
     
     invoke: function(){
