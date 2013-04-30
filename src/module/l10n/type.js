@@ -121,6 +121,9 @@
     rule: basis.fn.$true
   });
 
+  //
+  // extend Dictionary
+  //
   Object.extend(Dictionary.entityType.entityClass.prototype, {
     save: function(){
       if (this.modified && this.state != STATE.PROCESSING)
@@ -134,7 +137,7 @@
         for (var i in modifiedCultures)
           cultureList.push(i);
 
-        app.transport.invoke('saveDictionary', this.data.Dictionary, cultureList);
+        app.transport.invoke('saveDictionary', this.data.Dictionary, this.data.Location, cultureList);
         this.setState(STATE.PROCESSING);
       }
     },
@@ -145,6 +148,7 @@
       });
     }
   });  
+
 
   //
   // add/remove culture
@@ -201,7 +205,57 @@
         for (var i = 0, culture; culture = delta.deleted[i]; i++)
           deleteCulture(culture.data.Culture);
     }
+  });  
+
+  //
+  //load resource for current dictionary and added culture
+  //
+  var resourcesLoaded = {};
+  
+  dictionaryCultureDataset.addHandler({
+    datasetChanged: function(object, delta){
+      if (delta.inserted)
+        for (var i = 0, dictCulture; dictCulture = delta.inserted[i]; i++)
+        {
+          var key = dictCulture.data.Dictionary + '_' + dictCulture.data.Culture;
+          if (!resourcesLoaded[key])
+          {
+            app.transport.invoke('loadDictionaryResource', dictCulture.data.Dictionary, dictCulture.data.Culture);
+            resourcesLoaded[key] = true;
+          }
+        }
+    }
   });
+
+  //
+  // get dictionaries list from appProfile
+  //
+  var appProfile = app.type.AppProfile();
+
+  appProfile.addHandler({
+    targetChanged: function(object){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    },
+    update: function(object, delta){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    }
+  });
+  
+  if (appProfile.data.l10n)
+    processDictionaries(appProfile.data.l10n);
+
+  function processDictionaries(data){
+    for (var dictName in data) {
+      Dictionary({
+        Dictionary: dictName,
+        Location: data[dictName].path
+      });
+
+      processDictionaryData(dictName, data[dictName].tokens);
+    }
+  }
 
   //
   // process resources
@@ -231,39 +285,48 @@
     }
 
     tokenSplit.getSubset(dictionary, true).sync(tokens);
-  }
+  }  
 
   //
-  // get dictionaries list from appProfile
+  // message handlers
   //
-  var appProfile = app.type.AppProfile();
+  app.transport.ready(function(){
+    for (var i in resourcesLoaded)
+      delete resourcesLoaded[i];
 
-  appProfile.addHandler({
-    targetChanged: function(object){
-      if (object.data.l10n)
-        processDictionaries(object.data.l10n);
-    },
-    update: function(object, delta){
-      if (object.data.l10n)
-        processDictionaries(object.data.l10n);
-    }
+    app.transport.invoke('loadCultureList');
+    app.transport.invoke('loadDictionaryList');
   });
-  
-  if (appProfile.data.l10n)
-    processDictionaries(appProfile.data.l10n);
-  
-  function processDictionaries(data){
-    for (var dictName in data) {
-      Dictionary({
-        Dictionary: dictName,
-        Location: data[dictName].path
-      });
 
-      processDictionaryData(dictName, data[dictName].tokens);
+  app.transport.onMessage({
+    cultureList: function(data){
+      data.cultureList.push('base')
+      Culture.all.sync(data.cultureList);
+    },
+    
+    dictionaryList: function(data){
+      data.map(Dictionary);
+    },
+
+    dictionaryResource: function(data){
+      processDictionaryData(data.dictionaryName, data.tokens);
+    },
+
+    newDictionary: function(data){
+      Dictionary(data.dictionaryName);
+    },
+          
+    saveDictionary: function(data){
+      if (data.result == 'success')
+      {
+        Dictionary(data.dictionaryName).setState(STATE.READY);
+        processDictionaryData(data.dictionaryName, data.tokens);
+      }
+      else 
+        Dictionary(data.dictionaryName).setState(STATE.ERROR, data.errorText);
     }
-  }
-
-
+  });  
+  
   //
   // exports
   //

@@ -52,7 +52,8 @@ File.entityType.entityClass.extend({
 //
 // transport binding
 //
-app.transport.onMessage('filesChanged', function(data){
+app.transport.onMessage({
+  filesChanged: function(data){
   if (data.inserted)
     for (var i = 0, file; file = data.inserted[i]; i++)
       File(file);
@@ -60,13 +61,14 @@ app.transport.onMessage('filesChanged', function(data){
   if (data.deleted)
     for (var i = 0, filename; filename = data.deleted[i]; i++)
       File(filename).destroy();
-});
+  },
+  updateFile: function(data){
+    var file = File(data.filename);
+    debugger;
 
-app.transport.onMessage('updateFile', function(data){
-  var file = File(data.filename);
-
-  file.update(data);
-  file.setState(data.content == null ? STATE.UNDEFINED : STATE.READY);
+    file.update(data);
+    file.setState(data.content == null ? STATE.UNDEFINED : STATE.READY);
+  }
 });
 
 
