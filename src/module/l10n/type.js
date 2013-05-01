@@ -124,9 +124,11 @@
   //
   // extend Dictionary
   //
+  var isServerOnline = false;
+
   Object.extend(Dictionary.entityType.entityClass.prototype, {
     save: function(){
-      if (this.modified && this.state != STATE.PROCESSING)
+      if (isServerOnline && this.modified && this.state != STATE.PROCESSING)
       {
         var modifiedCultures = {};
         var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
@@ -284,7 +286,7 @@
       }
     }
 
-    tokenSplit.getSubset(dictionary, true).sync(tokens);
+    //tokenSplit.getSubset(dictionary, true).sync(tokens);
   }  
 
   //
@@ -294,11 +296,16 @@
     for (var i in resourcesLoaded)
       delete resourcesLoaded[i];
 
+    app.transport.invoke('serverStatus');
     app.transport.invoke('loadCultureList');
     app.transport.invoke('loadDictionaryList');
   });
 
   app.transport.onMessage({
+    serverStatus: function(isOnline){
+      isServerOnline = isOnline;
+    },
+
     cultureList: function(data){
       data.cultureList.push('base')
       Culture.all.sync(data.cultureList);

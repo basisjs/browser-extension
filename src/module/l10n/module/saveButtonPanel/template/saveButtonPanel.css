@@ -12,3 +12,9 @@
     vertical-align: middle;
     color: red;
   }
+
+
+  .saveButtonPanel_inactive
+  {
+    display: none;
+  }

@@ -14,9 +14,14 @@
   };
 
   module.exports = new basis.ui.button.ButtonPanel({
+    inactive: true,
+    disabled: true,
+
     template: resource('template/saveButtonPanel.tmpl'),
 
-    disabled: true,
+    binding: {
+      inactive: 'inactive'
+    },
 
     handler: {
       stateChanged: activityHandler,
