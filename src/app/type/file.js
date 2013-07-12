@@ -64,7 +64,6 @@ app.transport.onMessage({
   },
   updateFile: function(data){
     var file = File(data.filename);
-    debugger;
 
     file.update(data);
     file.setState(data.content == null ? STATE.UNDEFINED : STATE.READY);

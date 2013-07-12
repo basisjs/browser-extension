@@ -213,7 +213,6 @@
 
   app.transport.onMessage({
     serverStatus: function(isOnline){
-      debugger;
       saveButtonPanel.inactive = !isOnline;
       saveButtonPanel.updateBind('inactive');
     },

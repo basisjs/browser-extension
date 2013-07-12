@@ -23,7 +23,7 @@
         var action = sharedDOM.getAttribute('action');
         var data = sharedDOM.innerText;
 
-        console.log('transfer data action:', action);
+        //console.log('transfer data action:', action);
         //console.log('transfer data:', data);
 
         sendMessage(action, data);
@@ -43,5 +43,5 @@
 
   sendMessage('contentScriptInited');
 
-  console.log('content script inited');
+  //console.log('content script inited');
 })();
