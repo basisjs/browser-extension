@@ -12,8 +12,12 @@
     });
 
     app.transport.onMessage('version', function(version){
+      var l10nModule = version.l10n > 1 ? 
+        resource('module/l10n_v2/index.js') : 
+        resource('module/l10n/index.js');
+
       mainMenu.setChildNodes([
-        resource('module/l10n/index.js').fetch(),
+        l10nModule.fetch(),
         resource('module/templater/index.js').fetch(),
         resource('module/warnings/index.js').fetch(),
         resource('module/fileGraph/index.js').fetch()

@@ -1,0 +1,29 @@
+
+  .DictionaryListItem
+  {
+    padding: 0.4em 0.8em;
+    font-size: 85%;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+  }
+
+  .DictionaryListItem:hover
+  {
+    background: #AAA;
+    color: white;
+  }
+
+  .DictionaryListItem_selected
+  {
+    background: #7A7975 !important;
+    color: white;
+  }
+
+  .DictionaryListItem .match
+  {
+    background: #7A7975;
+    color: white;
+    border-radius: 2px;
+  }

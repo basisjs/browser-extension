@@ -1,0 +1,20 @@
+
+  .saveButtonPanel
+  {
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 0.5em;
+  }
+
+  .saveButtonPanel .Basis-Label-Error
+  {
+    display: inline-block;
+    vertical-align: middle;
+    color: red;
+  }
+
+
+  .saveButtonPanel_inactive
+  {
+    display: none;
+  }

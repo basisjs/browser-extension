@@ -11,14 +11,10 @@
   basis.require('basis.net');
   basis.require('basis.ui.resizer');
 
-  var STATE = basis.data.STATE;
-
-  var FLAG_PATH = 'img/flags';
-  var BASE_CULTURE = 'base';
-  var CULTURE_LIST;
   //var dictionaries;
 
   var l10nType = resource('type.js')();
+  app.l10nType = l10nType;
 
   var Dictionary = l10nType.Dictionary;
   var Token = l10nType.Token;
@@ -30,9 +26,12 @@
   var property_CurrentDictionary = new basis.data.property.Property(null);
   var property_CurrentToken = new basis.data.property.Property(null);
 
-  property_CurrentCulture.addHandler({
-    change: function(property){
-      //app.transport.invoke('setCulture', property.value);
+  var dictionaryFile = new basis.data.DataObject({
+    active: true,
+    handler: {
+      update: function(){
+        l10nType.processDictionaryData(this.data.filename, JSON.parse(this.data.content));
+      }
     }
   });
 
@@ -41,12 +40,16 @@
     change: function(property){
       var value = property.value;
 
+      dictionaryFile.setDelegate(app.type.File(value));
+
       l10nType.dictionaryCultureDataset.setSource(value ? l10nType.dictionaryCultureSplit.getSubset(value, true) : null);
       l10nType.tokenDataset.setSource(value ? l10nType.tokenSplit.getSubset(value, true) : null);
 
       if (value)
       {
         var cultures = l10nType.usedCulturesDataset.getItems();
+        var tokens = l10nType.tokenDataset.getItems();
+        createEmptyResources(tokens, cultures);
 
         for (var i = 0, culture; culture = cultures[i]; i++)
         {
@@ -55,16 +58,6 @@
             Culture: culture.data.Culture,
             Position: i
           });
-
-          var tokens = l10nType.tokenDataset.getItems();
-          for (var j = 0, token; token = tokens[j]; j++)
-          {
-            Resource({ 
-              Dictionary: property_CurrentDictionary.value, 
-              Token: token.data.Token,
-              Culture: culture.data.Culture
-            });
-          }
         }
       }
 
@@ -84,21 +77,15 @@
   l10nType.usedCulturesDataset.addHandler({
     datasetChanged: function(object, delta){
       if (delta.inserted)
-        for (var i = 0, culture; culture = delta.inserted[i]; i++)
-        {
+      {
+        var tokens = l10nType.tokenDataset.getItems();
+        var cultures = delta.inserted;
+        createEmptyResources(tokens, cultures);
+
+        for (var i = 0, culture; culture = cultures[i]; i++)
           l10nType.resourceDictionaryCultureMerge.addSource(l10nType.resourceDictionaryCultureSplit.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
-
-          var tokens = l10nType.tokenDataset.getItems();
-          for (var j = 0, token; token = tokens[j]; j++)
-          {
-            Resource({ 
-              Dictionary: property_CurrentDictionary.value, 
-              Token: token.data.Token,
-              Culture: culture.data.Culture
-            });
-          }
-        }
-
+      }
+        
       if (delta.deleted)
         for (var i = 0, culture; culture = delta.deleted[i]; i++)
           l10nType.resourceDictionaryCultureMerge.removeSource(l10nType.resourceDictionaryCultureSplit.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
@@ -108,24 +95,24 @@
   l10nType.tokenDataset.addHandler({
     datasetChanged: function(object, delta){
       if (delta.inserted)
-      {
-        var cultures = l10nType.usedCulturesDataset.getItems();
-        for (var i = 0, culture; culture = cultures[i]; i++)
-        {
-          for (var j = 0, token; token = delta.inserted[j]; j++)
-          {
-            Resource({ 
-              Dictionary: property_CurrentDictionary.value, 
-              Token: token.data.Token,
-              Culture: culture.data.Culture
-            });
-          }
-        }
-      }
+        createEmptyResources(delta.inserted, l10nType.usedCulturesDataset.getItems());
     }
-  })
+  });
 
-  l10nType.addCulture('base');
+  function createEmptyResources(tokens, cultures){
+    for (var i = 0, culture; culture = cultures[i]; i++)
+    {
+      for (var j = 0, token; token = tokens[j]; j++)
+      {
+        if (/string|key|index/.test(token.data.TokenType))
+          Resource({ 
+            Dictionary: property_CurrentDictionary.value, 
+            Token: token.data.Token,
+            Culture: culture.data.Culture
+          });
+      }
+    }    
+  }
 
   //
   // Layout
@@ -154,7 +141,7 @@
     template: resource('template/dictionaryListMatchInput.tmpl'),
     matchFilter: {
       node: dictionaryList,
-      startPoints: '^|\\.',
+      startPoints: '^|\\.|\/',
       textNodeGetter: 'tmpl.title'
     },
     binding: {
@@ -217,6 +204,7 @@
     },
     cultureList: function(data){
       property_CurrentCulture.set(data.currentCulture);
+      l10nType.addCulture(data.currentCulture);
     },
     
     cultureChanged: function(data){  
@@ -231,25 +219,48 @@
       }
     },
 
-    dictionaryResource: function(data){
+    /*dictionaryResource: function(data){
       if (property_CurrentToken.value)
       {  
         dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
         property_CurrentToken.reset();
       }
-    },
+    },*/
 
     token: function(data){
       property_CurrentDictionary.set(data.dictionaryName);
 
-      var dc = DictionaryCulture.get({ Dictionary: data.dictionaryName, Culture: property_CurrentCulture.value });
+      var dc = DictionaryCulture.get({ 
+        Dictionary: data.dictionaryName, 
+        Culture: property_CurrentCulture.value 
+      });
       if (!dc)
         l10nType.addCulture(property_CurrentCulture.value);
 
-      property_CurrentToken.set(data.selectedToken);
-      dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
+      
+      selectToken(data.selectedToken);
     }
   });  
+
+  function selectToken(token){
+    var resource = Resource({
+      Dictionary: property_CurrentDictionary.value,
+      Culture: property_CurrentCulture.value,
+      Token: token
+    });
+
+    dictionaryEditor.selectResource(resource);
+  }
+
+  /*dictionaryFile.addHandler({
+    update: function(){
+      if (currentToken)
+      {
+        selectToken(currentToken);
+        currentToken = null;
+      }
+    }
+  });*/
 
   //
   // exports

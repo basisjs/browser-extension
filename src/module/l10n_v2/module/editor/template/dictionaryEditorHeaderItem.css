@@ -1,0 +1,32 @@
+
+  #DictionaryEditor-Header .Culture-Wrapper .title
+  {
+    display: inline-block;
+  }
+
+  #DictionaryEditor-Header .Culture-Wrapper-Flag
+  {
+    width: 16px;
+    height: 11px;
+    display: inline-block;
+    margin-right: 5px;
+    background: url(img/flags2.png) no-repeat -1000px -1000px;
+  }
+
+  #DictionaryEditor-Header .deleteButton
+  {
+    float: right;
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+
+    overflow: hidden;
+    text-indent: -200px;
+    cursor: pointer;
+    background: url(img/delete_red_16x16.png) no-repeat center center;
+  }
+
+  #DictionaryEditor-Header .Culture-Wrapper.isBase .deleteButton
+  {
+    display: none;
+  }

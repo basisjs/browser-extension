@@ -1,0 +1,61 @@
+
+  .LocalizationPage
+  {
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+
+    -webkit-box-orient: vertical;
+    display: -webkit-box;
+  }
+
+
+  .Editor-Toolbar
+  {
+    border-bottom: 1px solid #B6BAC0;
+    padding: 0.5em;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .Editor-Box
+  {
+    -webkit-box-flex: 1;
+    position: relative;
+  }
+
+  .Editor-Box-Wrapper
+  {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  .Editor-Sidebar
+  {
+    width: 20%;
+    float: left;
+    height: 100%;
+    border-right: 1px solid #B6BAC0;
+    position: relative;
+  }
+
+  .Editor-Sidebar .Basis-Resizer
+  {
+    top: 0;
+    bottom: 0;
+    right: -3px;
+    width: 5px;
+  }
+
+  .Editor-Content
+  {
+    overflow: hidden;
+    height: 100%;
+    position: relative;
+  }
+
+
+
