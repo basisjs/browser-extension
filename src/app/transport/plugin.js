@@ -21,7 +21,7 @@
       this.port.postMessage({ action: 'appcpReady' });
     },
 
-    invoke: function(funcName){
+    invoke: function(funcName, onError){
       var args = basis.array.from(arguments, 1).map(JSON.stringify);
 
       inspectedWindow.eval(
@@ -30,8 +30,12 @@
         '    if (basis.appCP)\n' +
         '      basis.appCP.' + funcName + '(' + args.join(', ') + ');\n' +
         '    return true;\n' +
-        '  } catch(e){ console.warn(e.message, e); }\n' +
-        '})();'
+        '  } catch(e){ console.warn(e.message, e); return false }\n' +
+        '})();',
+        (onError && typeof onError == 'function' ? function(isSuccessful){
+          if (!isSuccessful)
+            onError();
+        } : undefined)
       );
     }    
   };
