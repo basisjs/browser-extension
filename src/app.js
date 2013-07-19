@@ -10,15 +10,17 @@
     app.transport.onMessage('startInspect', function(mode){
       mainMenu.item(mode).select();
     });
-    
-    mainMenu.setChildNodes([
-      resource('module/l10n/index.js').fetch(),
-      resource('module/templater/index.js').fetch(),
-      resource('module/warnings/index.js').fetch(),
-      resource('module/fileGraph/index.js').fetch()
-    ]);
 
-    mainMenu.selectPage();
+    app.transport.onMessage('version', function(version){
+      mainMenu.setChildNodes([
+        resource('module/l10n/index.js').fetch(),
+        resource('module/templater/index.js').fetch(),
+        resource('module/warnings/index.js').fetch(),
+        resource('module/fileGraph/index.js').fetch()
+      ], true);
+
+      mainMenu.selectPage();
+    });
   }
 
 
@@ -31,6 +33,15 @@
 
     // init interfaces
     app.transport.ready(basis.fn.runOnce(initMainMenu));
+
+    app.transport.ready(function(){
+      app.transport.invoke('getVersion', function(){
+        app.transport.message({
+          action: 'version', 
+          data: '{}'
+        });
+      });
+    });
 
     // add global key bindings
     domEvent.addGlobalHandler('keydown', function(event){
