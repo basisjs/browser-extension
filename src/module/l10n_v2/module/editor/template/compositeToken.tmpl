@@ -1,0 +1,23 @@
+<b:resource src="compositeToken.css"/>
+<b:define name="editMode" type="bool"/>
+<b:define name="type" type="enum" values="key index"/>
+
+<div class="composite-token {selected} {editMode} {type}">
+  <div class="composite-token-container">
+    <div{childNodesElement} class="Table-Row"/>
+    <div class="composite-token-title">
+      <span event-dblclick="edit">{title}</span>
+    </div>
+    <div class="composite-token-actions">
+      <div class="composite-token-action edit" event-click="edit"/>
+      <div class="composite-token-action delete" event-click="delete"/>
+    </div>
+  </div>
+  <div class="composite-token-editor">
+    <input{editor} type="text" event-keyup="keyup" event-blur="cancel"/>
+    <div class="composite-token-editor-actions">
+      <div class="composite-token-editor-action submit" event-mousedown="submit"/>
+      <div class="composite-token-editor-action cancel" event-click="cancel"/>
+    </div>
+  </div>
+</div>

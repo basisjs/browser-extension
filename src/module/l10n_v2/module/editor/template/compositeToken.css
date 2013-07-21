@@ -1,0 +1,107 @@
+.composite-token
+{
+  /*margin-top: -1px;
+  border-top: 1px solid #DDD;
+  border-bottom: 1px solid #DDD;*/
+  overflow: hidden;
+  position: relative;
+}
+.composite-token:hover
+{
+  background: #EEE;
+  background: rgba(225, 225, 225, 0.5);
+}
+.composite-token.selected,
+.composite-token.selected:hover
+{
+  background: #FAF9D2;
+  background: rgba(250, 249, 210, 0.65);
+}
+.composite-token-title
+{
+  overflow: hidden;
+  padding: 8px 8px 8px 20px;
+    -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
+
+.composite-token-actions
+{
+  display: none;
+  position: absolute;
+  right: 80%;
+  top: 10px;
+}
+.composite-token.key:hover .composite-token-actions
+{
+  display: inline-block;
+}
+.composite-token-action
+{
+  width: 12px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 10px;
+  opacity: 0.3;
+  cursor: pointer;
+}
+.composite-token-action:hover
+{
+  opacity: 1;  
+}
+.composite-token-action.edit
+{
+  background: url(img/edit.png) no-repeat center center;
+}
+.composite-token-action.delete
+{
+  background: url(img/delete.png) no-repeat center center;
+}
+
+
+.composite-token-editor
+{
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  top: 0;
+}
+.composite-token-editor input
+{
+  vertical-align: middle;
+  padding: 4px;
+  margin-left: 14px;
+  font-family: Tahoma;
+}
+.composite-token-editor-actions
+{
+  display: inline-block;
+  vertical-align: middle;
+}
+.composite-token-editor-action
+{
+  width: 12px;
+  height: 15px;
+  display: inline-block;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.composite-token-editor-action.submit
+{
+  background: url(img/ok.png) no-repeat center center;
+}
+.composite-token-editor-action.cancel
+{
+  background: url(img/delete.png) no-repeat center center;
+}
+.composite-token.editMode .composite-token-editor
+{
+  display: block;
+}
+
+.composite-token.editMode .composite-token-container
+{
+  visibility: hidden;
+}
+

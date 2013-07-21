@@ -31,7 +31,8 @@
       Dictionary: nsEntity.StringId,
       Token: nsEntity.StringId,
       TokenParent: String,
-      TokenType: String
+      TokenType: String,
+      Deleted: Boolean
     }
   });
 
@@ -70,7 +71,6 @@
     wrapper: Resource,
     rule: basis.getter('data.Dictionary')
   });
-
   var resourceDictionaryCultureSplit = new Split({
     source: Resource.all,
     wrapper: Resource,

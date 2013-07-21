@@ -1,0 +1,11 @@
+<b:style src="tokenGroup.css"/>
+<b:define name="type" type="enum" values="object string array"/>
+
+<div class="DictionaryEditor-Item-Group {type}">
+  <div class="DictionaryEditor-Item-Group-Title">
+    <span>{title}</span>
+
+  </div>
+  <div{childNodesElement}/>
+  <div class="DictionaryEditor-Item-Group-AddKey" event-click="addKey">add</div>
+</div>
