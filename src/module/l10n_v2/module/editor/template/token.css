@@ -1,34 +1,93 @@
+.token
+{
+  /*margin-top: -1px;
+  border-top: 1px solid #DDD;
+  border-bottom: 1px solid #DDD;*/
+  overflow: hidden;
+  position: relative;
+}
+.token:hover
+{
+  background: #EEE;
+  background: rgba(225, 225, 225, 0.5);
+}
+.token.selected,
+.token.selected:hover
+{
+  background: #FAF9D2;
+  background: rgba(250, 249, 210, 0.65);
+}
 
-  .DictionaryEditor-Item
-  {
-    margin-top: -1px;
-    border-top: 1px solid #DDD;
-    border-bottom: 1px solid #DDD;
-    overflow: hidden;
-    position: relative;
-  }
-  .DictionaryEditor-Item:hover
-  {
-    background: #EEE;
-    background: rgba(225, 225, 225, 0.5);
-  }
-  .DictionaryEditor-Item_selected,
-  .DictionaryEditor-Item_selected:hover
-  {
-    background: #FAF9D2;
-    background: rgba(250, 249, 210, 0.65);
-  }
+.token-title
+{
+  overflow: hidden;
+  padding: 8px;
+    -o-text-overflow: ellipsis;
+  text-overflow: ellipsis;
+}
 
-  .DictionaryEditor-Item-Title
-  {
-    overflow: hidden;
-    padding: 8px;
-      -o-text-overflow: ellipsis;
-    text-overflow: ellipsis;
-  }
+.token-actions
+{
+  display: none;
+  position: absolute;
+  right: 80%;
+  top: 10px;
+}
+.token:hover .token-actions
+{
+  display: inline-block;
+}
+.token-action
+{
+  width: 12px;
+  height: 15px;
+  display: inline-block;
+  margin-right: 10px;
+  opacity: 0.3;
+  cursor: pointer;
+}
+.token-action:hover
+{
+  opacity: 1;  
+}
+.token-action.edit
+{
+  background: url(img/edit.png) no-repeat center center;
+}
+.token-action.delete
+{
+  background: url(img/delete.png) no-repeat center center;
+}
 
-  .DictionaryEditor-Item_key .DictionaryEditor-Item-Title,
-  .DictionaryEditor-Item_index .DictionaryEditor-Item-Title
-  {
-    padding-left: 20px;
-  }
+
+/* markup switcher */
+.token-markup-switcher
+{
+  margin-left: 10px;
+  padding: 2px 4px;
+  
+  background: #c3c3c3;
+  border-radius: 2px;
+  
+  color: black;
+  font-size: 80%;
+  
+  cursor: pointer;
+  opacity: 0;
+}
+.token:hover .token-markup-switcher
+{
+  opacity: 0.5;
+}
+
+.token-markup-switcher:hover
+{
+  opacity: 1;
+}
+
+.token-markup-switcher.isMarkup
+{
+  color: white;
+  background: #AC9100;
+  opacity: 1 !important;
+}

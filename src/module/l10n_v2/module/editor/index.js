@@ -17,10 +17,18 @@
   var DictionaryCulture = l10nType.DictionaryCulture;
   var usedCulturesDataset = l10nType.usedCulturesDataset;
   var dictionaryCultureDataset = l10nType.dictionaryCultureDataset;
-  var resourceSplit = l10nType.resourceSplit;
+  var resourceSplitByToken = l10nType.resourceSplitByToken;
   var tokenDataset = l10nType.tokenDataset;
+  var tokenSplitByParent = l10nType.tokenSplitByParent;
 
-  var editorTokenDataset = new basis.data.dataset.Subset({
+
+  var compositeTokenDataset = new basis.data.dataset.Subset({
+    source: tokenDataset,
+    rule: function(object){
+      return /object|array|string/.test(object.data.TokenType) && !object.data.Deleted;
+    }
+  });
+  var optionTokenDataset = new basis.data.dataset.Subset({
     source: tokenDataset,
     rule: function(object){
       return /string|index|key/.test(object.data.TokenType) && !object.data.Deleted;
@@ -104,12 +112,6 @@
       template: resource('template/headerItem.tmpl'), 
       binding: {
         title: 'data:Culture',
-        isBase: {
-          events: 'update',
-          getter: function(object){
-            return object.data.Culture == 'base' ? 'isBase' : '';
-          }
-        },
         spriteX: {
           events: 'update delegateChanged',
           getter: function(object){
@@ -158,6 +160,43 @@
     }
   });
 
+
+  var tokenTypeSwitcher = basis.fn.lazyInit(function(){
+    return new basis.ui.popup.Popup({
+      childNodes: new basis.ui.Node({
+        autoDelegate: true,
+        template: resource('template/tokenTypeSwitcher.tmpl'),
+        action: {
+          switch: function(event){
+            var newType = event.sender.getAttribute('data-type');
+
+            var token = this.target;
+            if (token.data.TokenType != newType)
+            {
+              token.set('Deleted', true, true);
+              token.set('TokenType', newType, true);
+              token.set('Deleted', false, true);
+            }
+          }
+        }
+      }),
+      handler: {
+        targetChanged: function(){
+          if (!this.target)
+            this.hide();
+        },
+        show: function(){
+          this.delegate.typeSwitchMode = true;
+          this.delegate.updateBind('typeSwitchMode');
+        },
+        hide: function(){
+          this.delegate.typeSwitchMode = false;
+          this.delegate.updateBind('typeSwitchMode');
+          this.setDelegate();
+        }
+      }
+    });
+  });
 
   //
   // resource editor
@@ -231,15 +270,226 @@
     }
   });
 
+
+  var Token = basis.ui.Node.subclass({
+    typeSwitchMode: false,
+    editMode: false,
+    template: resource('template/newtoken.tmpl'),
+
+    binding: {
+      editMode: 'editMode',
+      title: 'data:Token',
+      type: 'data:TokenType',
+      isMarkup: 'data:IsMarkup',
+      isPlural: 'data:IsPlural',
+      typeSwitchMode: 'typeSwitchMode'
+    },
+
+    action: {
+      edit: function(){
+        if (this.data.TokenType != 'index')
+          this.setEditMode(true);
+      },
+      submit: function(event){
+        this.submit();
+        event.die();
+      },
+      cancel: function(){
+        this.reset();
+      },
+      keyup: function(event){
+        if (event.key == basis.dom.event.KEY.ESC)
+          this.reset();
+
+        if (event.key == basis.dom.event.KEY.ENTER)
+          this.submit();
+      },
+      togglePlural: function(){
+        this.target.set('IsPlural', !this.data.IsPlural, true);
+      },
+      toggleMarkup: function(){
+        this.target.set('IsMarkup', !this.data.IsMarkup, true);
+      },
+      switchType: function(){
+        tokenTypeSwitcher().setDelegate(this);
+        tokenTypeSwitcher().show(this.tmpl.switcher);
+      },
+      delete: function(){
+        if (this.target.modified && this.target.modified.Token === '')
+          this.target.destroy();
+        else
+          this.target.set('Deleted', true, true);
+      }
+    },
+    submit: function(){
+      var newToken = (/index|key/.test(this.data.TokenType) ? this.data.TokenParent + '.' : '') + this.tmpl.editor.value;
+
+      var token = l10nType.Token.get({
+        Dictionary: this.data.Dictionary,
+        Token: newToken
+      });
+
+      if (token)
+      {
+        if (token.data.Deleted)
+          token.set('Deleted', false, true);
+
+        this.target.destroy();
+        return;
+      }
+
+      this.target.set('Token', newToken, true);
+      this.setEditMode(false);
+    },
+    reset: function(){
+      var tokenKey = this.data.Token.split('.').pop();
+      if (tokenKey)
+        this.setEditMode(false);
+      else
+        this.target.destroy();
+    },
+    setEditMode: function(editMode){
+      this.editMode = editMode;
+      this.updateBind('editMode');
+      this.tmpl.editor.value = this.data.Token.split('.').pop();
+      this.tmpl.editor.focus();
+    }
+  });
+
+  var OptionToken = Token.subclass({
+    binding: {
+      title: {
+        events: 'update',
+        getter: function(object){
+          return object.data.Token.split('.').pop();
+        }
+      }
+    },
+    
+    childClass: ResourceEditor,
+    grouping: {
+      groupGetter: function(item){ 
+        return DictionaryCulture({
+          Culture: item.data.Culture,
+          Dictionary: item.data.Dictionary
+        });
+      },
+
+      dataSource: dictionaryCultureDataset,
+      sorting: getter('data.Position'),
+      
+      childClass: {
+        template: resource('template/resourceGroup.tmpl')
+      }
+    },  
+    
+    templateUpdate: function(object, delta){
+      if (this.data.Dictionary)
+        this.setDataSource(resourceSplitByToken.getSubset([this.data.Dictionary, this.data.Token].join('_'), true))
+    }
+  });
+
+  var ComplexToken = Token.subclass({
+    sorting: 'data.Token',
+    template: resource('template/complexToken.tmpl'),
+    childClass: OptionToken,
+    action: {
+      addKey: function(){
+        if (this.data.TokenType == 'object')
+        {
+          var token = l10nType.Token({
+            Dictionary: this.data.Dictionary,
+            Token: '',
+            TokenParent: this.data.Token,
+            TokenType: 'key'
+          });
+
+          var tokenNode = this.childNodes.search(token, 'delegate');
+          tokenNode.setEditMode(true);
+        }
+        else
+        {
+          var newToken = this.data.Token + '.' + (this.lastChild ? Number(this.lastChild.data.Token.split('.').pop()) + 1 : 0);
+          
+          var token = l10nType.Token.get({
+            Dictionary: this.data.Dictionary,
+            Token: newToken,
+            TokenParent: this.data.Token,
+            TokenType: 'index'
+          });
+
+          if (token)
+            token.set('Deleted', false, true);
+          else
+          {
+            var token = l10nType.Token({
+              Dictionary: this.data.Dictionary,
+              Token: '',
+              TokenType: 'index'
+            });
+            
+            token.update({
+              Token: newToken,
+              TokenParent: this.data.Token
+            }, true);
+          }
+        }
+      }      
+    },
+    event_update: function(object, delta){
+      Token.prototype.event_update.call(this, object, delta);
+      this.setDataSource(tokenSplitByParent.getSubset(this.data.Token, true));
+    },
+    init: function(){
+      Token.prototype.init.call(this);
+      this.setDataSource(tokenSplitByParent.getSubset(this.data.Token, true));
+    }
+  });
+
+  var IndexToken = OptionToken.subclass({
+    binding: {
+      title: 'index'
+    }    
+  });
+
+  var ArrayToken = ComplexToken.subclass({
+    childClass: IndexToken,
+
+    event_childNodesModified: function(object, delta){
+      ComplexToken.prototype.event_childNodesModified.apply(this, arguments);
+      for (var i = 0, child; child = this.childNodes[i]; i++)
+      {
+        child.index = i;
+        child.updateBind('title');
+      }
+    }
+  });
+
+  var TOKEN_TYPE_CLASS = {
+    'string': OptionToken,
+    'object': ComplexToken,
+    'array': ArrayToken
+  }
+
   //
   // token editor
   //
 
-  var TokenEditor = basis.ui.Node.subclass({
+  /*var TokenEditor = basis.ui.Node.subclass({
     template: resource('template/token.tmpl'),
 
     binding: {
-      title: 'data:Token'
+      title: 'data:Token',
+      isMarkup: 'data:IsMarkup'
+    },
+
+    action: {
+      toggleMarkup: function(){
+        this.target.set('IsMarkup', !this.data.IsMarkup);
+      },
+      delete: function(object){
+        this.target.set('Deleted', true, true);
+      }
     },
 
     childClass: ResourceEditor,
@@ -264,15 +514,30 @@
       if (this.data.Dictionary)
         this.setDataSource(resourceSplit.getSubset([this.data.Dictionary, this.data.Token].join('_'), true))
     }
-  });
+  });*/
 
   //
   // composite token editor
   //
+  /*var OptionTokenEditor = TokenEditor.subclass({
+    binding: {
+      type: 'data:TokenType',
+      title: {
+        events: 'update',
+        getter: function(object){
+          return object.data.Token.split('.').pop();
+        }
+      }
+    }
+  });
+
+  var IndexTokenEditor = OptionTokenEditor.subclass({
+    template: resource('template/indexToken.tmpl')
+  });
   
-  var CompositeTokenEditor = TokenEditor.subclass({
+  var KeyTokenEditor = OptionTokenEditor.subclass({
     editMode: false,
-    template: resource('template/compositeToken.tmpl'),
+    template: resource('template/keyToken.tmpl'),
     binding: {
       editMode: 'editMode',
       type: 'data:TokenType',
@@ -286,9 +551,6 @@
     action: {
       edit: function(){
         this.setEditMode(true);
-      },
-      delete: function(object){
-        this.remove();
       },
       submit: function(event){
         this.submit();
@@ -306,31 +568,36 @@
       }
     },
     submit: function(){
-      var tokenKey = this.data.TokenParent + '.' + this.tmpl.editor.value;
+      var newToken = this.data.TokenParent + '.' + this.tmpl.editor.value;
+
       var token = l10nType.Token.get({
         Dictionary: this.data.Dictionary,
-        Token: tokenKey
+        Token: newToken
       });
 
       if (token)
-        this.remove();
-      else
       {
-        var resources = l10nType.resourceSplit.getSubset([this.data.Dictionary, this.data.Token].join('_'), true).getItems();
-        for (var i = 0, res; res = resources[i]; i++)
-          res.set('Token', tokenKey, true);
-        
-        this.target.set('Token', tokenKey, true);
+        if (token.data.Deleted)
+          token.set('Deleted', false, true);
+
+        this.target.destroy();
+        return;
       }
 
+      var resourcesSet = l10nType.resourceSplit.getSubset([this.data.Dictionary, this.data.Token].join('_'));
+      var resources = resourcesSet && resourcesSet.getItems() || [];
+      for (var i = 0, res; res = resources[i]; i++)
+        res.set('Token', newToken, true);
+      
+      this.target.set('Token', newToken, true);
       this.setEditMode(false);
     },
     reset: function(){
-      this.tmpl.editor.value = this.data.Token.split('.').pop();
-      this.setEditMode(false);
-    },
-    remove: function(){
-      this.target.set('Deleted', true, true);
+      var tokenKey = this.data.Token.split('.').pop();
+      if (tokenKey)
+        this.setEditMode(false);
+      else
+        this.target.destroy();
     },
     setEditMode: function(editMode){
       this.editMode = editMode;
@@ -338,38 +605,54 @@
       this.tmpl.editor.value = this.data.Token.split('.').pop();
       this.tmpl.editor.focus();
     }
-  });
+  });*/
 
   //
   // composite token group
   //
-  var CompositTokenGroup = basis.ui.PartitionNode.subclass({
-    template: resource('template/tokenGroup.tmpl'),
+  /*var CompositeToken = basis.ui.PartitionNode.subclass({
+    template: resource('template/compositeToken.tmpl'),
     binding: {
       type: 'data:TokenType',
-      title: 'data:Token'
+      title: 'data:Token',
+      isPlural: 'data:IsPlural'
     },
     action: {
       addKey: function(){
-        var res = l10nType.Token({
+        var token = l10nType.Token({
           Dictionary: this.data.Dictionary,
-          Token: this.data.Token + '.newKey',
+          Token: this.data.Token + '.' + (this.data.TokenType == 'array' ? this.nodes.length : ''),
           TokenParent: this.data.Token,
-          TokenType: 'key'
+          TokenType: this.data.TokenType == 'object' ? 'key' : 'index'
         });
+        
+        if (token.data.Deleted)
+          token.set('Deleted', false, true);
 
-        var cultures = usedCulturesDataset.getItems();
-        for (var i = 0; i < cultures.length; i++)
+        if (this.data.TokenType == 'object')
         {
-          l10nType.Resource({
-            Dictionary: this.data.Dictionary,
-            Token: this.data.Token + '.newKey',
-            Culture: cultures[i].data.Culture
-          });
+          var tokenNode = dictionaryEditor.childNodes.search(token, 'delegate');
+          tokenNode.setEditMode(true);
         }
+      },
+      togglePlural: function(){
+        this.target.set('IsPlural', !this.data.IsPlural);
+      },
+      delete: function(){
+        var items = basis.array.from(this.nodes);
+        for (var i = 0, item; item = items[i]; i++)
+          item.target.set('Deleted', true, true);
+
+        this.target.set('Deleted', true, true);
       }
     }
-  });
+  });*/
+
+  /*var TOKEN_TYPE_CLASS = {
+    string: TokenEditor,
+    key: KeyTokenEditor,
+    index: IndexTokenEditor
+  }*/
 
   //
   // editor
@@ -384,25 +667,26 @@
 
     selection: true,
 
-    dataSource: editorTokenDataset,
+    dataSource: compositeTokenDataset,
     sorting: 'data.Token',
 
-    childClass: TokenEditor,
+    childClass: Token,
     childFactory: function(config){
-      var childClass = config.delegate.data.TokenType == 'string' ? TokenEditor : CompositeTokenEditor;
+      var childClass = TOKEN_TYPE_CLASS[config.delegate.data.TokenType];
       return new childClass(config);
     },
 
-    grouping: {
+    /*grouping: {
+      dataSource: compositeTokenDataset,
       groupGetter: function(object){
         return l10nType.Token({
           Dictionary: object.data.Dictionary,
           Token: object.data.TokenParent || object.data.Token
         })
       },
-      childClass: CompositTokenGroup,
+      childClass: CompositeToken,
       sorting: 'data.Token'
-    },
+    },*/
 
     selectResource: function(resource){
       var tokenItem = this.childNodes.search(resource.data.Token, 'data.Token');
@@ -412,7 +696,10 @@
 
         var resourceNode = tokenItem.childNodes.search(resource, 'delegate');
         if (resourceNode)
+        {
           resourceNode.satellite.memo.focus();
+          return resourceNode
+        }
       }
       else
         this.currentResource = resource;

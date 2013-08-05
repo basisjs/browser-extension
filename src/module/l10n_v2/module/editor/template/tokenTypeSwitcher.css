@@ -1,0 +1,20 @@
+.token-type-switcher__item
+{
+  padding: 5px 5px 5px 25px;
+  background: url(img/string.png) no-repeat 5px center;
+  cursor: pointer;
+}
+
+.token-type-switcher__item:hover
+{
+  background-color: #f8f8f8;
+}
+
+.token-type-switcher__item.object
+{
+  background-image: url(img/object.png);
+}
+.token-type-switcher__item.array
+{
+  background-image: url(img/array.png);
+}

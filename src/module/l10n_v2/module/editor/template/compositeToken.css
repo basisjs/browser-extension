@@ -1,28 +1,28 @@
 .composite-token
 {
-  /*margin-top: -1px;
+  margin-top: -1px;
   border-top: 1px solid #DDD;
-  border-bottom: 1px solid #DDD;*/
+  border-bottom: 1px solid #DDD;
   overflow: hidden;
   position: relative;
+  z-index: 1;
 }
-.composite-token:hover
+.composite-token__title
+{
+  padding: 8px;
+  /*margin-top: -1px;
+  border-top: 1px solid #DDD;*/
+}
+.composite-token__title:hover
 {
   background: #EEE;
-  background: rgba(225, 225, 225, 0.5);
+  background: rgba(225, 225, 225, 0.5);  
 }
-.composite-token.selected,
-.composite-token.selected:hover
+.composite-token_string .composite-token__title
 {
-  background: #FAF9D2;
-  background: rgba(250, 249, 210, 0.65);
-}
-.composite-token-title
-{
-  overflow: hidden;
-  padding: 8px 8px 8px 20px;
-    -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
+  position: absolute;
+  z-index: 2;
+  pointer-events: none;
 }
 
 .composite-token-actions
@@ -32,7 +32,7 @@
   right: 80%;
   top: 10px;
 }
-.composite-token.key:hover .composite-token-actions
+.composite-token:hover .composite-token-actions
 {
   display: inline-block;
 }
@@ -49,59 +49,64 @@
 {
   opacity: 1;  
 }
-.composite-token-action.edit
-{
-  background: url(img/edit.png) no-repeat center center;
-}
 .composite-token-action.delete
 {
   background: url(img/delete.png) no-repeat center center;
 }
 
-
-.composite-token-editor
+.composite-token_string .composite-token__title,
+.composite-token_string .composite-token__actions
 {
   display: none;
-  position: absolute;
-  z-index: 1;
-  width: 100%;
-  top: 0;
 }
-.composite-token-editor input
+
+.composite-token__addkey
 {
-  vertical-align: middle;
-  padding: 4px;
-  margin-left: 14px;
-  font-family: Tahoma;
-}
-.composite-token-editor-actions
-{
+  padding: 8px 0 8px 20px;
   display: inline-block;
-  vertical-align: middle;
-}
-.composite-token-editor-action
-{
-  width: 12px;
-  height: 15px;
-  display: inline-block;
-  margin-left: 10px;
+  color: #6f70d1;
+  text-decoration: underline;
   cursor: pointer;
 }
-.composite-token-editor-action.submit
+.composite-token_string .composite-token__addkey
 {
-  background: url(img/ok.png) no-repeat center center;
-}
-.composite-token-editor-action.cancel
-{
-  background: url(img/delete.png) no-repeat center center;
-}
-.composite-token.editMode .composite-token-editor
-{
-  display: block;
+  display: none;
 }
 
-.composite-token.editMode .composite-token-container
+/* plural switcher */
+.composite-token-plural-switcher
 {
-  visibility: hidden;
+  margin-left: 10px;
+  padding: 2px 4px;
+  
+  background: #c3c3c3;
+  border-radius: 2px;
+  
+  color: black;
+  font-size: 80%;
+  
+  cursor: pointer;
+  opacity: 0;
+}
+.composite-token:hover .composite-token-plural-switcher
+{
+  opacity: 0.5;
 }
 
+.composite-token-plural-switcher:hover
+{
+  opacity: 1;
+}
+
+.composite-token-plural-switcher.isPlural
+{
+  color: white;
+  background: green;
+  opacity: 1 !important;
+}
+
+.composite-token_string .composite-token-plural-switcher,
+.composite-token_object .composite-token-plural-switcher
+{
+  display: none;
+}

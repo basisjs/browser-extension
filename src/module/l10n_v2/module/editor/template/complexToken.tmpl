@@ -1,0 +1,27 @@
+<b:style src="complexToken.css"/>
+
+<b:include src="newtoken.tmpl">
+  <b:append ref="element">
+    <!--{childNodesHere}-->
+    <div class="token-addkey" event-click="addKey">add</div>
+  </b:append>
+</b:include>
+
+<!--<div class="token token_{type} {editMode}">
+  <div class="token-editor">
+    <input{editor} type="text" event-keyup="keyup" event-blur="cancel"/>
+  </div>  
+
+  <div class="token-title">
+    <span>{title}</span>
+    <span class="token-plural-switcher {isPlural}" event-click="togglePlural">plural</span>
+  </div>
+  <div class="token-actions">
+    <div class="token-action edit" event-click="edit"/>
+    <div class="token-action delete" event-click="delete"/>
+  </div>
+
+  <div{childNodesElement}/>
+  
+  <div class="token-addkey" event-click="addKey">add</div>
+</div>-->

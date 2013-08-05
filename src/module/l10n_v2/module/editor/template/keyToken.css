@@ -1,0 +1,58 @@
+.token-key
+{
+  border: none;
+}
+
+.token-key .token-title
+{
+  padding-left: 20px;
+  -webkit-user-select: none;
+}
+
+.token-editor
+{
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  top: 0;
+}
+.token-editor input
+{
+  vertical-align: middle;
+  padding: 4px;
+  margin-left: 14px;
+  font-family: Tahoma;
+  width: 200px;
+}
+.token-editor-actions
+{
+  display: inline-block;
+  vertical-align: middle;
+}
+.token-editor-action
+{
+  width: 12px;
+  height: 15px;
+  display: inline-block;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.token-editor-action.submit
+{
+  background: url(img/ok.png) no-repeat center center;
+}
+.token-editor-action.cancel
+{
+  background: url(img/delete.png) no-repeat center center;
+}
+.token.editMode .token-editor
+{
+  display: block;
+}
+
+.token.editMode .token-container
+{
+  visibility: hidden;
+}
+

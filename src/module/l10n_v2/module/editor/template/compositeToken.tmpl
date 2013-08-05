@@ -1,23 +1,15 @@
-<b:resource src="compositeToken.css"/>
-<b:define name="editMode" type="bool"/>
-<b:define name="type" type="enum" values="key index"/>
+<b:style src="compositeToken.css"/>
+<b:define name="type" type="enum" values="object string array"/>
+<b:define name="isPlural" type="bool"/>
 
-<div class="composite-token {selected} {editMode} {type}">
-  <div class="composite-token-container">
-    <div{childNodesElement} class="Table-Row"/>
-    <div class="composite-token-title">
-      <span event-dblclick="edit">{title}</span>
-    </div>
-    <div class="composite-token-actions">
-      <div class="composite-token-action edit" event-click="edit"/>
-      <div class="composite-token-action delete" event-click="delete"/>
-    </div>
+<div class="composite-token composite-token_{type}">
+  <div class="composite-token__title">
+    <span>{title}</span>
+    <span class="composite-token-plural-switcher {isPlural}" event-click="togglePlural">plural</span>
   </div>
-  <div class="composite-token-editor">
-    <input{editor} type="text" event-keyup="keyup" event-blur="cancel"/>
-    <div class="composite-token-editor-actions">
-      <div class="composite-token-editor-action submit" event-mousedown="submit"/>
-      <div class="composite-token-editor-action cancel" event-click="cancel"/>
-    </div>
+  <div class="composite-token-actions">
+    <div class="composite-token-action delete" event-click="delete"/>
   </div>
+  <div{childNodesElement}/>
+  <div class="composite-token__addkey" event-click="addKey">add</div>
 </div>

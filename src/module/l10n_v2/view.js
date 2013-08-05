@@ -14,7 +14,6 @@
   //var dictionaries;
 
   var l10nType = resource('type.js')();
-  app.l10nType = l10nType;
 
   var Dictionary = l10nType.Dictionary;
   var Token = l10nType.Token;
@@ -22,97 +21,8 @@
   var Culture = l10nType.Culture;
   var DictionaryCulture = l10nType.DictionaryCulture;
 
+  var property_CurrentDictionary  = l10nType.currentDictionary;
   var property_CurrentCulture = new basis.data.property.Property(null);
-  var property_CurrentDictionary = new basis.data.property.Property(null);
-  var property_CurrentToken = new basis.data.property.Property(null);
-
-  var dictionaryFile = new basis.data.DataObject({
-    active: true,
-    handler: {
-      update: function(){
-        l10nType.processDictionaryData(this.data.filename, JSON.parse(this.data.content));
-      }
-    }
-  });
-
-  // current dictionary changed
-  property_CurrentDictionary.addHandler({
-    change: function(property){
-      var value = property.value;
-
-      dictionaryFile.setDelegate(app.type.File(value));
-
-      l10nType.dictionaryCultureDataset.setSource(value ? l10nType.dictionaryCultureSplit.getSubset(value, true) : null);
-      l10nType.tokenDataset.setSource(value ? l10nType.tokenSplit.getSubset(value, true) : null);
-
-      if (value)
-      {
-        var cultures = l10nType.usedCulturesDataset.getItems();
-        var tokens = l10nType.tokenDataset.getItems();
-        createEmptyResources(tokens, cultures);
-
-        for (var i = 0, culture; culture = cultures[i]; i++)
-        {
-          l10nType.DictionaryCulture({
-            Dictionary: value,
-            Culture: culture.data.Culture,
-            Position: i
-          });
-        }
-      }
-
-      l10nType.resourceDictionaryCultureMerge.clear();
-
-      if (value)
-      {
-        var cultures = l10nType.usedCulturesDataset.getItems();
-        for (var i = 0, culture; culture = cultures[i]; i++)
-          l10nType.resourceDictionaryCultureMerge.addSource(l10nType.resourceDictionaryCultureSplit.getSubset(value + '_' + culture.data.Culture, true));
-      }
-
-      l10nType.resourceModifiedDataset.setSource(value ? l10nType.resourceModifiedSplit.getSubset(value, true) : null);
-    }
-  });
-
-  l10nType.usedCulturesDataset.addHandler({
-    datasetChanged: function(object, delta){
-      if (delta.inserted)
-      {
-        var tokens = l10nType.tokenDataset.getItems();
-        var cultures = delta.inserted;
-        createEmptyResources(tokens, cultures);
-
-        for (var i = 0, culture; culture = cultures[i]; i++)
-          l10nType.resourceDictionaryCultureMerge.addSource(l10nType.resourceDictionaryCultureSplit.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
-      }
-        
-      if (delta.deleted)
-        for (var i = 0, culture; culture = delta.deleted[i]; i++)
-          l10nType.resourceDictionaryCultureMerge.removeSource(l10nType.resourceDictionaryCultureSplit.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
-    }
-  });
-
-  l10nType.tokenDataset.addHandler({
-    datasetChanged: function(object, delta){
-      if (delta.inserted)
-        createEmptyResources(delta.inserted, l10nType.usedCulturesDataset.getItems());
-    }
-  });
-
-  function createEmptyResources(tokens, cultures){
-    for (var i = 0, culture; culture = cultures[i]; i++)
-    {
-      for (var j = 0, token; token = tokens[j]; j++)
-      {
-        if (/string|key|index/.test(token.data.TokenType))
-          Resource({ 
-            Dictionary: property_CurrentDictionary.value, 
-            Token: token.data.Token,
-            Culture: culture.data.Culture
-          });
-      }
-    }    
-  }
 
   //
   // Layout
@@ -237,7 +147,6 @@
       if (!dc)
         l10nType.addCulture(property_CurrentCulture.value);
 
-      
       selectToken(data.selectedToken);
     }
   });  
@@ -251,16 +160,6 @@
 
     dictionaryEditor.selectResource(resource);
   }
-
-  /*dictionaryFile.addHandler({
-    update: function(){
-      if (currentToken)
-      {
-        selectToken(currentToken);
-        currentToken = null;
-      }
-    }
-  });*/
 
   //
   // exports
