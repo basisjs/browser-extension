@@ -650,11 +650,14 @@
 
           for (var key in values)
           {
+            var tokenKey = token + (key ? '.' + key : '');
+            
             tokens.push({ 
               Dictionary: dictionary, 
-              Token: token + (key ? '.' + key : ''),
+              Token: tokenKey,
               TokenParent: key ? token : '',
-              TokenType: tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : '')
+              TokenType: tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : ''),
+              IsMarkup: tokenTypes[tokenKey] == 'markup'
             });
 
             resources.push({
