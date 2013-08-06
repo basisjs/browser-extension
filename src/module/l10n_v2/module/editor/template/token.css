@@ -1,11 +1,18 @@
 .token
 {
-  /*margin-top: -1px;
-  border-top: 1px solid #DDD;
-  border-bottom: 1px solid #DDD;*/
   overflow: hidden;
   position: relative;
 }
+
+.token_string,
+.token_object,
+.token_array
+{
+  margin-top: -1px;
+  border-top: 1px solid #DDD;
+  border-bottom: 1px solid #DDD;
+}
+
 .token:hover
 {
   background: #EEE;
@@ -26,14 +33,20 @@
   text-overflow: ellipsis;
 }
 
+.token_index .token-title,
+.token_key .token-title
+{
+  padding-left: 20px;
+}
+
 .token-actions
 {
   display: none;
   position: absolute;
   right: 80%;
-  top: 10px;
+  top: 7px;
 }
-.token:hover .token-actions
+.token:hover > .token-actions
 {
   display: inline-block;
 }
@@ -42,9 +55,11 @@
   width: 12px;
   height: 15px;
   display: inline-block;
+  vertical-align: middle;
   margin-right: 10px;
   opacity: 0.3;
   cursor: pointer;
+  background: url(img/edit.png) no-repeat center center;
 }
 .token-action:hover
 {
@@ -52,11 +67,39 @@
 }
 .token-action.edit
 {
-  background: url(img/edit.png) no-repeat center center;
+  background-image: url(img/edit.png);
 }
 .token-action.delete
 {
-  background: url(img/delete.png) no-repeat center center;
+  background-image: url(img/delete.png);
+}
+.token-action.type
+{
+  background-image: url(img/string.png);
+}
+.token_object .token-action.type
+{
+  background-image: url(img/object.png);
+}
+.token_array .token-action.type
+{
+  background-image: url(img/array.png); 
+}
+
+.token_index .token-action.edit,
+.token_index .token-action.type,
+.token_key .token-action.type
+{
+  display: none;
+}
+
+.token.typeSwitchMode > .token-actions
+{
+  display: inline-block;
+}
+.token.typeSwitchMode > .token-actions .token-action.type
+{
+  opacity: 1;
 }
 
 
@@ -75,7 +118,7 @@
   cursor: pointer;
   opacity: 0;
 }
-.token:hover .token-markup-switcher
+.token:hover > .token-title .token-markup-switcher
 {
   opacity: 0.5;
 }
@@ -91,3 +134,102 @@
   background: #AC9100;
   opacity: 1 !important;
 }
+
+.token_object > .token-title .token-markup-switcher,
+.token_array > .token-title .token-markup-switcher
+{
+  display: none;
+}
+
+/* plural switcher */
+.token-plural-switcher
+{
+  margin-left: 10px;
+  padding: 2px 4px;
+  
+  background: #c3c3c3;
+  border-radius: 2px;
+  
+  color: black;
+  font-size: 80%;
+  
+  cursor: pointer;
+  opacity: 0;
+
+  display: none;
+}
+.token:hover .token-plural-switcher
+{
+  opacity: 0.5;
+}
+
+.token-plural-switcher:hover
+{
+  opacity: 1;
+}
+
+.token-plural-switcher.isPlural
+{
+  color: white;
+  background: green;
+  opacity: 1 !important;
+}
+
+.token_array > .token-title .token-plural-switcher
+{
+  display: inline;
+}
+
+/* token editor */
+.token-editor
+{
+  display: none;
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  top: 0;
+}
+.token-editor input
+{
+  vertical-align: middle;
+  padding: 4px;
+  margin-left: 2px;
+  font-family: Tahoma;
+  width: 200px;
+}
+.token_index .token-editor input,
+.token_key .token-editor input
+{
+  margin-left: 14px;
+}
+.token-editor-actions
+{
+  display: inline-block;
+  vertical-align: middle;
+}
+.token-editor-action
+{
+  width: 12px;
+  height: 15px;
+  display: inline-block;
+  margin-left: 10px;
+  cursor: pointer;
+}
+.token-editor-action.submit
+{
+  background: url(img/ok.png) no-repeat center center;
+}
+.token-editor-action.cancel
+{
+  background: url(img/delete.png) no-repeat center center;
+}
+.token.editMode .token-editor
+{
+  display: block;
+}
+
+.token.editMode .token-editor ~ * 
+{
+  visibility: hidden;
+}
+

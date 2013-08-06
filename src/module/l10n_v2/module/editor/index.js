@@ -274,7 +274,7 @@
   var Token = basis.ui.Node.subclass({
     typeSwitchMode: false,
     editMode: false,
-    template: resource('template/newtoken.tmpl'),
+    template: resource('template/token.tmpl'),
 
     binding: {
       editMode: 'editMode',
