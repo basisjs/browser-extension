@@ -39,16 +39,26 @@
   padding-left: 20px;
 }
 
+.token-caption
+{
+  float: left;
+}
+
 .token-actions
 {
-  display: none;
-  position: absolute;
+  visibility: hidden;
+  /*position: absolute;
   right: 80%;
   top: 7px;
+  background: white;
+  padding: 0 5px;
+  margin-right: 5px;*/
+  float: right;
 }
-.token:hover > .token-actions
+.token:hover > .token-title .token-actions
 {
-  display: inline-block;
+  /*display: inline-block;*/
+  visibility: visible;
 }
 .token-action
 {
@@ -60,6 +70,10 @@
   opacity: 0.3;
   cursor: pointer;
   background: url(img/edit.png) no-repeat center center;
+}
+.token-action:last-child
+{ 
+  margin-right: 0;
 }
 .token-action:hover
 {

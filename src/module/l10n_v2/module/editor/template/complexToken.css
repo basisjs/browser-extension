@@ -6,3 +6,8 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.complex-token > .token-title
+{
+  margin-right: 80%;
+}

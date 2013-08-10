@@ -16,13 +16,17 @@
   
   <div{childNodesElement} class="Table-Row"/>
   <div class="token-title" event-dblclick="edit">
-    <span >{title}</span>
-    <span class="token-markup-switcher {isMarkup}" event-click="toggleMarkup">markup</span>
-    <span class="token-plural-switcher {isPlural}" event-click="togglePlural">plural</span>
+    <div class="token-caption">
+      <span >{title}</span>
+      <span class="token-markup-switcher {isMarkup}" event-click="toggleMarkup">markup</span>
+      <span class="token-plural-switcher {isPlural}" event-click="togglePlural">plural</span>
+    </div>
+    
+    <div class="token-actions">
+      <div{switcher} class="token-action type" event-click="switchType"></div>
+      <div class="token-action edit" event-click="edit"/>
+      <div class="token-action delete" event-click="delete"/>
+    </div>    
   </div>
-  <div class="token-actions">
-    <div{switcher} class="token-action type" event-click="switchType"></div>
-    <div class="token-action edit" event-click="edit"/>
-    <div class="token-action delete" event-click="delete"/>
-  </div>
+
 </div>

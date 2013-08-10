@@ -122,6 +122,13 @@
       return object.data.Dictionary + '_' + object.data.Token;
     }
   });
+  var resourceAllSplitByToken = new Split({
+    source: Resource.all,
+    wrapper: Resource,
+    rule: function(object){
+      return object.data.Dictionary + '_' + object.data.Token;
+    }    
+  });
 
   var tokenDataset = new Subset({});
   var tokenSplit = new Split({
@@ -140,113 +147,6 @@
     })
   });
   
-
-  //
-  // modified
-  //
-  var MODIFIED_HANDLER = {
-    datasetChanged: function(object, delta){
-      if (delta.inserted)
-        for (var i = 0, item; item = delta.inserted[i]; i++)
-        {
-          item.addHandler(MODIFIED_ITEM_HANDLER)
-          var dict = Dictionary.get(item.data.Dictionary);
-          if (dict)
-            dict.set('ModificationCount', dict.data.ModificationCount + 1, true);
-        }
-
-      if (delta.deleted)
-        for (var i = 0, item; item = delta.deleted[i]; i++)
-        {
-          item.removeHandler(MODIFIED_ITEM_HANDLER);
-          
-          var dict = Dictionary.get(item.data.Dictionary);
-          if (dict)
-            dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
-        }      
-    }
-  }
-  var MODIFIED_ITEM_HANDLER = {
-    destroy: function(){
-      var dict = Dictionary.get(this.data.Dictionary);
-      if (dict)
-        dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
-    }
-  }
-
-  var tokenModified = new Subset({
-    source: Token.all,
-    handler: MODIFIED_HANDLER,
-    rule: function(object){
-      return !!object.modified;
-    },
-  });
-
-  var resourceModified = new Subset({
-    source: Resource.all,
-    handler: MODIFIED_HANDLER,
-    rule: function(object){
-      return !!object.modified;
-    }
-  });
-
-  // observe resource changes datasets
-  /*var resourceModifiedSubset = new Subset({ 
-    source: Resource.all,
-    ruleEvents: { 
-      rollbackUpdate: true,
-      update: true
-    },
-    rule: function(object){
-      return !!object.modified;
-    }
-  });
-  resourceModifiedSubset.addHandler({
-    datasetChanged: function(object, delta){
-      var objects = [].concat(delta.inserted || [], delta.deleted || []);
-      for (var i = 0, object; object = objects[i]; i++)
-        Dictionary(object.data.Dictionary).set('ResourceModified', resourceModifiedSplit.getSubset(object.data.Dictionary, true).itemCount > 0, true);
-    }
-  });
-  var resourceModifiedSplit = new Split({
-    source: resourceModifiedSubset,
-    wrapper: Resource,
-    rule: getter('data.Dictionary')
-  });
-  var resourceModifiedDataset = new Subset({
-    rule: basis.fn.$true
-  });*/
-
-  //
-  // extend Dictionary
-  //
-  var isServerOnline = false;
-
-  Object.extend(Dictionary.entityType.entityClass.prototype, {
-    save: function(){
-      if (isServerOnline && this.modified && this.state != STATE.PROCESSING)
-      {
-        /*var modifiedCultures = {};
-        var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
-        for (var i = 0, resource; resource = modifiedResources[i]; i++) 
-          modifiedCultures[resource.data.Culture] = true;
-
-        var cultureList = [];
-        for (var i in modifiedCultures)
-          cultureList.push(i);*/
-
-        app.transport.invoke('saveDictionary', this.data.Dictionary, this.data.Location, cultureList);
-        this.setState(STATE.PROCESSING);
-      }
-    },
-    reset: function(){
-      this.setState(STATE.READY);
-      /*resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
-        token.rollback();
-      });*/
-    }
-  });
-
   //
   // add/remove culture
   //
@@ -421,7 +321,7 @@
             }
           }
 
-          var resourcesSet = resourceSplitByToken.getSubset([this.data.Dictionary, oldToken].join('_'));
+          var resourcesSet = resourceAllSplitByToken.getSubset([this.data.Dictionary, oldToken].join('_'));
           var resources = resourcesSet && resourcesSet.getItems() || [];
           for (var i = 0, res; res = resources[i]; i++)
             res.set('Token', newToken, true);
@@ -440,11 +340,16 @@
     for (var i = 0, culture; culture = cultures[i]; i++)
     {
       if (/string|key|index/.test(token.data.TokenType))
-        Resource({ 
+      {
+        var resourceId = { 
           Dictionary: property_CurrentDictionary.value, 
           Token: token.data.Token,
           Culture: culture.data.Culture
-        });
+        }
+        var resource = Resource.get(resourceId);
+        if (!resource)
+          Resource(resourceId);
+      }
     }    
   }    
 
@@ -465,6 +370,106 @@
       }
     }    
   }
+
+  //
+  // modified
+  //
+  var MODIFIED_HANDLER = {
+    datasetChanged: function(object, delta){
+      debugger;
+      if (delta.inserted)
+        for (var i = 0, item; item = delta.inserted[i]; i++)
+        {
+          item.addHandler(MODIFIED_ITEM_HANDLER)
+          var dict = Dictionary.get(item.data.Dictionary);
+          if (dict)
+            dict.set('ModificationCount', dict.data.ModificationCount + 1, true);
+        }
+
+      if (delta.deleted)
+        for (var i = 0, item; item = delta.deleted[i]; i++)
+        {
+          item.removeHandler(MODIFIED_ITEM_HANDLER);
+          
+          var dict = Dictionary.get(item.data.Dictionary);
+          if (dict)
+            dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
+        }      
+    }
+  }
+  var MODIFIED_ITEM_HANDLER = {
+    destroy: function(){
+      var dict = Dictionary.get(this.data.Dictionary);
+      if (dict)
+        dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
+    }
+  }
+
+  var tokenModified = new Subset({
+    source: Token.all,
+    handler: MODIFIED_HANDLER,
+    ruleEvents: {
+      update: true,
+      rollbackUpdate: true
+    },
+    rule: function(object){
+      return !!object.modified;
+    }
+  });
+
+  var resourceModified = new Subset({
+    source: Resource.all,
+    handler: MODIFIED_HANDLER,
+    ruleEvents: {
+      update: true,
+      rollbackUpdate: true
+    },
+    rule: function(object){
+      return !!object.modified && (object.modified.Value || object.data.Value);
+    }
+  });  
+  
+  var tokenModifiedSplit = new Split({
+    source: tokenModified,
+    wrapper: Token,
+    rule: 'data.Dictionary'
+  });
+
+  var resourceModifiedSplit = new Split({
+    source: resourceModified,
+    wrapper: Resource,
+    rule: 'data.Dictionary'
+  });  
+
+
+  //
+  // extend Dictionary
+  //
+  var isServerOnline = false;
+
+  Object.extend(Dictionary.entityType.entityClass.prototype, {
+    save: function(){
+      if (isServerOnline && this.modified && this.state != STATE.PROCESSING)
+      {
+        /*var modifiedCultures = {};
+        var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
+        for (var i = 0, resource; resource = modifiedResources[i]; i++) 
+          modifiedCultures[resource.data.Culture] = true;
+
+        var cultureList = [];
+        for (var i in modifiedCultures)
+          cultureList.push(i);*/
+
+        app.transport.invoke('saveDictionary', this.data.Dictionary, this.data.Location, cultureList);
+        this.setState(STATE.PROCESSING);
+      }
+    },
+    reset: function(){
+      this.setState(STATE.READY);
+      tokenModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(basis.getter('rollback()'));
+      resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(basis.getter('rollback()'));
+    }
+  });
 
   //
   //load resource for current dictionary and added culture
