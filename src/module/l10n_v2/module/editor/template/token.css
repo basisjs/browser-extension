@@ -107,11 +107,11 @@
   display: none;
 }
 
-.token.typeSwitchMode > .token-actions
+.token.typeSwitchMode > .token-title .token-actions
 {
-  display: inline-block;
+  visibility: visible;
 }
-.token.typeSwitchMode > .token-actions .token-action.type
+.token.typeSwitchMode > .token-title .token-actions .token-action.type
 {
   opacity: 1;
 }

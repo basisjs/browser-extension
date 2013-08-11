@@ -66,30 +66,6 @@
     }
   });
 
-  //
-  // Datasets
-  //
-  /*var resourceDictionarySplit = new Split({
-    source: Resource.all,
-    wrapper: Resource,
-    rule: basis.getter('data.Dictionary')
-  });
-  var resourceDictionaryCultureSplit = new Split({
-    source: Resource.all,
-    wrapper: Resource,
-    rule: function(object){
-      return object.data.Dictionary + '_' + object.data.Culture;
-    }
-  });
-  var resourceDictionaryCultureMerge = new Merge({});
-  var resourceSplit = new Split({
-    source: resourceDictionaryCultureMerge,
-    wrapper: Resource,
-    rule: function(object){
-      return object.data.Dictionary + '_' + object.data.Token;
-    }
-  });*/
-
   // dictionary culture
   var dictionaryCultureSplit = new Split({
     source: DictionaryCulture.all,
@@ -209,14 +185,21 @@
   //
   var property_CurrentDictionary = new basis.data.property.Property(null);
 
-  var dictionaryFile = new basis.data.DataObject({
+  /*var dictionaryFile = new basis.data.DataObject({
     active: true,
     handler: {
       update: function(){
-        processDictionaryFile(this.data.filename, JSON.parse(this.data.content));
+        if (!this.data.content)
+          return;
+
+        var data = JSON.parse(this.data.content) || {};
+        var tokenTypes = data['_meta'] && data['_meta']['type'];
+        delete data['_meta'];
+        
+        processDictionary(this.data.filename, data, tokenTypes);
       }
     }
-  });
+  });*/
 
   // current dictionary changed
   property_CurrentDictionary.addHandler({
@@ -226,14 +209,14 @@
       // load dictionary data
       if (value)
       {
-        dictionaryFile.setDelegate(app.type.File(value));
+        //dictionaryFile.setDelegate(app.type.File.get(value));
         app.transport.invoke('loadDictionaryTokens', value);      
       }
 
       // prepare collections
       dictionaryCultureDataset.setSource(value ? dictionaryCultureSplit.getSubset(value, true) : null);
       tokenDataset.setSource(value ? tokenSplit.getSubset(value, true) : null);
-      //resourceDataset.setSource(value ? resourceSplit.getSubset(value, true) : '')
+
       resourceDictionaryCultureMerge.clear();      
 
       if (value)
@@ -330,8 +313,15 @@
         createEmptyResource(this);
       }
 
-      if ('TokenType' in delta && this.data.TokenType == 'string')
-        createEmptyResource(this);
+      if ('TokenType' in delta)
+      {
+        if (this.data.TokenType == 'string')
+          createEmptyResource(this);
+
+        // hack: remove from list and paste again to change token node class
+        this.set('Deleted', true, true);
+        this.set('Deleted', false, true);
+      }
     }
   }
 
@@ -376,7 +366,6 @@
   //
   var MODIFIED_HANDLER = {
     datasetChanged: function(object, delta){
-      debugger;
       if (delta.inserted)
         for (var i = 0, item; item = delta.inserted[i]; i++)
         {
@@ -451,16 +440,7 @@
     save: function(){
       if (isServerOnline && this.modified && this.state != STATE.PROCESSING)
       {
-        /*var modifiedCultures = {};
-        var modifiedResources = resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems();
-        for (var i = 0, resource; resource = modifiedResources[i]; i++) 
-          modifiedCultures[resource.data.Culture] = true;
-
-        var cultureList = [];
-        for (var i in modifiedCultures)
-          cultureList.push(i);*/
-
-        app.transport.invoke('saveDictionary', this.data.Dictionary, this.data.Location, cultureList);
+        app.transport.invoke('saveDictionary', exportDictionary(this.data.Dictionary));
         this.setState(STATE.PROCESSING);
       }
     },
@@ -471,162 +451,96 @@
     }
   });
 
-  //
-  //load resource for current dictionary and added culture
-  //
-  /*var resourcesLoaded = {};
-  
-  dictionaryCultureDataset.addHandler({
-    datasetChanged: function(object, delta){
-      if (delta.inserted)
-        for (var i = 0, dictCulture; dictCulture = delta.inserted[i]; i++)
-        {
-          var key = dictCulture.data.Dictionary + '_' + dictCulture.data.Culture;
-          if (!resourcesLoaded[key])
-          {
-            app.transport.invoke('loadDictionaryResource', dictCulture.data.Dictionary, dictCulture.data.Culture);
-            resourcesLoaded[key] = true;
-          }
-        }
-    }
-  });*/
-
-  //
-  // get dictionaries list from appProfile
-  //
-  /*var appProfile = app.type.AppProfile();
-
-  appProfile.addHandler({
-    targetChanged: function(object){
-      if (object.data.l10n)
-        processDictionaries(object.data.l10n);
-    },
-    update: function(object, delta){
-      if (object.data.l10n)
-        processDictionaries(object.data.l10n);
-    }
-  });
-  
-  if (appProfile.data.l10n)
-    processDictionaries(appProfile.data.l10n);
-
-  function processDictionaries(data){
-    for (var dictName in data) {
-      Dictionary({
-        Dictionary: dictName,
-        Location: data[dictName].path
-      });
-
-      processDictionaryData(dictName, data[dictName].tokens);
-    }
-  }*/
-
-  //
-  // process resources
-  //
-  /*function processDictionaryData(dictionary, culture, data){
-    var resource;
-    var tokens = [];
-    var resources = [];    
+  function exportDictionary(dictionary){
+    var tokens = tokenSplit.getSubset(dictionary, true).getItems();
+    var cultures = Culture.all.getItems().map(basis.getter('data.Culture'));
     
-    for (var token in data)
+    var tokenKeys = [];
+    var tokenTypes = {};
+    var cultureValues = {};
+    for (var i = 0, culture; culture = cultures[i]; i++)
+      cultureValues[culture] = {};
+
+    for (var i = 0, token; token = tokens[i]; i++)
     {
-      var value = data[token];
-      var tokenType = Array.isArray(value) ? 'array' : (typeof value == 'object' ? 'object' : 'string');
+      if (token.data.Deleted)
+        continue;
 
-      var existingToken = Token.get({
-        Dictionary: dictionary, 
-        Token: token
-      });
+      tokenKeys.push(token.data.Token);
 
-      if (!existingToken || existingToken.data.TokenType == 'string')
+      if (token.data.IsPlural)
+        tokenTypes[token.data.Token] = 'plural';
+
+      if (token.data.IsMarkup)
+        tokenTypes[token.data.Token] = 'markup';
+
+      if (/object|array/.test(token.data.TokenType))
       {
-        tokens.push({ 
-          Dictionary: dictionary, 
-          Token: token,
-          TokenType: tokenType
-        });
+        /*for (var j = 0, culture; culture = cultures[j]; j++)
+          cultureValues[culture][token.data.Token] = token.data.TokenType == 'array' ? [] : {};*/
+        
+        continue;
       }
 
-      if (tokenType == 'string')
+      var tokenParent = /index|key/.test(token.data.TokenType) ? token.data.Token.split('.').shift() : ''
+      var tokenKey = token.data.Token.split('.').pop();
+
+      for (var j = 0, culture; culture = cultures[j]; j++)
       {
-        resources.push({
-          Dictionary: dictionary, 
-          Token: token,
-          Culture: culture,
-          Value: value
+        var resource = Resource.get({
+          Dictionary: dictionary,
+          Token: token.data.Token,
+          Culture: culture
         });
-      }
-      else
-      {
-        var values = {};
-
-        switch (tokenType){
-          case 'array':
-            value.forEach(function(value, index){
-              values[index] = value;
-            });
-            break;
-
-          case 'object':
-            values = value
-            break;
-        }
-
-        for (var key in values)
+        
+        if (resource)
         {
-          tokens.push({ 
-            Dictionary: dictionary, 
-            Token: token + (key ? '.' + key : ''),
-            TokenParent: key ? token : '',
-            TokenType: tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : '')
-          });
+          if (tokenParent)
+          {
+            if (!cultureValues[culture][tokenParent])
+              cultureValues[culture][tokenParent] = token.data.TokenType == 'index' ? [] : {};
 
-          resources.push({
-            Dictionary: dictionary, 
-            Token: token + (key ? '.' + key : ''),
-            Culture: culture,
-            Value: values[key]
-          });
-        }          
-      }      
+            cultureValues[culture][tokenParent][tokenKey] = resource.data.Value;
+          }
+          else
+            cultureValues[culture][tokenKey] = resource.data.Value;
+        }
+      }
     }
 
-    //tokenSplit.getSubset(dictionary, true).sync(tokens);
-    //resourceDictionarySplit.getSubset(dictionary, true).sync(resources);
-    tokens.map(Token);
-    resources.map(Resource);
-  }  */
+    return {
+      dictionary: dictionary,
+      tokenKeys: tokenKeys,
+      tokenTypes: tokenTypes,
+      cultureValues: cultureValues
+    }
+  }
 
   //
   // process resources
   //
-  function processDictionaryFile(dictionary, data){
-    if (!data)
-      return;
 
+  function processDictionary(dictionary, tokenKeys, tokenTypes, cultureValues){
     var resources = [];
     var tokens = [];
 
-    var tokenTypes = data['_meta'] && data['_meta'].type;
+    var tokenTypeMap = {};
+    tokenKeys.forEach(function(token){
+      tokenTypeMap[token] = 'string';
+    });
 
-    for (var culture in data){
-      if (/^_/.test(culture))
-        continue;
-
-      for (var token in data[culture])
+    for (var culture in cultureValues)
+    {
+      for (var token in cultureValues[culture])
       {
-        var value = data[culture][token];
-        var tokenType = typeof value == 'string' ? 'string' : 
-          (Array.isArray(value) ? 'array' : 'object');
+        if (token.indexOf('.') != -1)
+          continue;
 
-        tokens.push({ 
-          Dictionary: dictionary, 
-          Token: token,
-          TokenType: tokenType,
-          IsMarkup: tokenTypes[token] == 'markup',
-          IsPlural: tokenTypes[token] == 'plural'
-        });        
+        var value = cultureValues[culture][token];
+        var tokenType = typeof value == 'string' ? 'string' : (Array.isArray(value) ? 'array' : 'object');
+
+        if (!tokenTypeMap[token] || tokenTypeMap[token] == 'string')
+          tokenTypeMap[token] = tokenType;
 
         if (tokenType == 'string')
         {
@@ -656,14 +570,8 @@
           for (var key in values)
           {
             var tokenKey = token + (key ? '.' + key : '');
-            
-            tokens.push({ 
-              Dictionary: dictionary, 
-              Token: tokenKey,
-              TokenParent: key ? token : '',
-              TokenType: tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : ''),
-              IsMarkup: tokenTypes[tokenKey] == 'markup'
-            });
+
+            tokenTypeMap[tokenKey] = tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : '');
 
             resources.push({
               Dictionary: dictionary, 
@@ -676,12 +584,21 @@
       }
     }
 
-    tokenSplit.getSubset(dictionary, true).sync(tokens);
+    for (var token in tokenTypeMap)
+    {
+      var tokenType = tokenTypeMap[token];
+      tokens.push({
+        Dictionary: dictionary,
+        Token: token,
+        TokenType: tokenType,
+        TokenParent: /index|key/.test(tokenType) ? token.split('.').shift() : '',
+        IsMarkup: tokenTypes[token] == 'markup',
+        IsPlural: tokenTypes[token] == 'plural'
+      });
+    }
+
     resourceSplit.getSubset(dictionary, true).sync(resources);
-  }
-
-  function processDictionaryTokens(){
-
+    tokenSplit.getSubset(dictionary, true).sync(tokens);
   }
 
 
@@ -708,13 +625,9 @@
     },
 
     dictionaryTokens: function(data){
-      processDictionaryTokens(data.dictionaryName, data.tokens);
+      processDictionary(data.dictionary, data.tokenKeys, data.tokenTypes, data.cultureValues);
     },
 
-    dictionaryResource: function(data){
-      processDictionaryData(data.dictionaryName, data.culture, data.tokens);
-    },
-    
     newDictionary: function(data){
       Dictionary(data.dictionaryName);
     },
@@ -722,11 +635,11 @@
     saveDictionary: function(data){
       if (data.result == 'success')
       {
-        Dictionary(data.dictionaryName).setState(STATE.READY);
-        processDictionaryData(data.dictionaryName, data.tokens);
+        Dictionary(data.dictionary).setState(STATE.READY);
+        processDictionary(data.dictionary, data.tokenKeys, data.tokenTypes, data.cultureValues);
       }
       else 
-        Dictionary(data.dictionaryName).setState(STATE.ERROR, data.errorText);
+        Dictionary(data.dictionary).setState(STATE.ERROR, data.errorText);
     }    
 
   });  
@@ -747,28 +660,19 @@
     dictionaryCultureSplit: dictionaryCultureSplit,
     dictionaryCultureDataset: dictionaryCultureDataset,
 
-    /*resourceDictionaryCultureSplit: resourceDictionaryCultureSplit,
-    resourceDictionaryCultureMerge: resourceDictionaryCultureMerge,*/
-
     tokenSplit: tokenSplit,
     tokenDataset: tokenDataset,
     tokenSplitByParent: tokenSplitByParent,
 
-    /*resourceModifiedSplit: resourceModifiedSplit,
-    resourceModifiedSubset: resourceModifiedSubset,
-    resourceModifiedDataset: resourceModifiedDataset,*/
     resourceSplit: resourceSplit,
     resourceSplitByToken: resourceSplitByToken,
 
     usedCulturesDataset: usedCulturesDataset,
 
-    //saveDictionary: saveDictionary,
     addCulture: function(culture){ 
       usedCulturesDataset.add([Culture(culture)]);
     },
     deleteCulture: function(culture){ 
       usedCulturesDataset.remove([Culture(culture)]);
-    },
-    processDictionaryFile: processDictionaryFile,
-    processDictionaryTokens: processDictionaryTokens
+    }
   }

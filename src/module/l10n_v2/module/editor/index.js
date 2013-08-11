@@ -172,11 +172,7 @@
 
             var token = this.target;
             if (token.data.TokenType != newType)
-            {
-              token.set('Deleted', true, true);
               token.set('TokenType', newType, true);
-              token.set('Deleted', false, true);
-            }
           }
         }
       }),

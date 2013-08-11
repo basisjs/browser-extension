@@ -22,7 +22,8 @@
   .Table-Row
   {
     width: 80%;
-    float: right; 
+    float: right;
+    min-height: 1em;
   }
 
   .Table-Column
