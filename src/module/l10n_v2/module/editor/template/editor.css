@@ -19,17 +19,31 @@
   }
 
 
+  .Table-Title
+  {
+    min-width: 200px;
+    max-width: 300px;
+    width: 30%;
+    float: left;
+  }
   .Table-Row
   {
-    width: 80%;
-    float: right;
+    /*width: 66.66%;*/
+    /*float: right;*/
+    overflow: hidden;
     min-height: 1em;
   }
 
   .Table-Column
   {
-    width: 50%;
+    width: 100%;
     float: left;
+    max-width: 400px;
+  }
+
+  .columnCount_2 .Table-Column
+  {
+    width: 50%;
   }
 
   .columnCount_3 .Table-Column

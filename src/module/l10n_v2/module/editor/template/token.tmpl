@@ -14,19 +14,24 @@
     </div>-->
   </div>  
   
-  <div{childNodesElement} class="Table-Row"/>
-  <div class="token-title" event-dblclick="edit">
+  
+  <div class="token-title Table-Title" event-dblclick="edit">
     <div class="token-caption">
       <span >{title}</span>
-      <span class="token-markup-switcher {isMarkup}" event-click="toggleMarkup">markup</span>
-      <span class="token-plural-switcher {isPlural}" event-click="togglePlural">plural</span>
+      
     </div>
-    
+
+    <div class="token-switchers">
+      <span class="token-switcher token-markup-switcher {isMarkup}" event-click="toggleMarkup" title="markup">m</span>
+      <span class="token-switcher token-plural-switcher {isPlural}" event-click="togglePlural" title="plural">p</span>
+    </div>
+
     <div class="token-actions">
       <div{switcher} class="token-action type" event-click="switchType"></div>
       <div class="token-action edit" event-click="edit"/>
       <div class="token-action delete" event-click="delete"/>
     </div>    
-  </div>
 
+  </div>
+  <div{childNodesElement} class="Table-Row"/>
 </div>

@@ -9,5 +9,13 @@
 
 .complex-token > .token-title
 {
-  margin-right: 80%;
+  /*margin-right: 66.66%;*/
+  /*width: 30%;
+  max-width: 300px;*/
+  float: none;
+}
+
+.complex-token > .Table-Row
+{
+  display: none;
 }

@@ -1,0 +1,11 @@
+
+  .AddCulturePanel
+  {
+    margin-left: 20px;
+    display: inline-block;
+  }
+
+  .AddCulturePanel_invisible
+  {
+    display: none;
+  }

@@ -28,6 +28,9 @@
   // Layout
   //
 
+  // add culture panel
+  var addCulturePanel = resource('module/addCulturePanel/index.js').fetch();
+
   //save button
   var saveButtonPanel = resource('module/saveButtonPanel/index.js').fetch();
   property_CurrentDictionary.addLink(saveButtonPanel, function(value){
@@ -89,7 +92,8 @@
       matchInput: dictionaryListMatchInput,
       dictionaryList: dictionaryList,
       dictionaryEditor: dictionaryEditor,
-      saveButtonPanel: saveButtonPanel
+      saveButtonPanel: saveButtonPanel,
+      addCulturePanel: addCulturePanel
     }
   });
 

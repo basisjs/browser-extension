@@ -16,6 +16,11 @@
     visibility: hidden;
     overflow-y: scroll;
   }
+  #DictionaryEditor-Header .Table-Title
+  {
+    /*min-width: 100%;*/
+    height: 100%;
+  }
   #DictionaryEditor-Header .Table-Row
   {
     visibility: visible;
@@ -25,7 +30,7 @@
   {
     position: relative;
     z-index: 1;
-    float: right;
+    /*float: right;*/
   }
   #DictionaryEditor-Header .Culture-Wrapper 
   {

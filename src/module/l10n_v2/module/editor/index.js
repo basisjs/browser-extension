@@ -40,72 +40,15 @@
   var cultureOnFocus = new basis.data.property.Property();
 
 
-  //header
-  var addCulturePanel = new basis.ui.Node({
-    template: resource('template/addCulturePanel.tmpl'),
-
-    dataSource: new basis.data.dataset.Subtract({
-      minuend: Culture.all,
-      subtrahend: usedCulturesDataset
-    }),
-
-    childClass: {
-      template: resource('template/addCulturePanelItem.tmpl'),
-
-      binding: {
-        culture: 'data:Culture',
-        spriteX: {
-          events: 'update delegateChanged',
-          getter: function(object){
-            var value = object.data.Culture;
-            if (value)
-            {
-              var code = value.split('-')[1];
-              return code ? 16 * (code.charCodeAt(0) - 65) : 1000;
-            }
-          }
-        },
-        spriteY: {
-          events: 'update delegateChanged',
-          getter: function(object){
-            var value = object.data.Culture;
-            if (value)
-            {
-              var code = value.split('-')[1];
-              return code ? 11 * (code.charCodeAt(1) - 65) : 1000;
-            }
-          }
-        }
-      },
-
-      action: {
-        addCulture: function(){
-          if (!this.isDisabled())
-            l10nType.addCulture(this.data.Culture);
-        }
-      }
-    }
-  });
-
-  usedCulturesDataset.addHandler({
-    datasetChanged: function(object, delta){
-      if (object.itemCount > 4)
-        this.disable();
-      else
-        this.enable();
-    }
-  }, addCulturePanel);
-
-
   var dictionaryEditorHeader = new basis.ui.Node({
     template: resource('template/header.tmpl'), 
-    binding: {
+    /*binding: {
       addCulturePanel: 'satellite:'
     },
 
     satellite: {
       addCulturePanel: addCulturePanel
-    },
+    },*/
 
     dataSource: dictionaryCultureDataset,
     sorting: getter('data.Position'),
@@ -399,7 +342,9 @@
   });
 
   var ComplexToken = Token.subclass({
-    sorting: 'data.Token',
+    sorting: function(object){
+      return object.data.Token ? '0_' + object.data.Token : '1';
+    },
     template: resource('template/complexToken.tmpl'),
     childClass: OptionToken,
     action: {
@@ -726,7 +671,7 @@
 
   usedCulturesDataset.addHandler({
     datasetChanged: function(object, delta){
-      dictionaryEditor.tmpl.set('columnCount', object.itemCount + 1);
+      dictionaryEditor.tmpl.set('columnCount', object.itemCount);
     }
   });
 

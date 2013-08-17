@@ -5,6 +5,20 @@
     top: 0;
     bottom: 0;
     right: 0;
+    left: 0;
+  }
+  #columnBackgroundContainer .Table-Title
+  {
+    /*min-width: 200px;
+    max-width: 300px;
+    width: 30%;
+    float: left;*/
+    height: 100%;
+  }
+
+  #columnBackgroundContainer .Table-Row
+  {
+    height: 100%;
   }
 
   #columnBackgroundContainer .Table-Column

@@ -28,15 +28,25 @@
 .token-title
 {
   overflow: hidden;
-  padding: 8px;
+  min-height: 2.7em;
+  /*float: left;
+  width: 30%;
+  max-width: 300px;
+  min-width: 200px;
+  overflow: hidden;
     -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
+  text-overflow: ellipsis;*/
 }
 
-.token_index .token-title,
-.token_key .token-title
+.token-caption
 {
-  padding-left: 20px;
+  padding: 8px;
+}
+
+.token_index .token-caption,
+.token_key .token-caption
+{
+  margin-left: 20px;
 }
 
 .token-caption
@@ -46,7 +56,8 @@
 
 .token-actions
 {
-  visibility: hidden;
+  display: none;
+  /*visibility: hidden;*/
   /*position: absolute;
   right: 80%;
   top: 7px;
@@ -54,11 +65,12 @@
   padding: 0 5px;
   margin-right: 5px;*/
   float: right;
+  padding: 8px 0;
 }
 .token:hover > .token-title .token-actions
 {
   /*display: inline-block;*/
-  visibility: visible;
+  display: block;
 }
 .token-action
 {
@@ -71,10 +83,10 @@
   cursor: pointer;
   background: url(img/edit.png) no-repeat center center;
 }
-.token-action:last-child
+/*.token-action:last-child
 { 
   margin-right: 0;
-}
+}*/
 .token-action:hover
 {
   opacity: 1;  
@@ -116,11 +128,18 @@
   opacity: 1;
 }
 
-
-/* markup switcher */
-.token-markup-switcher
+.token-switchers
 {
-  margin-left: 10px;
+  float: right;
+  padding: 8px 0;
+}
+
+.token-switcher
+{
+  /*float: right;*/
+  display: none;
+  width: 8px;
+  margin-right: 10px;
   padding: 2px 4px;
   
   background: #c3c3c3;
@@ -128,70 +147,49 @@
   
   color: black;
   font-size: 80%;
+  text-align: center;
   
   cursor: pointer;
   opacity: 0;
 }
-.token:hover > .token-title .token-markup-switcher
-{
-  opacity: 0.5;
-}
-
-.token-markup-switcher:hover
+.token-switcher:hover
 {
   opacity: 1;
 }
 
+/* markup switcher */
 .token-markup-switcher.isMarkup
 {
   color: white;
   background: #AC9100;
   opacity: 1 !important;
+  display: inline-block !important;
 }
-
-.token_object > .token-title .token-markup-switcher,
-.token_array > .token-title .token-markup-switcher
+.token_key:hover > .token-title .token-markup-switcher,
+.token_string:hover > .token-title .token-markup-switcher
 {
-  display: none;
-}
-
-/* plural switcher */
-.token-plural-switcher
-{
-  margin-left: 10px;
-  padding: 2px 4px;
-  
-  background: #c3c3c3;
-  border-radius: 2px;
-  
-  color: black;
-  font-size: 80%;
-  
-  cursor: pointer;
-  opacity: 0;
-
-  display: none;
-}
-.token:hover .token-plural-switcher
-{
+  display: inline-block;
   opacity: 0.5;
 }
 
-.token-plural-switcher:hover
+/*.token_object > .token-title .token-markup-switcher,
+.token_array > .token-title .token-markup-switcher
 {
-  opacity: 1;
-}
+  display: none !important;
+}*/
 
+/* plural switcher */
+.token_array:hover > .token-title .token-plural-switcher
+{
+  display: inline-block;
+  opacity: 0.5;
+}
 .token-plural-switcher.isPlural
 {
   color: white;
   background: green;
   opacity: 1 !important;
-}
-
-.token_array > .token-title .token-plural-switcher
-{
-  display: inline;
+  display: inline-block !important;
 }
 
 /* token editor */

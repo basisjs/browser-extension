@@ -455,7 +455,7 @@
     reset: function(){
       this.setState(STATE.READY);
       tokenModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
-        if (!token.modified.Token)
+        if ('Token' in token.modified && !token.modified.Token)
           token.destroy();
         else
           token.rollback();
