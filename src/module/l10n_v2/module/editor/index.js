@@ -37,6 +37,8 @@
 
   var KEY_S = 'S'.charCodeAt(0);
 
+  var cultureOnFocus = new basis.data.property.Property();
+
 
   //header
   var addCulturePanel = new basis.ui.Node({
@@ -214,6 +216,8 @@
               livememo.LiveMemo.prototype.action.focus.call(this, event);
               basis.cssom.classList(this.owner.element).remove('empty');
               this.owner.parentNode.select();
+
+              cultureOnFocus.set(this.data.Culture);
             },
             blur: function(event){
               livememo.LiveMemo.prototype.action.blur.call(this, event);
@@ -249,6 +253,11 @@
           }
         })
       }
+    },
+
+    event_select: function(){
+      basis.ui.Node.prototype.event_select.apply(this, arguments);
+      this.satellite.memo.focus();
     },
 
     binding: {
@@ -336,6 +345,10 @@
 
       this.target.set('Token', newToken, true);
       this.setEditMode(false);
+
+      var resourceToFocus = this.childNodes.search(cultureOnFocus.value, 'data.Culture') || this.firstChild;
+      if (resourceToFocus)
+        resourceToFocus.select();
     },
     reset: function(){
       var tokenKey = this.data.Token.split('.').pop();
@@ -693,8 +706,8 @@
         var resourceNode = tokenItem.childNodes.search(resource, 'delegate');
         if (resourceNode)
         {
-          resourceNode.satellite.memo.focus();
-          return resourceNode
+          resourceNode.select();
+          return resourceNode;
         }
       }
       else
