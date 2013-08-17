@@ -283,6 +283,7 @@
 
   var TOKEN_HANDLER = {
     destroy: function(){
+      debugger;
       clearEmptyResource(this);
     },
     update: function(object, delta){
@@ -317,6 +318,13 @@
       {
         if (this.data.TokenType == 'string')
           createEmptyResource(this);
+
+        if (/object|array/.test(delta.TokenType) && /object|array/.test(this.data.TokenType))
+        {
+          var tokens = tokenSplitByParent.getSubset(this.data.Token, true).getItems();
+          for (var i = 0, token; token = tokens[i]; i++)
+            token.set('TokenType', this.data.TokenType == 'array' ? 'index' : 'key', true);
+        }
 
         // hack: remove from list and paste again to change token node class
         this.set('Deleted', true, true);
@@ -446,7 +454,12 @@
     },
     reset: function(){
       this.setState(STATE.READY);
-      tokenModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(basis.getter('rollback()'));
+      tokenModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(function(token){
+        if (!token.modified.Token)
+          token.destroy();
+        else
+          token.rollback();
+      });
       resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(basis.getter('rollback()'));
     }
   });
@@ -475,12 +488,7 @@
         tokenTypes[token.data.Token] = 'markup';
 
       if (/object|array/.test(token.data.TokenType))
-      {
-        /*for (var j = 0, culture; culture = cultures[j]; j++)
-          cultureValues[culture][token.data.Token] = token.data.TokenType == 'array' ? [] : {};*/
-        
         continue;
-      }
 
       var tokenParent = /index|key/.test(token.data.TokenType) ? token.data.Token.split('.').shift() : ''
       var tokenKey = token.data.Token.split('.').pop();
@@ -499,6 +507,9 @@
           {
             if (!cultureValues[culture][tokenParent])
               cultureValues[culture][tokenParent] = token.data.TokenType == 'index' ? [] : {};
+
+            if (token.data.TokenType == 'index')
+              tokenKey = cultureValues[culture][tokenParent].length;
 
             cultureValues[culture][tokenParent][tokenKey] = resource.data.Value;
           }
