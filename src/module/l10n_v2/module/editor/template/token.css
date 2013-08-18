@@ -46,7 +46,7 @@
 .token_index .token-caption,
 .token_key .token-caption
 {
-  margin-left: 20px;
+  margin-left: 12px;
 }
 
 .token-caption
@@ -128,6 +128,12 @@
   opacity: 1;
 }
 
+.token.isPlural > .token .token-action.delete
+{
+  display: none;
+}
+
+/* switchers */
 .token-switchers
 {
   float: right;

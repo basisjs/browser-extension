@@ -106,10 +106,10 @@
   // message handlers
   //
   var lastDictionary;
-  app.transport.ready(function(){
+  /*app.transport.ready(function(){
     lastDictionary = property_CurrentDictionary.value;
     property_CurrentDictionary.set(null);
-  });
+  });*/
 
   app.transport.onMessage({
     serverStatus: function(isOnline){
@@ -126,20 +126,12 @@
     },
     
     dictionaryList: function(data){
-      if (lastDictionary)
+      /*if (lastDictionary)
       {
         property_CurrentDictionary.set(lastDictionary);
         lastDictionary = null;
-      }
+      }*/
     },
-
-    /*dictionaryResource: function(data){
-      if (property_CurrentToken.value)
-      {  
-        dictionaryEditor.selectResource(property_CurrentToken.value, property_CurrentCulture.value);
-        property_CurrentToken.reset();
-      }
-    },*/
 
     token: function(data){
       property_CurrentDictionary.set(data.dictionaryName);
@@ -151,19 +143,13 @@
       if (!dc)
         l10nType.addCulture(property_CurrentCulture.value);
 
-      selectToken(data.selectedToken);
+      dictionaryEditor.selectResource(Resource({
+        Dictionary: property_CurrentDictionary.value,
+        Culture: property_CurrentCulture.value,
+        Token: data.selectedToken
+      }));
     }
   });  
-
-  function selectToken(token){
-    var resource = Resource({
-      Dictionary: property_CurrentDictionary.value,
-      Culture: property_CurrentCulture.value,
-      Token: token
-    });
-
-    dictionaryEditor.selectResource(resource);
-  }
 
   //
   // exports

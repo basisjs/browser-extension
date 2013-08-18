@@ -5,7 +5,7 @@
 <b:define name="typeSwitchMode" type="bool"/>
 <b:define name="type" type="enum" values="object array string key index"/>
 
-<div class="token token_{type} {selected} {editMode} {typeSwitchMode}">
+<div class="token token_{type} {selected} {editMode} {typeSwitchMode} {isPlural}">
   <div class="token-editor">
     <input{editor} type="text" event-keyup="keyup" event-blur="cancel"/>
     <!--<div class="token-editor-actions">

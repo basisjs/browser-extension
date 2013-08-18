@@ -270,7 +270,8 @@
       }
     },
     submit: function(){
-      var newToken = (/index|key/.test(this.data.TokenType) ? this.data.TokenParent + '.' : '') + this.tmpl.editor.value;
+      var newToken = (this.data.TokenParent ? this.data.TokenParent + '.' : '' ) + this.tmpl.editor.value;
+      console.log(newToken);
 
       var token = l10nType.Token.get({
         Dictionary: this.data.Dictionary,
@@ -282,7 +283,7 @@
         if (token.data.Deleted)
           token.set('Deleted', false, true);
 
-        this.target.destroy();
+        this.reset();
         return;
       }
 
@@ -294,8 +295,7 @@
         resourceToFocus.select();
     },
     reset: function(){
-      var tokenKey = this.data.Token.split('.').pop();
-      if (tokenKey)
+      if (this.data.Token.split('.').pop())
         this.setEditMode(false);
       else
         this.target.destroy();
@@ -303,7 +303,7 @@
     setEditMode: function(editMode){
       this.editMode = editMode;
       this.updateBind('editMode');
-      this.tmpl.editor.value = this.data.Token.split('.').pop();
+      this.tmpl.editor.value = editMode ? this.data.Token.split('.').pop() : '';
       this.tmpl.editor.focus();
     }
   });
@@ -342,11 +342,13 @@
   });
 
   var ComplexToken = Token.subclass({
-    sorting: function(object){
-      return object.data.Token ? '0_' + object.data.Token : '1';
-    },
-    template: resource('template/complexToken.tmpl'),
     childClass: OptionToken,
+    template: resource('template/token_complex.tmpl'),
+
+    sorting: function(object){
+      return object.data.TokenKey ? '0_' + object.data.TokenKey : '1';
+    },    
+
     action: {
       addKey: function(){
         if (this.data.TokenType == 'object')
@@ -354,9 +356,10 @@
           var token = l10nType.Token({
             Dictionary: this.data.Dictionary,
             Token: '',
-            TokenParent: this.data.Token,
             TokenType: 'key'
           });
+
+          token.set('Token', this.data.Token + '.', true);
 
           var tokenNode = this.childNodes.search(token, 'delegate');
           tokenNode.setEditMode(true);
@@ -364,11 +367,10 @@
         else
         {
           var newToken = this.data.Token + '.' + (this.lastChild ? Number(this.lastChild.data.Token.split('.').pop()) + 1 : 0);
-          
+
           var token = l10nType.Token.get({
             Dictionary: this.data.Dictionary,
             Token: newToken,
-            TokenParent: this.data.Token,
             TokenType: 'index'
           });
 
@@ -381,15 +383,13 @@
               Token: '',
               TokenType: 'index'
             });
-            
-            token.update({
-              Token: newToken,
-              TokenParent: this.data.Token
-            }, true);
+
+            token.set('Token', newToken, true);
           }
         }
       }      
     },
+    
     event_update: function(object, delta){
       Token.prototype.event_update.call(this, object, delta);
       this.setDataSource(tokenSplitByParent.getSubset(this.data.Token, true));
@@ -400,6 +400,7 @@
     }
   });
 
+  // array token
   var IndexToken = OptionToken.subclass({
     binding: {
       title: 'index'
@@ -408,6 +409,10 @@
 
   var ArrayToken = ComplexToken.subclass({
     childClass: IndexToken,
+
+    sorting: function(object){
+      return Number(object.data.TokenKey);
+    },        
 
     event_childNodesModified: function(object, delta){
       ComplexToken.prototype.event_childNodesModified.apply(this, arguments);
@@ -418,6 +423,7 @@
       }
     }
   });
+
 
   var TOKEN_TYPE_CLASS = {
     'string': OptionToken,

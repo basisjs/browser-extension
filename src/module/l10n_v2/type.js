@@ -30,8 +30,12 @@
     fields: {
       Dictionary: nsEntity.StringId,
       Token: nsEntity.StringId,
-      TokenParent: String,
-      TokenKey: String,
+      TokenParent: basis.entity.CalculateField('Token', function(token){
+        return token.search(/\./) != -1 ? token.split('.').shift() : '';
+      }),
+      TokenKey: basis.entity.CalculateField('Token', function(token){
+        return token.search(/\./) != -1 ? token.split('.').pop() : '';
+      }),
       TokenType: String,
       IsMarkup: Boolean,
       IsPlural: Boolean,
@@ -45,7 +49,8 @@
       Dictionary: nsEntity.StringId,
       Token: nsEntity.StringId,
       Culture: nsEntity.StringId,
-      Value: String
+      Value: String,
+      Deleted: Boolean
     }
   });
 
@@ -62,7 +67,9 @@
     name: 'Culture',
     fields: {
       Culture: nsEntity.StringId,
-      Title: String
+      Title: String,
+      PluralFormCount: Number,
+      PluralFormComment: Array.from
     }
   });
 
@@ -85,7 +92,12 @@
 
   var resourceDictionaryCultureMerge = new Merge({});
   var resourceSplitByDictionaryCulture = new Split({
-    source: Resource.all,
+    source: new Subset({
+      source: Resource.all,
+      rule: function(object){
+        return !object.data.Deleted;
+      }
+    }),
     wrapper: Resource,
     rule: function(object){
       return object.data.Dictionary + '_' + object.data.Culture;
@@ -258,6 +270,8 @@
         for (var i = 0, culture; culture = delta.deleted[i]; i++)
           resourceDictionaryCultureMerge.removeSource(resourceSplitByDictionaryCulture.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
       }
+
+      adjustPlurals();
     }
   });
 
@@ -278,12 +292,13 @@
           token.removeHandler(TOKEN_HANDLER);
           clearEmptyResource(token);
         }
+
+      adjustPlurals();
     }
   });
 
   var TOKEN_HANDLER = {
     destroy: function(){
-      debugger;
       clearEmptyResource(this);
     },
     update: function(object, delta){
@@ -297,12 +312,7 @@
           {
             var tokens = tokenSplitByParent.getSubset(oldToken, true).getItems();
             for (var i = 0, token; token = tokens[i]; i++)
-            {
-              token.update({
-                TokenParent: newToken,
-                Token: newToken + '.' + token.data.Token.split('.').pop()
-              }, true);
-            }
+              token.set('Token', newToken + '.' + token.data.TokenKey, true);
           }
 
           var resourcesSet = resourceAllSplitByToken.getSubset([this.data.Dictionary, oldToken].join('_'));
@@ -313,14 +323,16 @@
 
         createEmptyResource(this);
       }
-
+      
       if ('TokenType' in delta)
       {
-        if (this.data.TokenType == 'string')
-          createEmptyResource(this);
+        createEmptyResource(this);
 
         if (/object|array/.test(delta.TokenType) && /object|array/.test(this.data.TokenType))
         {
+          if (this.data.TokenType == 'object' && this.data.IsPlural)
+            this.set('IsPlural', false, true);
+
           var tokens = tokenSplitByParent.getSubset(this.data.Token, true).getItems();
           for (var i = 0, token; token = tokens[i]; i++)
             token.set('TokenType', this.data.TokenType == 'array' ? 'index' : 'key', true);
@@ -330,14 +342,17 @@
         this.set('Deleted', true, true);
         this.set('Deleted', false, true);
       }
+
+      if ('IsPlural' in delta)
+        adjustPlurals();      
     }
   }
 
   function createEmptyResource(token){
-    var cultures = usedCulturesDataset.getItems();
-    for (var i = 0, culture; culture = cultures[i]; i++)
+    if (/string|key|index/.test(token.data.TokenType))
     {
-      if (/string|key|index/.test(token.data.TokenType))
+      var cultures = usedCulturesDataset.getItems();
+      for (var i = 0, culture; culture = cultures[i]; i++)
       {
         var resourceId = { 
           Dictionary: property_CurrentDictionary.value, 
@@ -347,26 +362,103 @@
         var resource = Resource.get(resourceId);
         if (!resource)
           Resource(resourceId);
-      }
-    }    
+      }    
+    }
   }    
 
   function clearEmptyResource(token){
-    var cultures = usedCulturesDataset.getItems();
-    for (var i = 0, culture; culture = cultures[i]; i++)
-    {
-      if (/string|key|index/.test(token.data.TokenType))
+    if (/string|key|index/.test(token.data.TokenType))
+    {    
+      var cultures = usedCulturesDataset.getItems();
+      for (var i = 0, culture; culture = cultures[i]; i++)
       {
-        var resource = Resource({ 
+        var resource = Resource.get({ 
           Dictionary: property_CurrentDictionary.value, 
           Token: token.data.Token,
           Culture: culture.data.Culture
         });
 
-        if (resource.modified && resource.modified.Value === '')
-          resource.destroy();
+        if (resource)
+        {
+          if (resource.modified && resource.modified.Value === '')
+            resource.destroy();
+        }
       }
     }    
+  }
+
+  function adjustPlurals(){
+    var cultures = usedCulturesDataset.getItems();
+    var maxPluralFormCount = Math.max.apply(null, cultures.map(basis.getter('data.PluralFormCount')));
+
+    var pluralTokens = tokenDataset.getItems().filter(function(token){
+      return token.data.IsPlural;
+    });
+
+    for (var i = 0, token; token = pluralTokens[i]; i++)
+    {
+
+      for (var j = 0; j < maxPluralFormCount; j ++)
+      {
+        var tokenId = {
+          Dictionary: token.data.Dictionary,
+          Token: token.data.Token + '.' + j,
+          TokenType: 'index'
+        };
+        var tkn = Token.get(tokenId);
+        if (!tkn)
+          Token(tokenId);
+        else if (tkn.data.Deleted)
+          tkn.set('Deleted', false);
+      }
+    }
+
+    var indexTokens = tokenDataset.getItems().filter(function(token){
+      return token.data.TokenType == 'index';
+    });
+
+    for (var i = 0, token; token = indexTokens[i]; i++)
+    {
+      var parentToken = Token.get({
+        Dictionary: token.data.Dictionary,
+        Token: token.data.TokenParent
+      });
+      
+      if (parentToken && parentToken.data.IsPlural)
+      {
+        if (Number(token.data.TokenKey) >= maxPluralFormCount)
+          token.set('Deleted', true);
+        else
+        {
+          for (var j = 0, culture; culture = cultures[j]; j++)
+          {
+            var resource = Resource.get({ 
+              Dictionary: property_CurrentDictionary.value, 
+              Token: token.data.Token,
+              Culture: culture.data.Culture,
+            });
+            if (resource && Number(token.data.TokenKey) >= culture.data.PluralFormCount)
+              resource.set('Deleted', true);
+          }
+        }
+      }
+      else
+      {
+        if (token.data.Deleted)
+          token.set('Deleted', false);
+
+        for (var j = 0, culture; culture = cultures[j]; j++)
+        {
+          var resource = Resource.get({ 
+            Dictionary: property_CurrentDictionary.value, 
+            Token: token.data.Token,
+            Culture: culture.data.Culture
+          });
+          if (resource)
+            resource.set('Deleted', false);
+        }
+      }
+    }
   }
 
   //
@@ -374,10 +466,13 @@
   //
   var MODIFIED_HANDLER = {
     datasetChanged: function(object, delta){
+      var modifiedDict = {};
+
       if (delta.inserted)
         for (var i = 0, item; item = delta.inserted[i]; i++)
         {
-          item.addHandler(MODIFIED_ITEM_HANDLER)
+          item.addHandler(MODIFIED_ITEM_HANDLER);
+          modifiedDict[item.data.Dictionary] = 1;
           var dict = Dictionary.get(item.data.Dictionary);
           if (dict)
             dict.set('ModificationCount', dict.data.ModificationCount + 1, true);
@@ -387,14 +482,20 @@
         for (var i = 0, item; item = delta.deleted[i]; i++)
         {
           item.removeHandler(MODIFIED_ITEM_HANDLER);
-          
+          modifiedDict[item.data.Dictionary] = 1;
           var dict = Dictionary.get(item.data.Dictionary);
           if (dict)
             dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
         }      
+
+      for (var dict in modifiedDict) 
+        app.transport.invoke('updateDictionary', exportDictionary(dict));
     }
   }
   var MODIFIED_ITEM_HANDLER = {
+    update: function(){
+      app.transport.invoke('updateDictionary', exportDictionary(this.data.Dictionary));
+    },
     destroy: function(){
       var dict = Dictionary.get(this.data.Dictionary);
       if (dict)
@@ -442,7 +543,7 @@
   //
   // extend Dictionary
   //
-  var isServerOnline = false;
+  var eventUpdate = Dictionary.entityType.entityClass.prototype.event_update;
 
   Object.extend(Dictionary.entityType.entityClass.prototype, {
     save: function(){
@@ -461,6 +562,7 @@
           token.rollback();
       });
       resourceModifiedSplit.getSubset(this.data.Dictionary, true).getItems().forEach(basis.getter('rollback()'));
+      //adjustPlurals();
     }
   });
 
@@ -490,7 +592,7 @@
       if (/object|array/.test(token.data.TokenType))
         continue;
 
-      var tokenParent = /index|key/.test(token.data.TokenType) ? token.data.Token.split('.').shift() : ''
+      var tokenParent = token.data.TokenParent;///index|key/.test(token.data.TokenType) ? token.data.Token.split('.').shift() : ''
       var tokenKey = token.data.Token.split('.').pop();
 
       for (var j = 0, culture; culture = cultures[j]; j++)
@@ -568,9 +670,23 @@
 
           switch (tokenType){
             case 'array':
-              value.forEach(function(value, index){
-                values[index] = value;
-              });
+              if (tokenTypes[token] == 'plural')
+              {
+                var formCount = Culture(culture).data.PluralFormCount;
+                for (var i = 0; i < formCount; i++)
+                  values[i] = '';
+
+                value.forEach(function(value, index){
+                  if (index < formCount)
+                    values[index] = value;
+                });
+              }
+              else
+              {
+                value.forEach(function(value, index){
+                  values[index] = value;
+                });
+              }
               break;
 
             case 'object':
@@ -581,7 +697,6 @@
           for (var key in values)
           {
             var tokenKey = token + (key ? '.' + key : '');
-
             tokenTypeMap[tokenKey] = tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : '');
 
             resources.push({
@@ -602,7 +717,7 @@
         Dictionary: dictionary,
         Token: token,
         TokenType: tokenType,
-        TokenParent: /index|key/.test(tokenType) ? token.split('.').shift() : '',
+        //TokenParent: /index|key/.test(tokenType) ? token.split('.').shift() : '',
         IsMarkup: tokenTypes[token] == 'markup',
         IsPlural: tokenTypes[token] == 'plural'
       });
@@ -616,6 +731,8 @@
   //
   // message handlers
   //
+  var isServerOnline = false;
+
   app.transport.ready(function(){
     app.transport.invoke('serverStatus');
     app.transport.invoke('loadCultureList');
@@ -629,6 +746,20 @@
 
     cultureList: function(data){
       Culture.all.sync(data.cultureList);
+
+      var plurals = [
+        {
+          Culture: 'ru-RU',
+          PluralFormCount: 3,
+          PluralFormComment: ['1, 21, 31...', '2, 3, 4, 22...', '5-20, 25...']
+        },
+        {
+          Culture: 'en-US', 
+          PluralFormCount: 4,
+          PluralFormComment: ['one', 'not one']
+        }
+      ];
+      plurals.map(Culture);
     },
     
     dictionaryList: function(data){

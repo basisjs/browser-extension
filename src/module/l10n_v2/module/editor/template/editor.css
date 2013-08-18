@@ -39,6 +39,7 @@
     width: 100%;
     float: left;
     max-width: 400px;
+    min-height: 1em;
   }
 
   .columnCount_2 .Table-Column
