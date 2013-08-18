@@ -197,22 +197,6 @@
   //
   var property_CurrentDictionary = new basis.data.property.Property(null);
 
-  /*var dictionaryFile = new basis.data.DataObject({
-    active: true,
-    handler: {
-      update: function(){
-        if (!this.data.content)
-          return;
-
-        var data = JSON.parse(this.data.content) || {};
-        var tokenTypes = data['_meta'] && data['_meta']['type'];
-        delete data['_meta'];
-        
-        processDictionary(this.data.filename, data, tokenTypes);
-      }
-    }
-  });*/
-
   // current dictionary changed
   property_CurrentDictionary.addHandler({
     change: function(property){
@@ -222,7 +206,7 @@
       if (value)
       {
         //dictionaryFile.setDelegate(app.type.File.get(value));
-        app.transport.invoke('loadDictionaryTokens', value);      
+        app.transport.invoke('loadDictionaryTokens', value);
       }
 
       // prepare collections
@@ -717,7 +701,6 @@
         Dictionary: dictionary,
         Token: token,
         TokenType: tokenType,
-        //TokenParent: /index|key/.test(tokenType) ? token.split('.').shift() : '',
         IsMarkup: tokenTypes[token] == 'markup',
         IsPlural: tokenTypes[token] == 'plural'
       });
@@ -727,6 +710,45 @@
     tokenSplit.getSubset(dictionary, true).sync(tokens);
   }
 
+  function gatherDictionaryDelta(dictionary){
+    var delta = [];
+    var tokensModified = tokenModifiedSplit.getSubset(dictionary, true).getItems();
+    var resourcesModified = resourceModifiedSplit.getSubset(dictionary, true).getItems();
+    
+    [].concat(tokensModified, resourcesModified).forEach(function(object){
+      delta.push({
+        type: object.entityType,
+        data: basis.object.extend(object.data, object.modified),
+        modified: basis.object.slice(object.data, basis.object.keys(object.modified))
+      });
+    });
+
+    return delta;
+  }
+
+  function applyDictionaryDelta(delta){
+    for (var i = 0, object; object = delta[i]; i++)
+    {
+      var obj = object.type(object.data);
+      obj.update(object.modified, true);
+    }
+  }
+
+  var dictionaryFile = new basis.data.DataObject({
+    active: true,
+    handler: {
+      update: function(){
+        if (!this.data.content)
+          return;
+
+        app.transport.invoke('loadDictionaryTokens', this.data.filename);
+      }
+    }
+  });  
+
+  property_CurrentDictionary.addLink(dictionaryFile, function(value){
+    this.setDelegate(app.type.File(value));
+  });
 
   //
   // message handlers
@@ -737,6 +759,9 @@
     app.transport.invoke('serverStatus');
     app.transport.invoke('loadCultureList');
     app.transport.invoke('loadDictionaryList');
+
+    if (property_CurrentDictionary.value)
+      app.transport.invoke('loadDictionaryTokens', property_CurrentDictionary.value);
   });
 
   app.transport.onMessage({
@@ -755,7 +780,7 @@
         },
         {
           Culture: 'en-US', 
-          PluralFormCount: 4,
+          PluralFormCount: 2,
           PluralFormComment: ['one', 'not one']
         }
       ];
@@ -767,7 +792,9 @@
     },
 
     dictionaryTokens: function(data){
+      var delta = gatherDictionaryDelta(data.dictionary);
       processDictionary(data.dictionary, data.tokenKeys, data.tokenTypes, data.cultureValues);
+      applyDictionaryDelta(delta);
     },
 
     newDictionary: function(data){
