@@ -1,5 +1,5 @@
 
-  .DictionaryListItem
+  .dictionary-list-item
   {
     padding: 0.4em 0.8em;
     font-size: 85%;
@@ -9,19 +9,19 @@
 
   }
 
-  .DictionaryListItem:hover
+  .dictionary-list-item:hover
   {
     background: #AAA;
     color: white;
   }
 
-  .DictionaryListItem_selected
+  .dictionary-list-item_selected
   {
     background: #7A7975 !important;
     color: white;
   }
 
-  .DictionaryListItem .match
+  .dictionary-list-item .match
   {
     background: #7A7975;
     color: white;

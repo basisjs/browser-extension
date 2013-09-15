@@ -1,5 +1,5 @@
 
-  #DictionaryEditor
+  #dictionary-editor
   {
     position: absolute;
     top: 0;
@@ -10,7 +10,7 @@
     display: -webkit-box;
   }
 
-  #DictionaryEditor .DictionaryEditor-Content
+  #dictionary-editor .dictionary-editor-content
   {
     position: relative;
     z-index: 1;
@@ -19,14 +19,14 @@
   }
 
 
-  .Table-Title
+  .table-title
   {
     min-width: 200px;
     max-width: 300px;
     width: 30%;
     float: left;
   }
-  .Table-Row
+  .table-row
   {
     /*width: 66.66%;*/
     /*float: right;*/
@@ -34,7 +34,7 @@
     min-height: 1em;
   }
 
-  .Table-Column
+  .table-column
   {
     width: 100%;
     float: left;
@@ -42,34 +42,34 @@
     min-height: 1em;
   }
 
-  .columnCount_2 .Table-Column
+  .columnCount_2 .table-column
   {
     width: 50%;
   }
 
-  .columnCount_3 .Table-Column
+  .columnCount_3 .table-column
   {
     width: 33.33%;
   }
-  .columnCount_4 .Table-Column
+  .columnCount_4 .table-column
   {
     width: 25%;
   }
-  .columnCount_5 .Table-Column
+  .columnCount_5 .table-column
   {
     width: 20%;
   }
-  .columnCount_6 .Table-Column
+  .columnCount_6 .table-column
   {
     width: 16.66%;
   }
 
 
-  #DictionaryEditor-Header .Table-Column
+  #dictionary-editor-header .table-column
   {
     background: #F0F0F0;
   }
-  #DictionaryEditor-Header .Table-Column:nth-child(2n + 1)
+  #dictionary-editor-header .table-column:nth-child(2n + 1)
   {
     background: #F8F8F8;
   }

@@ -1,11 +1,11 @@
 
-  .AddCulturePanel
+  .addCulture-panel
   {
     margin-left: 20px;
     display: inline-block;
   }
 
-  .AddCulturePanel_invisible
+  .addCulture-panel_invisible
   {
     display: none;
   }

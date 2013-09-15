@@ -1,5 +1,5 @@
 
-  #columnBackgroundContainer
+  #column-background
   {
     position: absolute;
     top: 0;
@@ -7,7 +7,7 @@
     right: 0;
     left: 0;
   }
-  #columnBackgroundContainer .Table-Title
+  #column-background .table-title
   {
     /*min-width: 200px;
     max-width: 300px;
@@ -16,20 +16,20 @@
     height: 100%;
   }
 
-  #columnBackgroundContainer .Table-Row
+  #column-background .table-row
   {
     height: 100%;
   }
 
-  #columnBackgroundContainer .Table-Column
+  #column-background .table-column
   {
     height: 100%;
   }
-  #columnBackgroundContainer .Table-Column
+  #column-background .table-column
   {
     background: #F0F0F0;
   }
-  #columnBackgroundContainer .Table-Column:nth-child(2n + 1)
+  #column-background .table-column:nth-child(2n + 1)
   {
     background: #F8F8F8;
   }

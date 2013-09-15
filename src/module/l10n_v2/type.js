@@ -314,13 +314,13 @@
 
         if (/object|array/.test(delta.TokenType) && /object|array/.test(this.data.TokenType))
         {
-          if (this.data.TokenType == 'object' && this.data.IsPlural)
-            this.set('IsPlural', false, true);
-
           var tokens = tokenSplitByParent.getSubset(this.data.Token, true).getItems();
           for (var i = 0, token; token = tokens[i]; i++)
             token.set('TokenType', this.data.TokenType == 'array' ? 'index' : 'key', true);
         }
+
+        if (this.data.TokenType != 'array' && this.data.IsPlural)
+          this.set('IsPlural', false, true);
 
         // hack: remove from list and paste again to change token node class
         this.set('Deleted', true, true);
@@ -328,7 +328,7 @@
       }
 
       if ('IsPlural' in delta)
-        adjustPlurals();      
+        setImmediate(adjustPlurals);
     }
   }
 
@@ -381,7 +381,6 @@
 
     for (var i = 0, token; token = pluralTokens[i]; i++)
     {
-
       for (var j = 0; j < maxPluralFormCount; j ++)
       {
         var tokenId = {
@@ -522,7 +521,6 @@
     wrapper: Resource,
     rule: 'data.Dictionary'
   });  
-
 
   //
   // extend Dictionary
@@ -749,6 +747,34 @@
   property_CurrentDictionary.addLink(dictionaryFile, function(value){
     this.setDelegate(app.type.File(value));
   });
+
+
+  //
+  // extractor
+  //
+
+  var appProfile = app.type.AppProfile();
+
+  appProfile.addHandler({
+    targetChanged: function(object){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    },
+    update: function(object, delta){
+      if (object.data.l10n)
+        processDictionaries(object.data.l10n);
+    }
+  });
+  
+  if (appProfile.data.l10n)
+    processDictionaries(appProfile.data.l10n);
+
+  function processDictionaries(data){
+    for (var dictName in data)
+      Dictionary(dictName)
+  }
+
+
 
   //
   // message handlers

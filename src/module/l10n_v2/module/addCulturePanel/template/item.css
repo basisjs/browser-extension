@@ -1,5 +1,5 @@
 
-  .Culture-Flag
+  .culture-flag
   {
     width: 16px;
     height: 11px;
@@ -9,7 +9,7 @@
     cursor: pointer;
   }
 
-  .Culture-Flag_disabled
+  .culture-flag_disabled
   {
     cursor: default;
     opacity: 0.3;
