@@ -30,14 +30,16 @@
 
   function attachExtensionUIPort(port){
     var tabId;
-    var extensionTabId = port.sender.tab.id;
+    var extensionTabId = port.sender.tab && port.sender.tab.id;
 
     port.onMessage.addListener(function(msg) {
       if (msg.action == 'extensionInited')
       {
         extensionUIPorts[msg.tabId] = port;
         tabId = msg.tabId;
-        extensionTabIdTab[msg.tabId] = extensionTabId;
+
+        if (extensionTabId)
+          extensionTabIdTab[msg.tabId] = extensionTabId;
       }
 
       if (contentScriptPorts[tabId])
