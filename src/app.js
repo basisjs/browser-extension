@@ -1,61 +1,65 @@
+var Node = require('basis.ui').Node;
+var transport = require('app.transport');
 
-  basis.require('basis.dom.event');
-  basis.require('app.transport');
+function initMainMenu(){
+  var mainMenu = require('./module/mainmenu/index.js');
 
-  var domEvent = basis.dom.event;
-
-  function initMainMenu(){
-    var mainMenu = resource('module/mainmenu/index.js').fetch();
-
-    app.transport.onMessage('startInspect', function(mode){
-      mainMenu.item(mode).select();
-    });
-
-    app.transport.onMessage('version', function(version){
-      var l10nModule = version.l10n > 1 ? 
-        resource('module/l10n_v2/index.js') : 
-        resource('module/l10n/index.js');
-
-      mainMenu.setChildNodes([
-        l10nModule.fetch(),
-        resource('module/templater/index.js').fetch(),
-        resource('module/warnings/index.js').fetch(),
-        resource('module/fileGraph/index.js').fetch()
-      ], true);
-
-      mainMenu.selectPage();
-    });
-  }
-
-
-  //
-  // init
-  //
-  basis.ready(function(){
-    // create transport
-    app.transport.init();
-
-    // init interfaces
-    app.transport.ready(basis.fn.runOnce(initMainMenu));
-
-    app.transport.ready(function(){
-      app.transport.invoke('getVersion', function(){
-        app.transport.message({
-          action: 'version', 
-          data: '{}'
-        });
-      });
-    });
-
-    // add global key bindings
-    domEvent.addGlobalHandler('keydown', function(event){
-      var key = domEvent.key(event);
-      var sender = domEvent.sender(event);
-      if (key == domEvent.KEY.BACKSPACE && sender.tagName != 'INPUT' && sender.tagName != 'TEXTAREA')
-        domEvent.cancelDefault(event);
-    });
-
-    // notSupported panel
-    resource('module/notSupported/index.js').fetch();
+  transport.onMessage('startInspect', function(mode){
+    mainMenu.item(mode).select();
   });
 
+  transport.onMessage('version', function(version){
+    mainMenu.setChildNodes([
+      version.l10n > 1
+        ? require('./module/l10n_v2/index.js')
+        : require('./module/l10n/index.js'),
+      requireresource('./module/templater/index.js'),
+      require('./module/warnings/index.js'),
+      require('./module/fileGraph/index.js')
+    ], true);
+
+    mainMenu.selectPage();
+  });
+}
+
+
+//
+// init
+//
+// basis.ready(function(){
+//   // create transport
+//   transport.init();
+
+//   // init interfaces
+//   transport.ready(basis.fn.runOnce(initMainMenu));
+
+//   transport.ready(function(){
+//     transport.invoke('getVersion', function(){
+//       transport.message({
+//         action: 'version',
+//         data: '{}'
+//       });
+//     });
+//   });
+
+//   // add global key bindings
+//   // TODO: investigate why here???
+//   var domEvent = require('basis.dom.event');
+//   domEvent.addGlobalHandler('keydown', function(event){
+//     var key = domEvent.key(event);
+//     var sender = domEvent.sender(event);
+//     if (key == domEvent.KEY.BACKSPACE && sender.tagName != 'INPUT' && sender.tagName != 'TEXTAREA')
+//       domEvent.cancelDefault(event);
+//   });
+
+//   // notSupported panel
+//   require('module/notSupported/index.js');
+// });
+
+module.exports = require('basis.app').create({
+  init: function(){
+    return new Node({
+      template: 'OK!'
+    });
+  }
+});

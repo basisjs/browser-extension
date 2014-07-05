@@ -1,0 +1,8 @@
+{
+  "name": "basis.js developer tools",
+  "version": "2.0",
+  "dependencies": {
+    "basisjs": "1.3.0",
+    "file-graph-viewer": "lahmatiy/file-graph-viewer"
+  }
+}

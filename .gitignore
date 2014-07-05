@@ -1,1 +1,6 @@
 plugin/appcp-build/
+build/
+lib/
+tmp/
+.idea/
+node_modules/
