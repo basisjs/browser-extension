@@ -3,7 +3,7 @@ var transport = require('app.transport');
 
 var view = new Node({
   container: document.body,
-  template: resource('template/view.tmpl'),
+  template: resource('./template/view.tmpl'),
   action: {
     add: function(){
       chrome.devtools.inspectedWindow.eval(

@@ -1,22 +1,22 @@
-.file-graph-panel
+.panel
 {
   position: relative;
   float: right;
   padding: 5px 5px;
   z-index: 2;
 }
-.file-graph-panel .Basis-Button
+.panel .Basis-Button
 {
   float: right;
 }
-.file-graph-panel .error
+.panel .error
 {
   display: none;
   color: red;
   margin-top: 3px;
   padding: 3px;
 }
-.file-graph-panel__state-error .error
+.panel_state-error .error
 {
   display: inline;
 }

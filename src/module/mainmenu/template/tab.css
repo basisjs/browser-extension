@@ -1,31 +1,29 @@
-.App-MainMenu-Tab
+.tab
 {
   float: left;
   height: 100%;
   cursor: pointer;
 }
-.App-MainMenu-Tab:hover
+.tab:hover
 {
   background-color: #DDD;
 }
-
-.App-MainMenu-TabContent
-{
-  padding: 0.6em 1em;
-  display: block;
-}
-
-.App-MainMenu-Tab_selected
+.tab_selected
 {
   cursor: default;
   background: #7A7975 !important;
   color: white;
 }
-
-.App-MainMenu-Tab_disabled
+.tab_disabled
 {
   cursor: default;
   background: none !important;
   color: #AAA !important;
   text-shadow: 0 1px 0 white;
+}
+
+.content
+{
+  padding: 0.6em 1em;
+  display: block;
 }

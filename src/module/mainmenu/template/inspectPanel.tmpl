@@ -1,6 +1,8 @@
+<b:isolate/>
 <b:style src="./inspectPanel.css"/>
+<b:define name="inspectMode" type="enum" values="l10n template"/>
 
-<div class="App-InspectPanel App-InspectPanel-InspectMode_{inspectMode}">
-  <div class="App-InspectPanel-Button template" event-click="templateInspect">tmpl</div>
-  <div class="App-InspectPanel-Button l10n" event-click="l10nInspect">l10n</div>  
+<div class="panel panel_mode-{inspectMode}">
+  <div class="button button_template" event-click="templateInspect">tmpl</div>
+  <div class="button button_l10n" event-click="l10nInspect">l10n</div>  
 </div>
