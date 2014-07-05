@@ -1,5 +1,5 @@
 module.exports = {
-  File: resource('type/file.js').fetch(),
-  AppProfile: resource('type/appProfile.js').fetch(),
-  Warning: resource('type/warning.js').fetch()
-}
+  File: require('./type/file.js'),
+  AppProfile: require('./type/appProfile.js'),
+  Warning: require('./type/warning.js')
+};

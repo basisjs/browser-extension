@@ -1,19 +1,13 @@
-basis.require('basis.entity');
-basis.require('app.transport');
+var entity = require('basis.entity');
+var transport = require('app.transport');
 
-var arrayOrEmpty = function(value){
-  return Array.isArray(value)
-    ? value
-    : [];
-};
-
-var AppProfile = new basis.entity.EntityType({
+var AppProfile = entity.createType({
   name: 'AppProfile',
   singleton: true,
   fields: {
-    files: arrayOrEmpty,
-    links: arrayOrEmpty,
-    warns: arrayOrEmpty,
+    files: Array,
+    links: Array,
+    warns: Array,
     l10n: basis.fn.$self
   }
 });
@@ -21,7 +15,7 @@ var AppProfile = new basis.entity.EntityType({
 var appProfile = AppProfile();
 var timer;
 
-app.transport.onMessage('fileGraph', function(data){
+transport.onMessage('fileGraph', function(data){
   clearTimeout(timer);
   if (data && !data.err && data.data)
   {
@@ -40,7 +34,7 @@ appProfile.setSyncAction(function(){
   }, 10000); // 10 sec timeout
 
   appProfile.setState(basis.data.STATE.PROCESSING);
-  app.transport.invoke('getFileGraph');
+  transport.invoke('getFileGraph');
 });
 
 module.exports = AppProfile;

@@ -1,25 +1,25 @@
-basis.require('basis.entity');
+var entity = require('basis.entity');
+var AppProfile = require('./appProfile.js');
+var DatasetWrapper = require('basis.data').DatasetWrapper;
 
-var AppProfile = resource('appProfile.js').fetch();
-
-var Warning = new basis.entity.EntityType({
-  name: 'Warning',
-  fields: {
-    file: String,
-    message: String,
-    fatal: Boolean
-  }
+var Warning = entity.createType('Warning', {
+  file: String,
+  message: String,
+  fatal: Boolean
 });
 
-Warning.all.setDelegate(AppProfile());
+var warningTrigger = new DatasetWrapper({
+  delegate: AppProfile(),
+  dataset: Warning.all,
+  handler: {
+    update: function(sender, delta){
+      if ('warns' in delta)
+        this.dataset.sync(this.data.warns || []);
+    }
+  }
+});
 Warning.all.setSyncAction(function(){
-  this.setActive(true);
-});
-Warning.all.addHandler({
-  update: function(sender, delta){
-    if ('warns' in delta)
-      this.sync(this.data.warns || []);
-  }
+  warningTrigger.setActive(true);
 });
 
 module.exports = Warning;

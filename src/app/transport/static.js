@@ -1,7 +1,6 @@
+module.exports = {
+  isReady: true,
 
-  module.exports = {
-    isReady: true,
-
-    init: function(){
-    }
-  };
+  init: function(){
+  }
+};

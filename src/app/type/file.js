@@ -1,25 +1,19 @@
-basis.require('basis.data');
-basis.require('basis.entity');
-basis.require('app.transport');
-
-var nsEntity = basis.entity;
-var STATE = basis.data.STATE;
+var entity = require('basis.entity');
+var STATE = require('basis.data').STATE;
+var transport = require('app.transport');
 
 
 //
 // define type
-//  
-var File = new nsEntity.EntityType({
-  name: 'File',
-  fields: {
-    filename: nsEntity.StringId,
-    lastUpdate: String,
-    content: function(value){ 
-      return value == null ? null : String(value);
-    },
-    declaration: basis.fn.$self,
-    resources: basis.fn.$self
-  }
+//
+var File = entity.createType('File', {
+  filename: entity.StringId,
+  lastUpdate: String,
+  content: function(value){
+    return value == null ? null : String(value);
+  },
+  declaration: basis.fn.$self,
+  resources: basis.fn.$self
 });
 
 
@@ -27,23 +21,22 @@ var File = new nsEntity.EntityType({
 // extensions
 //
 File.createFile = function(filename){
-  app.transport.invoke('createFile', filename);
+  transport.invoke('createFile', filename);
 };
 
-File.entityType.entityClass.extend({
-  state: STATE.UNDEFINED,
+File.extendClass({
   syncAction: function(){
     this.read();
   },
   read: function(){
     this.setState(STATE.PROCESSING);
-    app.transport.invoke('readFile', this.data.filename);
+    transport.invoke('readFile', this.data.filename);
   },
   save: function(){
     if (this.modified)
     {
       this.setState(STATE.PROCESSING);
-      app.transport.invoke('saveFile', this.data.filename, this.data.content);
+      transport.invoke('saveFile', this.data.filename, this.data.content);
     }
   }
 });
@@ -52,15 +45,15 @@ File.entityType.entityClass.extend({
 //
 // transport binding
 //
-app.transport.onMessage({
+transport.onMessage({
   filesChanged: function(data){
-  if (data.inserted)
-    for (var i = 0, file; file = data.inserted[i]; i++)
-      File(file);
+    if (data.inserted)
+      for (var i = 0, file; file = data.inserted[i]; i++)
+        File(file);
 
-  if (data.deleted)
-    for (var i = 0, filename; filename = data.deleted[i]; i++)
-      File(filename).destroy();
+    if (data.deleted)
+      for (var i = 0, filename; filename = data.deleted[i]; i++)
+        File(filename).destroy();
   },
   updateFile: function(data){
     var file = File(data.filename);
