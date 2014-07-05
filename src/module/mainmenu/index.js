@@ -1,9 +1,9 @@
-basis.require('basis.ui');
-basis.require('basis.ui.tabs');
-basis.require('basis.ui.button');
-basis.require('app.type');
+require('basis.ui');
+require('basis.ui.tabs');
+require('basis.ui.button');
+require('app.type');
 
-
+var transport = require('app.transport');
 var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
 var localStorage = global.localStorage;
 
@@ -12,7 +12,7 @@ var localStorage = global.localStorage;
 //
 var inspectPanel = new basis.ui.Node({
   inspectMode: '',
-  template: resource('template/inspectPanel.tmpl'),
+  template: resource('./template/inspectPanel.tmpl'),
   binding: {
     inspectMode: 'inspectMode'
   },
@@ -21,12 +21,12 @@ var inspectPanel = new basis.ui.Node({
     var opositeMode = mode == 'template' ? 'l10n' : 'template';
 
     if (this.inspectMode == opositeMode)
-      app.transport.invoke(opositeMode + 'EndInspect');
+      transport.invoke(opositeMode + 'EndInspect');
 
     if (inspected)
-      app.transport.invoke(mode + 'EndInspect')
-    else 
-      app.transport.invoke(mode + 'StartInspect');
+      transport.invoke(mode + 'EndInspect');
+    else
+      transport.invoke(mode + 'StartInspect');
 
     this.inspectMode = !inspected ? mode : '';
     this.updateBind('inspectMode');
@@ -45,19 +45,19 @@ var inspectPanel = new basis.ui.Node({
     }
   }
 });
-app.transport.onMessage('startInspect', function(mode){
+transport.onMessage('startInspect', function(mode){
   if (inspectPanel.inspectMode != mode)
     inspectPanel.inspect(mode);
 });
-app.transport.onMessage('endInspect', function(mode){
+transport.onMessage('endInspect', function(mode){
   if (inspectPanel.inspectMode == mode)
     inspectPanel.inspect(mode);
 });
-app.transport.ready(function(){
+transport.ready(function(){
   if (inspectPanel.inspectMode)
-    app.transport.invoke(inspectPanel.inspectMode + 'StartInspect')
+    transport.invoke(inspectPanel.inspectMode + 'StartInspect');
   else
-    app.transport.invoke('getInspectMode');
+    transport.invoke('getInspectMode');
 });
 
 //
@@ -66,7 +66,7 @@ app.transport.ready(function(){
 var appProfilePanel = new basis.ui.Node({
   active: true,
   delegate: app.type.AppProfile(),
-  template: resource('template/appProfilePanel.tmpl'),
+  template: resource('./template/appProfilePanel.tmpl'),
   binding: {
     refreshButton: new basis.ui.button.Button({
       autoDelegate: true,
@@ -98,12 +98,12 @@ var appProfilePanel = new basis.ui.Node({
 module.exports = new basis.ui.tabs.PageControl({
   container: document.body,
 
-  template: resource('template/pages.tmpl'),
+  template: resource('./template/pages.tmpl'),
   binding: {
     inspectPanel: inspectPanel,
     appProfilePanel: appProfilePanel,
     tabs: new basis.ui.tabs.TabControl({
-      template: resource('template/tabs.tmpl'),
+      template: resource('./template/tabs.tmpl'),
 
       handler: {
         ownerChanged: function(){
@@ -114,11 +114,11 @@ module.exports = new basis.ui.tabs.PageControl({
       autoSelectChild: false,
       childFactory: function(config){
         if (config.delegate.tabExt)
-          config = [config.delegate.tabExt, config].merge()
+          config = [config.delegate.tabExt, config].merge();
         return new this.childClass(config);
       },
       childClass: {
-        template: resource('template/tab.tmpl'),
+        template: resource('./template/tab.tmpl'),
         binding: {
           title: 'delegate.title',
           name: 'delegate.name'
@@ -144,7 +144,7 @@ module.exports = new basis.ui.tabs.PageControl({
   },
 
   childClass: {
-    template: resource('template/page.tmpl'),
+    template: resource('./template/page.tmpl'),
 
     event_select: function(){
       basis.ui.tabs.Page.prototype.event_select.call(this);
@@ -163,7 +163,7 @@ module.exports = new basis.ui.tabs.PageControl({
       datasetChanged: function(selection){
         var page = this.pick();
         if (page && localStorage)
-          localStorage[EXTENSION_LAST_TAB_STORAGE_KEY] = page.name;        
+          localStorage[EXTENSION_LAST_TAB_STORAGE_KEY] = page.name;
       }
     }
   },

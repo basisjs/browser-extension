@@ -115,7 +115,7 @@
     wrapper: Resource,
     rule: function(object){
       return object.data.Dictionary + '_' + object.data.Token;
-    }    
+    }
   });
 
   var tokenDataset = new Subset({});
@@ -134,18 +134,18 @@
       }
     })
   });
-  
+
   //
   // add/remove culture
   //
-  var usedCulturesDataset = new basis.data.Dataset({});  
+  var usedCulturesDataset = new basis.data.Dataset({});
 
   function addCulture(culture){
     var usedCulturesCount = usedCulturesDataset.getItems().length - 1;
 
     var dictionaries = Dictionary.all.getItems();
     for (var i = 0, dictionary; dictionary = dictionaries[i]; i++)
-    { 
+    {
       DictionaryCulture({
         Dictionary: dictionary.data.Dictionary,
         Culture: culture,
@@ -166,15 +166,17 @@
 
     for (var i = 0, dictionary; dictionary = dictionaries[i]; i++)
     {
-      DictionaryCulture({ 
-        Dictionary: dictionary.getId(), 
-        Culture: culture 
+      DictionaryCulture({
+        Dictionary: dictionary.getId(),
+        Culture: culture
       }).destroy();
     }
 
     if (culturePosition)
     {
-      var cultures = DictionaryCulture.all.getItems().filter(function(item){ return item.data.Position > culturePosition }) || [];
+      var cultures = DictionaryCulture.all.getItems().filter(function(item){
+        return item.data.Position > culturePosition;
+      }) || [];
       for (var i = 0, item; item = cultures[i]; i++)
         item.set('Position', item.data.Position - 1);
     }
@@ -190,7 +192,7 @@
         for (var i = 0, culture; culture = delta.deleted[i]; i++)
           deleteCulture(culture.data.Culture);
     }
-  });  
+  });
 
   //
   // dynamic
@@ -213,7 +215,7 @@
       dictionaryCultureDataset.setSource(value ? dictionaryCultureSplit.getSubset(value, true) : null);
       tokenDataset.setSource(value ? tokenSplit.getSubset(value, true) : null);
 
-      resourceDictionaryCultureMerge.clear();      
+      resourceDictionaryCultureMerge.clear();
 
       if (value)
       {
@@ -227,7 +229,7 @@
             Position: i
           });
 
-          resourceDictionaryCultureMerge.addSource(resourceSplitByDictionaryCulture.getSubset(value + '_' + culture.data.Culture, true));        
+          resourceDictionaryCultureMerge.addSource(resourceSplitByDictionaryCulture.getSubset(value + '_' + culture.data.Culture, true));
         }
       }
     }
@@ -245,7 +247,7 @@
         for (var i = 0, culture; culture = delta.inserted[i]; i++)
           resourceDictionaryCultureMerge.addSource(resourceSplitByDictionaryCulture.getSubset(property_CurrentDictionary.value + '_' + culture.data.Culture, true));
       }
-        
+
       if (delta.deleted)
       {
         for (var i = 0, token; token = tokens[i]; i++)
@@ -307,7 +309,7 @@
 
         createEmptyResource(this);
       }
-      
+
       if ('TokenType' in delta)
       {
         createEmptyResource(this);
@@ -330,7 +332,7 @@
       if ('IsPlural' in delta)
         setImmediate(adjustPlurals);
     }
-  }
+  };
 
   function createEmptyResource(token){
     if (/string|key|index/.test(token.data.TokenType))
@@ -338,26 +340,26 @@
       var cultures = usedCulturesDataset.getItems();
       for (var i = 0, culture; culture = cultures[i]; i++)
       {
-        var resourceId = { 
-          Dictionary: property_CurrentDictionary.value, 
+        var resourceId = {
+          Dictionary: property_CurrentDictionary.value,
           Token: token.data.Token,
           Culture: culture.data.Culture
-        }
+        };
         var resource = Resource.get(resourceId);
         if (!resource)
           Resource(resourceId);
-      }    
+      }
     }
-  }    
+  }
 
   function clearEmptyResource(token){
     if (/string|key|index/.test(token.data.TokenType))
-    {    
+    {
       var cultures = usedCulturesDataset.getItems();
       for (var i = 0, culture; culture = cultures[i]; i++)
       {
-        var resource = Resource.get({ 
-          Dictionary: property_CurrentDictionary.value, 
+        var resource = Resource.get({
+          Dictionary: property_CurrentDictionary.value,
           Token: token.data.Token,
           Culture: culture.data.Culture
         });
@@ -368,7 +370,7 @@
             resource.destroy();
         }
       }
-    }    
+    }
   }
 
   function adjustPlurals(){
@@ -381,7 +383,7 @@
 
     for (var i = 0, token; token = pluralTokens[i]; i++)
     {
-      for (var j = 0; j < maxPluralFormCount; j ++)
+      for (var j = 0; j < maxPluralFormCount; j++)
       {
         var tokenId = {
           Dictionary: token.data.Dictionary,
@@ -406,7 +408,7 @@
         Dictionary: token.data.Dictionary,
         Token: token.data.TokenParent
       });
-      
+
       if (parentToken && parentToken.data.IsPlural)
       {
         if (Number(token.data.TokenKey) >= maxPluralFormCount)
@@ -415,8 +417,8 @@
         {
           for (var j = 0, culture; culture = cultures[j]; j++)
           {
-            var resource = Resource.get({ 
-              Dictionary: property_CurrentDictionary.value, 
+            var resource = Resource.get({
+              Dictionary: property_CurrentDictionary.value,
               Token: token.data.Token,
               Culture: culture.data.Culture,
             });
@@ -432,8 +434,8 @@
 
         for (var j = 0, culture; culture = cultures[j]; j++)
         {
-          var resource = Resource.get({ 
-            Dictionary: property_CurrentDictionary.value, 
+          var resource = Resource.get({
+            Dictionary: property_CurrentDictionary.value,
             Token: token.data.Token,
             Culture: culture.data.Culture
           });
@@ -469,12 +471,12 @@
           var dict = Dictionary.get(item.data.Dictionary);
           if (dict)
             dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
-        }      
+        }
 
-      for (var dict in modifiedDict) 
+      for (var dict in modifiedDict)
         app.transport.invoke('updateDictionary', exportDictionary(dict));
     }
-  }
+  };
   var MODIFIED_ITEM_HANDLER = {
     update: function(){
       app.transport.invoke('updateDictionary', exportDictionary(this.data.Dictionary));
@@ -484,7 +486,7 @@
       if (dict)
         dict.set('ModificationCount', dict.data.ModificationCount - 1, true);
     }
-  }
+  };
 
   var tokenModified = new Subset({
     source: Token.all,
@@ -508,8 +510,8 @@
     rule: function(object){
       return !!object.modified && (object.modified.Value || object.data.Value);
     }
-  });  
-  
+  });
+
   var tokenModifiedSplit = new Split({
     source: tokenModified,
     wrapper: Token,
@@ -520,7 +522,7 @@
     source: resourceModified,
     wrapper: Resource,
     rule: 'data.Dictionary'
-  });  
+  });
 
   //
   // extend Dictionary
@@ -551,7 +553,7 @@
   function exportDictionary(dictionary){
     var tokens = tokenSplit.getSubset(dictionary, true).getItems();
     var cultures = Culture.all.getItems().map(basis.getter('data.Culture'));
-    
+
     var tokenKeys = [];
     var tokenTypes = {};
     var cultureValues = {};
@@ -584,7 +586,7 @@
           Token: token.data.Token,
           Culture: culture
         });
-        
+
         if (resource)
         {
           if (tokenParent)
@@ -608,7 +610,7 @@
       tokenKeys: tokenKeys,
       tokenTypes: tokenTypes,
       cultureValues: cultureValues
-    }
+    };
   }
 
   //
@@ -640,7 +642,7 @@
         if (tokenType == 'string')
         {
           resources.push({
-            Dictionary: dictionary, 
+            Dictionary: dictionary,
             Token: token,
             Culture: culture,
             Value: value
@@ -672,7 +674,7 @@
               break;
 
             case 'object':
-              values = value
+              values = value;
               break;
           }
 
@@ -682,12 +684,12 @@
             tokenTypeMap[tokenKey] = tokenType == 'object' ? 'key' : (tokenType == 'array' ? 'index' : '');
 
             resources.push({
-              Dictionary: dictionary, 
+              Dictionary: dictionary,
               Token: token + (key ? '.' + key : ''),
               Culture: culture,
               Value: values[key]
             });
-          }          
+          }
         }
       }
     }
@@ -712,7 +714,7 @@
     var delta = [];
     var tokensModified = tokenModifiedSplit.getSubset(dictionary, true).getItems();
     var resourcesModified = resourceModifiedSplit.getSubset(dictionary, true).getItems();
-    
+
     [].concat(tokensModified, resourcesModified).forEach(function(object){
       delta.push({
         type: object.entityType,
@@ -742,7 +744,7 @@
         app.transport.invoke('loadDictionaryTokens', this.data.filename);
       }
     }
-  });  
+  });
 
   property_CurrentDictionary.addLink(dictionaryFile, function(value){
     this.setDelegate(app.type.File(value));
@@ -765,13 +767,13 @@
         processDictionaries(object.data.l10n);
     }
   });
-  
+
   if (appProfile.data.l10n)
     processDictionaries(appProfile.data.l10n);
 
   function processDictionaries(data){
     for (var dictName in data)
-      Dictionary(dictName)
+      Dictionary(dictName);
   }
 
 
@@ -805,14 +807,14 @@
           PluralFormComment: ['1, 21, 31...', '2, 3, 4, 22...', '5-20, 25...']
         },
         {
-          Culture: 'en-US', 
+          Culture: 'en-US',
           PluralFormCount: 2,
           PluralFormComment: ['one', 'not one']
         }
       ];
       plurals.map(Culture);
     },
-    
+
     dictionaryList: function(data){
       data.map(Dictionary);
     },
@@ -826,19 +828,21 @@
     newDictionary: function(data){
       Dictionary(data.dictionaryName);
     },
-          
+
     saveDictionary: function(data){
       if (data.result == 'success')
       {
         Dictionary(data.dictionary).setState(STATE.READY);
         processDictionary(data.dictionary, data.tokenKeys, data.tokenTypes, data.cultureValues);
       }
-      else 
+      else
+      {
         Dictionary(data.dictionary).setState(STATE.ERROR, data.errorText);
-    }    
+      }
+    }
 
-  });  
-  
+  });
+
   //
   // exports
   //
@@ -864,10 +868,10 @@
 
     usedCulturesDataset: usedCulturesDataset,
 
-    addCulture: function(culture){ 
+    addCulture: function(culture){
       usedCulturesDataset.add([Culture(culture)]);
     },
-    deleteCulture: function(culture){ 
+    deleteCulture: function(culture){
       usedCulturesDataset.remove([Culture(culture)]);
     }
-  }
+  };

@@ -6,14 +6,9 @@
   basis.require('basis.entity');
   basis.require('basis.ui');
   basis.require('basis.ui.field');
-  basis.require('basis.ui.button');
-  basis.require('basis.data.property');
-  basis.require('basis.net');
   basis.require('basis.ui.resizer');
 
-  //var dictionaries;
-
-  var l10nType = resource('type.js')();
+  var l10nType = resource('./type.js')();
 
   var Dictionary = l10nType.Dictionary;
   var Token = l10nType.Token;
@@ -22,7 +17,7 @@
   var DictionaryCulture = l10nType.DictionaryCulture;
 
   var property_CurrentDictionary  = l10nType.currentDictionary;
-  var property_CurrentCulture = new basis.data.property.Property(null);
+  var property_CurrentCulture = new basis.data.Value();
 
   //
   // Layout
@@ -61,7 +56,7 @@
       example: cancelFilterButton
     }
   });
-  
+
   var cancelFilterButton = new basis.ui.Node({
     container: dictionaryListMatchInput.element,
     template: resource('template/cancelFilterButton.tmpl'),
@@ -76,7 +71,7 @@
   });
 
 
-  //dictionary editor 
+  //dictionary editor
 
   var dictionaryEditor = resource('module/editor/index.js')();
   property_CurrentDictionary.addLink(dictionaryEditor, function(value){
@@ -101,7 +96,7 @@
     element: layout.tmpl.sidebar
   });
 
-  
+
   //
   // message handlers
   //
@@ -120,11 +115,11 @@
       property_CurrentCulture.set(data.currentCulture);
       l10nType.addCulture(data.currentCulture);
     },
-    
-    cultureChanged: function(data){  
+
+    cultureChanged: function(data){
       property_CurrentCulture.set(data);
     },
-    
+
     dictionaryList: function(data){
       /*if (lastDictionary)
       {
@@ -136,9 +131,9 @@
     token: function(data){
       property_CurrentDictionary.set(data.dictionaryName);
 
-      var dc = DictionaryCulture.get({ 
-        Dictionary: data.dictionaryName, 
-        Culture: property_CurrentCulture.value 
+      var dc = DictionaryCulture.get({
+        Dictionary: data.dictionaryName,
+        Culture: property_CurrentCulture.value
       });
       if (!dc)
         l10nType.addCulture(property_CurrentCulture.value);
@@ -149,7 +144,7 @@
         Token: data.selectedToken
       }));
     }
-  });  
+  });
 
   //
   // exports

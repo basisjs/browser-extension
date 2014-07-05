@@ -1,7 +1,8 @@
-basis.require('basis.dom');
-basis.require('basis.ui');
+var Node = require('basis.ui').Node;
+var transport = require('app.transport');
 
-var view = new basis.ui.Node({
+var view = new Node({
+  container: document.body,
   template: resource('template/view.tmpl'),
   action: {
     add: function(){
@@ -10,12 +11,11 @@ var view = new basis.ui.Node({
         '  basis.require("basis.devpanel");'
       );
     }
-  },
-  container: document.body
+  }
 });
 
-app.transport.ready(basis.fn.runOnce(function(){
-  basis.dom.remove(view.element);
+transport.ready(basis.fn.runOnce(function(){
+  basis.doc.remove(view.element);
 }));
 
 module.exports = view;
