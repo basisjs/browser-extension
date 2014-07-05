@@ -1,9 +1,8 @@
+<b:style src="./cultureListItem.css"/>
 
-  <b:resource src="cultureListItem.css"/>
-
-  <b:include src="basis.ui.field.ComboboxItem" class="CultureListItem">
-    <b:replace ref="title">
-      <span class="CultureListItem-Flag" style="background-position: -{spriteX}px -{spriteY}px"></span>
-	    {title}
-	  </b:replace>
-  </b:include>
+<b:include src="basis.ui.field.ComboboxItem" class="CultureListItem">
+  <b:replace ref="title">
+    <span class="CultureListItem-Flag" style="background-position: -{spriteX}px -{spriteY}px"></span>
+    {title}
+  </b:replace>
+</b:include>
