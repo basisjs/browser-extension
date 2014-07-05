@@ -1,17 +1,16 @@
+<b:style src="./livememo.css"/>
 
-  <b:style src="./livememo.css"/>
-  
-  <div class="livememo livememo_{disabled} livememo_{focused}" event-scroll="resetScroll">
-    <textarea{memo|focus} class="livememo__memo livememo__memo_{disabled} livememo__memo_{focused}" style="height: {height}"
-      value="{value}"
-      disabled="{disabled}"
-      event-focus="focus"
-      event-blur="blur"
-      event-keyup="keyup"
-      event-keydown="keydown"
-      event-change="change"
-    />
-    <textarea{shadowMemo} class="livememo__shadow"
-      value="{value}"
-    />
-  </div>
+<div class="livememo livememo_{disabled} livememo_{focused}" event-scroll="resetScroll">
+  <textarea{memo|focus} class="livememo__memo livememo__memo_{disabled} livememo__memo_{focused}" style="height: {height}"
+    value="{value}"
+    disabled="{disabled}"
+    event-focus="focus"
+    event-blur="blur"
+    event-keyup="keyup"
+    event-keydown="keydown"
+    event-change="change"
+  />
+  <textarea{shadowMemo} class="livememo__shadow"
+    value="{value}"
+  />
+</div>

@@ -1,10 +1,7 @@
-basis.require('basis.data');
-basis.require('basis.ui');
-basis.require('app.type');
+var Node = require('basis.ui').Node;
+var appProfile = require('app.type').AppProfile();
+var graphView = basis.require('./lib/file-graph-viewer/src/module/view/index.js');
 
-var appProfile = app.type.AppProfile();
-
-var graphView = basis.resource('lib/file-graph-viewer/src/module/view/index.js').fetch();
 graphView.setActive(true);
 graphView.addHandler({
   update: function(sender){
@@ -14,7 +11,7 @@ graphView.addHandler({
 graphView.setDelegate(appProfile);
 
 module.exports = new basis.ui.Node({
-  template: resource('template/view.tmpl'),
+  template: resource('./template/view.tmpl'),
   binding: {
     graph: graphView
   }

@@ -1,16 +1,16 @@
-require('basis.ui');
-require('basis.ui.tabs');
-require('basis.ui.button');
-require('app.type');
-
+var tabs = require('basis.ui.tabs');
+var Node = require('basis.ui').Node;
+var Button = require('basis.ui.button').Button;
+var appProfile = require('app.type').AppProfile();
 var transport = require('app.transport');
+
 var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
 var localStorage = global.localStorage;
 
 //
 // inspect menu
 //
-var inspectPanel = new basis.ui.Node({
+var inspectPanel = new Node({
   inspectMode: '',
   template: resource('./template/inspectPanel.tmpl'),
   binding: {
@@ -63,12 +63,12 @@ transport.ready(function(){
 //
 // app profile control panel
 //
-var appProfilePanel = new basis.ui.Node({
+var appProfilePanel = new Node({
   active: true,
-  delegate: app.type.AppProfile(),
+  delegate: appProfile,
   template: resource('./template/appProfilePanel.tmpl'),
   binding: {
-    refreshButton: new basis.ui.button.Button({
+    refreshButton: new Button({
       autoDelegate: true,
       caption: 'Refresh app profile',
       click: function(){
@@ -95,14 +95,14 @@ var appProfilePanel = new basis.ui.Node({
 //
 // main
 //
-module.exports = new basis.ui.tabs.PageControl({
+module.exports = new tabs.PageControl({
   container: document.body,
 
   template: resource('./template/pages.tmpl'),
   binding: {
     inspectPanel: inspectPanel,
     appProfilePanel: appProfilePanel,
-    tabs: new basis.ui.tabs.TabControl({
+    tabs: new tabs.TabControl({
       template: resource('./template/tabs.tmpl'),
 
       handler: {
@@ -124,12 +124,12 @@ module.exports = new basis.ui.tabs.PageControl({
           name: 'delegate.name'
         },
         event_enable: function(){
-          basis.ui.tabs.Tab.prototype.event_enable.call(this);
+          tabs.Tab.prototype.event_enable.call(this);
           if (this.delegate.selected)
             this.select();
         },
         event_select: function(){
-          basis.ui.tabs.Tab.prototype.event_select.call(this);
+          tabs.Tab.prototype.event_select.call(this);
           this.delegate.select();
         },
         listen: {
@@ -147,7 +147,7 @@ module.exports = new basis.ui.tabs.PageControl({
     template: resource('./template/page.tmpl'),
 
     event_select: function(){
-      basis.ui.tabs.Page.prototype.event_select.call(this);
+      tabs.Page.prototype.event_select.call(this);
 
       if (this.lazyContent)
       {
