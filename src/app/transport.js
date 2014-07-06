@@ -4,7 +4,7 @@ var config = resource('./transport/static.js');
 // choose suitable config
 if (global.chrome && global.chrome.extension)
   config = resource('./transport/plugin.js');
-else if (global.appcp_server)
+else
   config = resource('./transport/server.js');
 
 /**

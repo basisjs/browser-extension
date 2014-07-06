@@ -1,0 +1,6 @@
+{
+  "title": "Basis.js Developer Tools",
+  "dependencies": {
+    "socket.io": "1.0.6"
+  }
+}

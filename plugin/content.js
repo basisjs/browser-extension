@@ -1,8 +1,10 @@
 (function(){
   var transportInited = false;
-  
-  var port = chrome.extension.connect({name: "contentScriptPort"});
-  port.onMessage.addListener(function(msg) {
+
+  var port = chrome.extension.connect({
+    name: 'contentScriptPort'
+  });
+  port.onMessage.addListener(function(msg){
     if (msg.action == 'appcpReady')
       initTransport();
   });
@@ -14,7 +16,7 @@
     {
       sendMessage('ready');
       return;
-    }  
+    }
 
     var sharedDOM = document.getElementById('devpanelSharedDom');
     if (sharedDOM)
@@ -28,7 +30,7 @@
 
         sendMessage(action, data);
       });
-      
+
       sendMessage('ready');
       transportInited = true;
     }

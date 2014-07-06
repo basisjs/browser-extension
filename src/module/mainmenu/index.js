@@ -2,6 +2,7 @@ var tabs = require('basis.ui.tabs');
 var Node = require('basis.ui').Node;
 var Button = require('basis.ui.button').Button;
 var appProfile = require('app.type').AppProfile();
+var Client = require('app.type').Client;
 var transport = require('app.transport');
 
 var EXTENSION_LAST_TAB_STORAGE_KEY = 'BasisDevtoolLastTab';
@@ -102,6 +103,16 @@ module.exports = new tabs.PageControl({
   binding: {
     inspectPanel: inspectPanel,
     appProfilePanel: appProfilePanel,
+    clients: new basis.ui.Node({
+      dataSource: Client.all,
+      childClass: {
+        template: '<li>{title} {location}</li>',
+        binding: {
+          title: 'data:',
+          location: 'data:'
+        }
+      }
+    }),
     tabs: new tabs.TabControl({
       template: resource('./template/tabs.tmpl'),
 

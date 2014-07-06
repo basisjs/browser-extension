@@ -1,5 +1,5 @@
 {
-  "name": "basis.js developer tools",
+  "name": "Basis.js Developer Tools",
   "version": "2.0",
   "dependencies": {
     "basisjs": "1.3.0",
