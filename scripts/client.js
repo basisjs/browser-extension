@@ -3,6 +3,7 @@
   var online = false;
   var title_ = getTitle();
   var location_ = getLocation();
+  var devpanel_ = getDevpanel();
   var socket;
 
   if (typeof io != 'undefined')
@@ -22,18 +23,26 @@
   function getLocation(){
     return location_ = String(location);
   }
+  function getDevpanel(){
+    return devpanel_ = typeof basis != 'undefined' && !!basis.devpanel;
+  }
   function getSelfInfo(){
     return {
       clientId: sessionStorage['basisjs-acp-clientId'],
       title: getTitle(),
-      location: getLocation()
+      location: getLocation(),
+      devpanel: getDevpanel()
     };
   }
 
   setInterval(function(){
-    if (online && (title_ != getTitle() || location_ != getLocation()))
+    if (online && (
+          title_ != getTitle() ||
+          location_ != getLocation() ||
+          devpanel_ != getDevpanel()
+       ))
       socket.emit('info', getSelfInfo());
-  }, 200);
+  }, 150);
 
   // connection events
   socket.on('connect', function(){
@@ -48,7 +57,18 @@
       sessionStorage['basisjs-acp-clientId'] = data.clientId;
   });
 
-  socket.on('clientList', function(data){
-    data.forEach(function(i){ console.log(i); });
+  socket.on('init-devpanel', function(args, callback){
+    if (typeof basis == 'undefined')
+      return callback('basis.js is not found');
+    if (!basis.require)
+      return callback('looks like isn\'t a basis.js');
+
+    try {
+      basis.require('basis.devpanel');
+      callback();
+    } catch(e) {
+      callback(e);
+    }
   });
+
 })(this);

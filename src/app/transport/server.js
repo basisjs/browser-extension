@@ -41,15 +41,9 @@ module.exports = {
     basis.doc.head.add(script);
   },
 
-  invoke: function(funcName){
+  invoke: function(action, clientId, args, callback){
     if (this.socket)
-      this.socket.emit('message', {
-        action: 'call',
-        data: {
-          method: funcName,
-          args: basis.array.from(arguments, 1)
-        }
-      });
+      this.socket.emit(action, clientId, args, callback);
     else
       console.warn('no socket');
   }

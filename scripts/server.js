@@ -3,13 +3,18 @@ var http = require('http');
 var socketIo = require('socket.io');
 
 var TTL = 15 * 60 * 1000; // 15 min offline -> remove from client list
+var CLIENT_FIELDS = {
+  title: '[no title]',
+  location: '[unknown]',
+  devpanel: false
+};
 var ports = {};
 var clients = {};
 
-var clientServer = socketIo(http.createServer().listen(null, function(){
+var clientServer = socketIo(http.createServer().listen(9101, function(){
   ports.client = this.address().port;
 }));
-var acpServer = socketIo(http.createServer().listen(null, function(){
+var acpServer = socketIo(http.createServer().listen(9102, function(){
   ports.acp = this.address().port;
 }));
 
@@ -44,10 +49,17 @@ function getClientList(){
   var result = [];
 
   for (var key in clients)
-    result.push(['id', 'online', 'title', 'location'].reduce(function(res, field){
-      res[field] = clients[key][field];
-      return res;
-    }, {}));
+  {
+    var client = clients[key];
+    var info = Object.keys(CLIENT_FIELDS)
+      .reduce(function(res, field){
+        res[field] = clients[key][field];
+        return res;
+      }, {});
+    info.id = client.id;
+    info.online = !!client.socket;
+    result.push(info);
+  }
 
   return result;
 }
@@ -56,42 +68,56 @@ function updateClientList(){
     acpServer.sockets.emit('clientList', getClientList());
 }
 
-function Client(id, online, title, location){
+function Client(id, socket, data){
   this.id = id;
-  this.online = !!online;
-  this.title = title || '[no title]';
-  this.location = location || '[unknown]';
+  this.socket = socket;
+
+  for (var key in CLIENT_FIELDS)
+    this[key] = Object.prototype.hasOwnProperty.call(data, key)
+      ? data[key]
+      : CLIENT_FIELDS[key];
 
   clients[id] = this;
   updateClientList();
 }
 Client.prototype = {
   id: null,
-  online: false,
+  socket: null,
 
   offlineTime: null,
-  setOnline: function(){
-    if (!this.online)
+  update: function(data){
+    for (var key in data)
+      if (Object.prototype.hasOwnProperty.call(CLIENT_FIELDS, key))
+        this[key] = data[key];
+  },
+  setOnline: function(socket){
+    if (!this.socket)
     {
       this.offlineTime = null;
-      this.online = true;
+      this.socket = socket;
       updateClientList();
     }
   },
   setOffline: function(){
-    if (this.online)
+    if (this.socket)
     {
-      this.online = false;
+      this.socket = null;
       this.offlineTime = new Date();
       updateClientList();
       setTimeout(function(){
-        if (!this.online && (new Date() - this.offlineTime) > TTL)
+        if (!this.socket && (new Date() - this.offlineTime) > TTL)
         {
           delete clients[this.clientId];
           updateClientList();
         }
       }.bind(this), TTL);
     }
+  },
+  send: function(action, args, callback){
+    if (this.socket)
+      this.socket.emit(action, args, callback);
+    else
+      callback('Client is offline');
   }
 };
 
@@ -117,12 +143,13 @@ clientServer.sockets.on('connect', function(socket){
     var client = clients[clientId];
 
     if (!client)
-      client = new Client(clientId, true, data.title, data.location);
+    {
+      client = new Client(clientId, this, data);
+    }
     else
     {
-      client.title = data.title;
-      client.location = data.location;
-      client.setOnline();
+      client.update(data);
+      client.setOnline(this);
     }
 
     this.clientId = clientId;
@@ -143,8 +170,8 @@ clientServer.sockets.on('connect', function(socket){
       return;
     }
 
-    client.location = data.location || '[unknown]';
-    client.title = data.title || '[no title]';
+    client.update(data);
+    updateClientList();
 
     updateClientList();
   });
@@ -167,6 +194,23 @@ acpServer.sockets.on('connect', function(socket){
     this.emit('handshake', {
       clients: getClientList()
     });
+  });
+
+  socket.on('init-devpanel', function(clientId, args, callback){
+    var client = clients[clientId];
+
+    if (typeof callback != 'function')
+      callback = Function();
+
+    if (!client)
+    {
+      var er = 'Wrong client id (' + clientId + '), client info not found';
+      console.error(er);
+      callback(er);
+      return;
+    }
+
+    client.send('init-devpanel', null, callback);
   });
 });
 

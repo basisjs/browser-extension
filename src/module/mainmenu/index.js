@@ -103,16 +103,7 @@ module.exports = new tabs.PageControl({
   binding: {
     inspectPanel: inspectPanel,
     appProfilePanel: appProfilePanel,
-    clients: new basis.ui.Node({
-      dataSource: Client.all,
-      childClass: {
-        template: '<li>{title} {location}</li>',
-        binding: {
-          title: 'data:',
-          location: 'data:'
-        }
-      }
-    }),
+    connections: resource('./module/connections/index.js'),
     tabs: new tabs.TabControl({
       template: resource('./template/tabs.tmpl'),
 
