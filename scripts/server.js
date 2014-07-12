@@ -107,7 +107,7 @@ Client.prototype = {
       setTimeout(function(){
         if (!this.socket && (new Date() - this.offlineTime) > TTL)
         {
-          delete clients[this.clientId];
+          delete clients[this.id];
           updateClientList();
         }
       }.bind(this), TTL);
