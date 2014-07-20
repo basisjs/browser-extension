@@ -9,11 +9,11 @@
   if (typeof io != 'undefined')
   {
     socket = io.connect('{SELF_HOST}', { transports: ['websocket', 'polling'] });
-    console.log('basisjs-acp: connected');
+    console.log('[basisjs-acp] Successful inited');
   }
   else
   {
-    console.warn('basisjs-acp: socket.io is not defined');
+    console.warn('[basisjs-acp] Init fault: socket.io is not defined');
     return;
   }
 
@@ -60,7 +60,7 @@
   socket.on('init-devpanel', function(args, callback){
     if (typeof basis == 'undefined')
       return callback('basis.js is not found');
-    if (!basis.require)
+    if (!basis || typeof basis.require !== 'function')
       return callback('looks like isn\'t a basis.js');
 
     try {

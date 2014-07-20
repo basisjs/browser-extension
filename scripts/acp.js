@@ -3,7 +3,7 @@
 
   if (typeof io != 'undefined')
   {
-    global.__AcpSocket__ = io.connect('{SELF_HOST}', { transports: ['websocket', 'polling'] });
+    global.basisjsAcpSocket = io.connect('{SELF_HOST}', { transports: ['websocket', 'polling'] });
     console.log('basisjs-acp: connected');
   }
   else

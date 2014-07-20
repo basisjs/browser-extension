@@ -3,15 +3,21 @@ var extensionUIPorts = {};
 var extensionTabIdTab = {};
 
 function attachContentScriptPort(port){
-  var tabId = port.sender.tab.id;
+  var tabId = port.sender.tab && port.sender.tab.id;
   contentScriptPorts[tabId] = port;
 
-  port.onMessage.addListener(function(msg){
+  port.onMessage.addListener(function(payload){
     if (extensionUIPorts[tabId])
-      extensionUIPorts[tabId].postMessage({ action: msg.action, data: msg.data });
+    {
+      // proxy: content.js -> extension
+      extensionUIPorts[tabId].postMessage(payload);
 
-    if ((msg.action == 'token' || msg.action == 'pickTemplate') && extensionTabIdTab[tabId])
-      chrome.tabs.update(extensionTabIdTab[tabId], { active: true });
+      var action = payload.action;
+      if (action == 'token' || action == 'pickTemplate')
+        chrome.tabs.update(extensionTabIdTab[tabId], {
+          active: true
+        });
+    }
   });
 
   port.onDisconnect.addListener(function(){
@@ -20,34 +26,38 @@ function attachContentScriptPort(port){
 }
 
 function attachExtensionUIPort(port){
-  var tabId;
   var extensionTabId = port.sender.tab && port.sender.tab.id;
+  var inspectedTabId;
 
-  port.onMessage.addListener(function(msg){
-    if (msg.action == 'extensionInited')
+  port.onMessage.addListener(function(payload){
+    console.log('extension ->', payload);
+    var action = payload.action;
+
+    // save references
+    if (action == 'extensionInit')
     {
-      extensionUIPorts[msg.tabId] = port;
-      tabId = msg.tabId;
+      inspectedTabId = payload.tabId;
+      extensionUIPorts[inspectedTabId] = port;
 
       if (extensionTabId)
-        extensionTabIdTab[msg.tabId] = extensionTabId;
+        extensionTabIdTab[inspectedTabId] = extensionTabId;
     }
 
-    if (contentScriptPorts[tabId])
-      contentScriptPorts[tabId].postMessage({ action: msg.action });
+    // proxy: extension -> content.js
+    if (contentScriptPorts[inspectedTabId])
+      contentScriptPorts[inspectedTabId].postMessage(payload);
   });
 
   port.onDisconnect.addListener(function(){
-    if (tabId)
-      delete extensionUIPorts[tabId];
+    delete extensionUIPorts[inspectedTabId];
   });
 }
 
 chrome.extension.onConnect.addListener(function(port){
-  if (port.name == 'contentScriptPort')
+  if (port.name == 'basisjsContentScriptPort')
     attachContentScriptPort(port);
 
-  if (port.name == 'extensionUIPort')
+  if (port.name == 'basisjsExtensionPort')
     attachExtensionUIPort(port);
 });
 

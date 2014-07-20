@@ -45,7 +45,7 @@ File.extendClass({
 //
 // transport binding
 //
-transport.onMessage({
+transport.on({
   filesChanged: function(data){
     if (data.inserted)
       for (var i = 0, file; file = data.inserted[i]; i++)

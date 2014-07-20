@@ -116,7 +116,7 @@ module.exports = new tabs.PageControl({
       autoSelectChild: false,
       childFactory: function(config){
         if (config.delegate.tabExt)
-          config = [config.delegate.tabExt, config].merge();
+          config = basis.object.merge(config.delegate.tabExt, config);
         return new this.childClass(config);
       },
       childClass: {

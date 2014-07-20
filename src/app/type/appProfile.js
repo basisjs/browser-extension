@@ -13,28 +13,10 @@ var AppProfile = entity.createType({
 });
 
 var appProfile = AppProfile();
-var timer;
-
-transport.onMessage('fileGraph', function(data){
-  clearTimeout(timer);
-  if (data && !data.err && data.data)
-  {
-    appProfile.setState(basis.data.STATE.READY);
-    appProfile.update(data.data.toObject());
-  }
-  else
-    appProfile.setState(basis.data.STATE.ERROR, (data && data.err) || 'Wrong data from server');
-});
 
 appProfile.setState(basis.data.STATE.UNDEFINED);
 appProfile.setSyncAction(function(){
-  clearTimeout(timer);
-  timer = setTimeout(function(){
-    appProfile.setState(basis.data.STATE.ERROR, 'Timeout');
-  }, 10000); // 10 sec timeout
-
-  appProfile.setState(basis.data.STATE.PROCESSING);
-  transport.invoke('getFileGraph');
+  transport.invoke('getFileGraph', null, null, this);
 });
 
 module.exports = AppProfile;

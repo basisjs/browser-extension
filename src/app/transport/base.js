@@ -1,16 +1,7 @@
-// default
-var config = resource('./transport/static.js');
+module.exports = basis.Class(null, {
+  className: 'Transport',
+  extendConstructor_: true,
 
-// choose suitable config
-if (global.chrome && global.chrome.extension)
-  config = resource('./transport/plugin.js');
-else
-  config = resource('./transport/server.js');
-
-/**
-* transport
-*/
-(module.exports = basis.object.complete(config(), {
   isReady: false,
   handlers: {},
 
@@ -22,15 +13,20 @@ else
   },
 
   message: function(message){
+    console.log('to ext:', message);
+
     if (message.action == 'ready')
       this.isReady = true;
 
     var handlers = this.handlers[message.action];
     if (handlers)
       for (var i = 0, handler; handler = handlers[i]; i++)
-        handler.handler.call(handler.context, message.data && JSON.parse(message.data));
+        handler.handler.call(handler.context, message.data);
   },
-  onMessage: function(messageNameOrHandlers, handlerOrContext, handlerContext){
+  onMessage: function(){
+    this.on.apply(this, arguments);
+  },
+  on: function(messageNameOrHandlers, handlerOrContext, handlerContext){
     var handlers;
     var handlerContext;
 
@@ -59,5 +55,6 @@ else
   },
 
   invoke: function(){
+    // should be override in subclasses
   }
-}));
+});

@@ -1,40 +1,6 @@
 (function(){
-  var transportInited = false;
-
-  var port = chrome.extension.connect({
-    name: 'contentScriptPort'
-  });
-  port.onMessage.addListener(function(msg){
-    if (msg.action == 'appcpReady')
-      initTransport();
-  });
-
-  document.body.addEventListener('devpanelInit', initTransport);
-
-  function initTransport(){
-    if (transportInited)
-    {
-      sendMessage('ready');
-      return;
-    }
-
-    var sharedDOM = document.getElementById('devpanelSharedDom');
-    if (sharedDOM)
-    {
-      sharedDOM.addEventListener('devpanelData', function(){
-        var action = sharedDOM.getAttribute('action');
-        var data = sharedDOM.innerText;
-
-        //console.log('transfer data action:', action);
-        //console.log('transfer data:', data);
-
-        sendMessage(action, data);
-      });
-
-      sendMessage('ready');
-      transportInited = true;
-    }
-  }
+  var extensionReady = false;
+  var devpanelExists = false;
 
   function sendMessage(action, data){
     port.postMessage({
@@ -43,7 +9,72 @@
     });
   }
 
-  sendMessage('contentScriptInited');
+  function notifyReady(){
+    if (extensionReady && devpanelExists)
+      sendMessage('ready');
+  }
 
-  //console.log('content script inited');
+  function setDevpanelExists(e){
+    if (!devpanelExists)
+    {
+      devpanelExists = true;
+      notifyReady();
+    }
+  }
+
+  //
+  // set up port
+  //
+  var port = chrome.extension.connect({
+    name: 'basisjsContentScriptPort'
+  });
+
+  port.onMessage.addListener(function(packet){
+    console.log('to content', packet);
+
+    switch (packet.action)
+    {
+      case 'extensionInit':
+        extensionReady = true;
+        notifyReady();
+        break;
+
+      case 'command':
+        document.dispatchEvent(new CustomEvent('devpanel:command', {
+          detail: packet.data
+        }));
+        break;
+    }
+  });
+
+  //
+  // set up transport
+  //
+  document.addEventListener('devpanel:data', function(event){
+    var payload = event.detail || {};
+
+    console.log('devpanel -> plugin:', payload);
+
+    if (payload.action)
+      sendMessage(payload.action, payload.data);
+  });
+
+  document.addEventListener('devpanel:init', setDevpanelExists);
+  document.addEventListener('devpanel:pong', setDevpanelExists);
+  document.dispatchEvent(new CustomEvent('devpanel:ping'));
+
+  //
+  // transport for basis.js prior 1.4
+  //
+  document.addEventListener('devpanelData', function(event){
+    var action = event.target.getAttribute('action');
+    var data = event.target.firstChild;
+
+    if (action)
+      sendMessage(action, data && JSON.parse(data.nodeValue || 'null'));
+  });
+  document.addEventListener('devpanelInit', setDevpanelExists);
+
+  // notify about ready
+  sendMessage('contentScriptInit');
 })();
