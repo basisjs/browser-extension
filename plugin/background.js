@@ -24,7 +24,9 @@ function attachContentScriptPort(port){
       connection.content = port;
 
       if (connection.extension)
-        connection.content.postMessage('extensionInit');
+        connection.content.postMessage({
+          action: 'extensionInit'
+        });
     }
 
     // proxy: content.js -> extension
@@ -40,16 +42,23 @@ function attachContentScriptPort(port){
   });
 
   port.onDisconnect.addListener(function(){
-    clearInterval(x);
+    //clearInterval(x);
     if (connection)
+    {
       connection.content = null;
+
+      if (connection.extension)
+        connection.extension.postMessage({
+          action: 'contentScriptDestroy'
+        });
+    }
   });
-  var x = setInterval(function(){
-    port.postMessage({
-      action: 'xxx',
-      connections: connections
-    });
-  }, 1000);
+  // var x = setInterval(function(){
+  //   port.postMessage({
+  //     action: 'xxx',
+  //     connections: connections
+  //   });
+  // }, 1000);
 }
 
 function attachExtensionUIPort(port){
@@ -67,7 +76,9 @@ function attachExtensionUIPort(port){
       //connection.tabId = port.sender.tab && port.sender.tab.id;
 
       if (connection.content)
-        connection.extension.postMessage('contentScriptInit');
+        connection.extension.postMessage({
+          action: 'contentScriptInit'
+        });
     }
 
     // proxy: extension -> content.js
@@ -77,7 +88,13 @@ function attachExtensionUIPort(port){
 
   port.onDisconnect.addListener(function(){
     if (connection)
+    {
       connection.extension = null;
+      if (connection.content)
+        connection.content.postMessage({
+          action: 'extensionDestroy'
+        });
+    }
   });
 }
 

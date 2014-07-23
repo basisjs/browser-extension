@@ -1,9 +1,12 @@
 var extensionReady = false;
 var devpanelExists = false;
-var devpanels = {};
-var notifyChannel = 'acp:connect-' +
+var notifyChannel = 'basisjs-acp:connect-' +
                     parseInt(10e12 * Math.random()).toString(36) +
                     parseInt(performance.now()).toString(36);
+var devpanels = {};
+var title_;
+var location_;
+var sendClientInfoTimer;
 
 
 //
@@ -23,6 +26,32 @@ function sendToPage(channelId, data){
   }));
 }
 
+//
+// client info
+//
+function getTitle(){
+  return title_ = document.title;
+}
+function getLocation(){
+  return location_ = String(location);
+}
+function getClientInfo(){
+  return {
+    title: getTitle(),
+    location: getLocation()
+  };
+}
+function sendClientInfo(force){
+  if (force ||
+      title_ != getTitle() ||
+      location_ != getLocation())
+    sendToPlugin('clientInfo', null, getClientInfo());
+}
+
+
+//
+// devpanel stuff
+//
 function regDevpanel(e){
   var channels = e.detail;
   var channelId = channels.output;
@@ -55,7 +84,7 @@ var port = chrome.extension.connect({
 });
 
 port.onMessage.addListener(function(packet){
-  console.log('to content', packet);
+  console.log('to content', packet.action, packet);
 
   switch (packet.action)
   {
@@ -63,9 +92,19 @@ port.onMessage.addListener(function(packet){
       if (!extensionReady)
       {
         extensionReady = true;
+
+        // send client info and shedule changes notification
+        sendClientInfo(true);
+        sendClientInfoTimer = setInterval(sendClientInfo, 150);
+
         for (var channelId in devpanels)
           sendToPlugin('regDevpanel', channelId);
       }
+      break;
+
+    case 'extensionDestroy':
+      extensionReady = false;
+      clearInterval(sendClientInfoTimer);
       break;
 
     case 'command':
@@ -85,24 +124,13 @@ port.onMessage.addListener(function(packet){
 // set up transport
 //
 document.addEventListener(notifyChannel, regDevpanel);
-document.addEventListener('devpanel:init', function(){
-  sendToPage('devpanel:connect', notifyChannel);
+document.addEventListener('basisjs-devpanel:init', function(){
+  sendToPage('basisjs-devpanel:connect', notifyChannel);
 });
-sendToPage('devpanel:connect', notifyChannel);
+sendToPage('basisjs-devpanel:connect', notifyChannel);
 
 
 //
-// transport for basis.js prior 1.4
+// notify background page about content is ready
 //
-// document.addEventListener('devpanelData', function(event){
-//   var action = event.target.getAttribute('action');
-//   var data = event.target.firstChild;
-
-//   if (action)
-//     sendToPlugin(action, data && JSON.parse(data.nodeValue || 'null'));
-// });
-// document.addEventListener('devpanelInit', regDevpanel);
-
-
-// notify about ready
 sendToPlugin('contentScriptInit');

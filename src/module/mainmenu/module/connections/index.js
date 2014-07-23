@@ -42,7 +42,8 @@ module.exports = new Node({
   },
 
   childClass: {
-    template: resource('./template/item.tmpl'),
+    dataSource: basis.data.Value.factory('update', 'data.channels'),
+    template: resource('./template/client.tmpl'),
     binding: {
       title: 'data:',
       location: 'data:',
@@ -57,6 +58,18 @@ module.exports = new Node({
       select: function(){
         selected.set(this.data.id);
       }
+    },
+    childClass: {
+      template: resource('./template/channel.tmpl'),
+      binding: {
+        id: 'data:'
+      }
+    }
+  },
+  handler: {
+    childNodesModified: function(){
+      if (!selected.value && this.firstChild)
+        selected.set(this.firstChild.data.id);
     }
   }
 });

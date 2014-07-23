@@ -13,7 +13,7 @@ module.exports = basis.Class(null, {
   },
 
   message: function(message){
-    console.log('to ext:', message);
+    console.log('data to ext:', message);
 
     if (message.action == 'ready')
       this.isReady = true;
@@ -53,6 +53,8 @@ module.exports = basis.Class(null, {
         context: handlerContext
       });
     }
+
+    return this;
   },
 
   invoke: function(){

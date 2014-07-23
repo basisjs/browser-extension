@@ -91,7 +91,7 @@
   //
 
   var emitEvent;
-  var notifyChannel = 'acp:connect-' +
+  var notifyChannel = 'basisjs-acp:connect-' +
                       parseInt(10e12 * Math.random()).toString(36) +
                       parseInt(performance.now()).toString(36);
 
@@ -146,10 +146,10 @@
   if (emitEvent)
   {
     document.addEventListener(notifyChannel, regDevpanel);
-    document.addEventListener('devpanel:init', function(){
-      emitEvent('devpanel:connect', notifyChannel);
+    document.addEventListener('basisjs-devpanel:init', function(){
+      emitEvent('basisjs-devpanel:connect', notifyChannel);
     });
-    emitEvent('devpanel:connect', notifyChannel);
+    emitEvent('basisjs-devpanel:connect', notifyChannel);
   }
   else
   {

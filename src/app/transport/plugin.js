@@ -1,8 +1,28 @@
 var Transport = require('./base.js');
+var Client = require('app.type.client');
 var inspectedWindow = chrome.devtools.inspectedWindow;
 
 var commandSeed = 1;
 var commands = {};
+var clientId = basis.genUID();
+var client;
+
+var initClientListeners = basis.fn.runOnce(function(transport){
+  transport
+    .on('clientInfo', function(data){
+      client.update(data);
+    })
+    .on('contentScriptDestroy', function(){
+      client.update({
+        online: false,
+        channels: null
+      });
+    })
+    .on('regDevpanel', function(data, message){
+      // TODO: rework to support multiple
+      client.set('channels', [message.channelId]);
+    });
+});
 
 module.exports = new Transport({
   port: chrome.extension.connect({
@@ -10,18 +30,15 @@ module.exports = new Transport({
   }),
 
   init: function(){
-    this.on('contentScriptInit', function(){
-      console.log('???');
-      //require('app.type').Client({ id: basis.genUID() });
-      this.port.postMessage({
-        action: 'extensionInit',
-        tabId: inspectedWindow.tabId
-      });
-    }, this);
+    this.on('contentScriptInit', function(data){
+      // init listeners that depends on client
+      initClientListeners(this);
 
-    this.on('regDevpanel', function(data){
-      console.log('???');
-      //require('app.type').Client({ id: basis.genUID() });
+      // create client on first `contentScriptInit`
+      client = Client({
+        id: clientId,
+        online: true
+      });
     }, this);
 
     this.on('response', function(data){
