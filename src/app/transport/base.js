@@ -21,7 +21,7 @@ module.exports = basis.Class(null, {
     var handlers = this.handlers[message.action];
     if (handlers)
       for (var i = 0, handler; handler = handlers[i]; i++)
-        handler.handler.call(handler.context, message.data);
+        handler.handler.call(handler.context, message.data, message);
   },
   onMessage: function(){
     this.on.apply(this, arguments);
@@ -44,6 +44,7 @@ module.exports = basis.Class(null, {
     for (var message in handlers)
     {
       var handler = handlers[message];
+
       if (!this.handlers[message])
         this.handlers[message] = [];
 

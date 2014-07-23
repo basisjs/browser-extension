@@ -124,6 +124,7 @@ Client.prototype = {
 
 //
 // Client server
+// page -> server
 //
 clientServer.sockets.on('connect', function(socket){
   console.log('connected');
@@ -172,14 +173,17 @@ clientServer.sockets.on('connect', function(socket){
 
     client.update(data);
     updateClientList();
+  });
 
-    updateClientList();
+  socket.on('devpanelPacket', function(channelId, data){
+    acpServer.emit('devpanelPacket', channelId, data);
   });
 });
 
 
 //
 // ACP server
+// server -> ACP
 //
 acpServer.sockets.on('connect', function(socket){
   console.log('connected');

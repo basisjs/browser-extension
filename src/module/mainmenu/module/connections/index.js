@@ -48,6 +48,7 @@ module.exports = new Node({
       location: 'data:',
       online: 'data:',
       devpanel: 'data:',
+      channels: 'data:',
       selected: selected.compute('update', function(node, selected){
         return node.data.id == selected;
       })

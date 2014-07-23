@@ -5,7 +5,12 @@ var Client = entity.createType('Client', {
   online: Boolean,
   devpanel: Boolean,
   title: String,
-  location: String
+  location: String,
+  channels: entity.createSetType('Channel')
+});
+
+Client.extendReader(function(data){
+  data.channels = data.devpanel || null;
 });
 
 module.exports = Client;

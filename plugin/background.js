@@ -1,55 +1,83 @@
-var contentScriptPorts = {};
-var extensionUIPorts = {};
-var extensionTabIdTab = {};
+var connections = {};
+
+function getConnection(id){
+  if (id in connections == false)
+    connections[id] = {
+      content: null,
+      extension: null
+    };
+
+  return connections[id];
+}
 
 function attachContentScriptPort(port){
   var tabId = port.sender.tab && port.sender.tab.id;
-  contentScriptPorts[tabId] = port;
+  var connection;
 
   port.onMessage.addListener(function(payload){
-    if (extensionUIPorts[tabId])
-    {
-      // proxy: content.js -> extension
-      extensionUIPorts[tabId].postMessage(payload);
+    console.log('content -> plugin', payload);
+    var action = payload.action;
 
-      var action = payload.action;
-      if (action == 'token' || action == 'pickTemplate')
-        chrome.tabs.update(extensionTabIdTab[tabId], {
-          active: true
-        });
+    if (action == 'contentScriptInit' && !connection)
+    {
+      connection = getConnection(tabId);
+      connection.content = port;
+
+      if (connection.extension)
+        connection.content.postMessage('extensionInit');
     }
+
+    // proxy: content.js -> extension
+    if (connection && connection.extension)
+      connection.extension.postMessage(payload);
+
+    // chrome.windows.update(extensionUIPorts[tabId].sender.tab.windowId, {
+    //   focused: true
+    // });
+    // chrome.tabs.update(tabId, {
+    //   active: true
+    // });
   });
 
   port.onDisconnect.addListener(function(){
-    delete contentScriptPorts[tabId];
+    clearInterval(x);
+    if (connection)
+      connection.content = null;
   });
+  var x = setInterval(function(){
+    port.postMessage({
+      action: 'xxx',
+      connections: connections
+    });
+  }, 1000);
 }
 
 function attachExtensionUIPort(port){
-  var extensionTabId = port.sender.tab && port.sender.tab.id;
-  var inspectedTabId;
+  var connection;
 
   port.onMessage.addListener(function(payload){
     console.log('extension ->', payload);
     var action = payload.action;
 
     // save references
-    if (action == 'extensionInit')
+    if (action == 'extensionInit' && !connection)
     {
-      inspectedTabId = payload.tabId;
-      extensionUIPorts[inspectedTabId] = port;
+      connection = getConnection(payload.tabId);
+      connection.extension = port;
+      //connection.tabId = port.sender.tab && port.sender.tab.id;
 
-      if (extensionTabId)
-        extensionTabIdTab[inspectedTabId] = extensionTabId;
+      if (connection.content)
+        connection.extension.postMessage('contentScriptInit');
     }
 
     // proxy: extension -> content.js
-    if (contentScriptPorts[inspectedTabId])
-      contentScriptPorts[inspectedTabId].postMessage(payload);
+    if (connection && connection.content)
+      connection.content.postMessage(payload);
   });
 
   port.onDisconnect.addListener(function(){
-    delete extensionUIPorts[inspectedTabId];
+    if (connection)
+      connection.extension = null;
   });
 }
 

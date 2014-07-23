@@ -23,10 +23,13 @@ module.exports = new Transport({
         })
         .on('handshake', function(data){
           console.log('handshake', data);
-          Client.all.sync(data.clients);
+          Client.all.sync(basis.array(data.clients).map(Client.reader));
         })
         .on('clientList', function(data){
-          Client.all.sync(data);
+          Client.all.sync(basis.array(data).map(Client.reader));
+        })
+        .on('devpanelPacket', function(data){
+          console.log('devpanelPacket', arguments);
         });
     };
 

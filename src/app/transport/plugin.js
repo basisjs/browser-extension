@@ -11,10 +11,17 @@ module.exports = new Transport({
 
   init: function(){
     this.on('contentScriptInit', function(){
+      console.log('???');
+      //require('app.type').Client({ id: basis.genUID() });
       this.port.postMessage({
         action: 'extensionInit',
         tabId: inspectedWindow.tabId
       });
+    }, this);
+
+    this.on('regDevpanel', function(data){
+      console.log('???');
+      //require('app.type').Client({ id: basis.genUID() });
     }, this);
 
     this.on('response', function(data){
@@ -89,6 +96,7 @@ module.exports = new Transport({
     this.port.postMessage({
       action: 'command',
       data: {
+        clientId: clientId,
         id: id,
         command: action,
         args: args

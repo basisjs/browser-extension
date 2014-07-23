@@ -22,7 +22,7 @@ module.exports = require('basis.app').create({
     // init interfaces
     transport.ready(basis.fn.runOnce(initMainMenu));
     transport.ready(function(){
-      transport.invoke('getVersion', function(){
+      transport.invoke('getVersion', null, null, function(){
         transport.message({
           action: 'version',
           data: '{}'
@@ -47,17 +47,17 @@ module.exports = require('basis.app').create({
       mainMenu.item(mode).select();
     });
 
-    transport.onMessage('version', function(version){
-      mainMenu.setChildNodes([
-        version.l10n > 1
-          ? require('./module/l10n_v2/index.js')
-          : require('./module/l10n/index.js'),
-        require('./module/templater/index.js'),
-        require('./module/warnings/index.js'),
-        require('./module/fileGraph/index.js')
-      ], true);
+    transport.on('version', function(version){
+      // mainMenu.setChildNodes([
+      //   version.l10n > 1
+      //     ? require('./module/l10n_v2/index.js')
+      //     : require('./module/l10n/index.js'),
+      //   require('./module/templater/index.js'),
+      //   require('./module/warnings/index.js'),
+      //   require('./module/fileGraph/index.js')
+      // ], true);
 
-      mainMenu.selectPage();
+      // mainMenu.selectPage();
     });
 
     return mainMenu;
