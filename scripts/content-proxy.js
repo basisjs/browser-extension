@@ -5,20 +5,19 @@ var socketIoClientCode = fs
   .replace('{', '{var define;');  // fix issue with require.js
 
 exports.process = function(mime, data, fn, fres, location){
-  if (fn === '/scripts/client.js')
-  {
-    return (
-      socketIoClientCode +
-      String(data)
-        .replace('{SELF_HOST}', ':' + server.port.client)
-    );
-  }
-  if (fn === '/scripts/acp.js')
-  {
-    return (
-      socketIoClientCode +
-      String(data)
-        .replace('{SELF_HOST}', ':' + server.port.acp)
-    );
+  switch (fn) {
+    case '/scripts/client.js':
+      return (
+        socketIoClientCode +
+        String(data)
+          .replace('{SELF_HOST}', ':' + server.port.client)
+      );
+
+    case '/scripts/acp.js':
+      return (
+        socketIoClientCode +
+        String(data)
+          .replace('{SELF_HOST}', ':' + server.port.acp)
+      );
   }
 };

@@ -7,11 +7,12 @@
   "manifest_version": 2,
   "permissions":  [
     "tabs",
-    "contextMenus", 
     "http://*/*",
     "https://*/*"
   ],
-  "background": { "scripts": ["background.js"] },
+  "background": {
+    "scripts": ["background.js"]
+  },
   "icons": {
     "32": "icon32x32.png",
     "128": "icon128x128.png"

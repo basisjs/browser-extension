@@ -6,7 +6,7 @@ var transport = require('app.transport');
 
 var storage = global.sessionStorage || {};
 function persistentValue(name, defValue){
-  return new basis.data.Value({
+  return new Value({
     value: storage[name] ? JSON.parse(storage[name]) : defValue,
     handler: {
       change: function(){
@@ -19,12 +19,12 @@ function persistentValue(name, defValue){
 var autodp = persistentValue('acp-connection-auto-devpanel', false);
 var selected = persistentValue('acp-connection-id');
 var selectedClient = new basis.data.Object({
-  delegate: basis.data.Value.from(selected, 'change', function(val){
-    return Client.getSlot(val.value);
+  delegate: selected.as(function(id){
+    return Client.getSlot(id);
   })
 });
-var selectedOnline = basis.data.Value.from(selectedClient, 'update', 'data.online');
-var selectedDevpanel = basis.data.Value.from(selectedClient, 'update', 'data.devpanel');
+var selectedOnline = Value.from(selectedClient, 'update', 'data.online');
+var selectedDevpanel = Value.from(selectedClient, 'update', 'data.devpanel');
 
 
 module.exports = new Node({
@@ -42,7 +42,7 @@ module.exports = new Node({
   },
 
   childClass: {
-    dataSource: basis.data.Value.factory('update', 'data.channels'),
+    dataSource: Value.factory('update', 'data.channels'),
     template: resource('./template/client.tmpl'),
     binding: {
       title: 'data:',

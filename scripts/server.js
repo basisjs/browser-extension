@@ -58,6 +58,7 @@ function getClientList(){
       }, {});
     info.id = client.id;
     info.online = !!client.socket;
+    info.devpanel = client.socket ? client.devpanel : false;
     result.push(info);
   }
 

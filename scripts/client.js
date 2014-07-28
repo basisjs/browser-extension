@@ -73,17 +73,7 @@
   });
 
   socket.on('init-devpanel', function(args, callback){
-    if (typeof basis == 'undefined')
-      return callback('basis.js is not found');
-    if (!basis || typeof basis.require !== 'function')
-      return callback('looks like isn\'t a basis.js');
-
-    try {
-      basis.require('basis.devpanel');
-      callback();
-    } catch(e) {
-      callback(e);
-    }
+    emitEvent('basisjs:init-devpanel');
   });
 
   //
@@ -153,7 +143,7 @@
   }
   else
   {
-    console.log('[acp] Communication with basis/devpanel is not supported by your browser');
+    console.log('[acp] Communication with basis.devpanel is not supported by your browser');
   }
 
 })(this);

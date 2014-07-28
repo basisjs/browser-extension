@@ -1,12 +1,12 @@
 var extensionReady = false;
-var devpanelExists = false;
-var notifyChannel = 'basisjs-acp:connect-' +
-                    parseInt(10e12 * Math.random()).toString(36) +
-                    parseInt(performance.now()).toString(36);
+var sendClientInfoTimer;
 var devpanels = {};
+var notifyChannelId =
+      'basisjs-acp:connect-' +
+      parseInt(10e12 * Math.random()).toString(36) +
+      parseInt(performance.now()).toString(36);
 var title_;
 var location_;
-var sendClientInfoTimer;
 
 
 //
@@ -42,9 +42,12 @@ function getClientInfo(){
   };
 }
 function sendClientInfo(force){
-  if (force ||
-      title_ != getTitle() ||
-      location_ != getLocation())
+  var hasChanges =
+        force ||
+        title_ != getTitle() ||
+        location_ != getLocation();
+
+  if (hasChanges)
     sendToPlugin('clientInfo', null, getClientInfo());
 }
 
@@ -121,13 +124,13 @@ port.onMessage.addListener(function(packet){
 
 
 //
-// set up transport
+// set up transport (basis.js 1.4+)
 //
-document.addEventListener(notifyChannel, regDevpanel);
+document.addEventListener(notifyChannelId, regDevpanel);
 document.addEventListener('basisjs-devpanel:init', function(){
-  sendToPage('basisjs-devpanel:connect', notifyChannel);
+  sendToPage('basisjs-devpanel:connect', notifyChannelId);
 });
-sendToPage('basisjs-devpanel:connect', notifyChannel);
+sendToPage('basisjs-devpanel:connect', notifyChannelId);
 
 
 //
