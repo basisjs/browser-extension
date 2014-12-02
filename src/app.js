@@ -41,24 +41,22 @@ module.exports = require('basis.app').create({
     });
 
     // notSupported panel
-    require('./module/notSupported/index.js');
-
     transport.onMessage('startInspect', function(mode){
       mainMenu.item(mode).select();
     });
 
-    transport.on('version', function(version){
-      // mainMenu.setChildNodes([
-      //   version.l10n > 1
-      //     ? require('./module/l10n_v2/index.js')
-      //     : require('./module/l10n/index.js'),
-      //   require('./module/templater/index.js'),
-      //   require('./module/warnings/index.js'),
-      //   require('./module/fileGraph/index.js')
-      // ], true);
+//    transport.on('version', function(version){
+      mainMenu.setChildNodes([
+        // version.l10n > 1
+        //   ? require('./module/l10n_v2/index.js')
+        //   : require('./module/l10n/index.js'),
+        // require('./module/templater/index.js'),
+        require('./module/warnings/index.js'),
+        require('./module/fileGraph/index.js')
+      ], true);
 
       // mainMenu.selectPage();
-    });
+//    });
 
     return mainMenu;
   }

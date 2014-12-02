@@ -1,5 +1,8 @@
 var Transport = require('./base.js');
 
+var commandSeed = 1;
+var commands = {};
+
 module.exports = new Transport({
   init: function(){
     var self = this;
@@ -29,15 +32,46 @@ module.exports = new Transport({
           Client.all.sync(basis.array(data).map(Client.reader));
         })
         .on('devpanelPacket', function(data){
-          console.log('devpanelPacket', arguments);
+          var id = data.id;
+          var status = data.status;
+
+          console.log('devpanelPacket in acp', data);
+
+          if (commands.hasOwnProperty(id))
+          {
+            var callback = commands[id];
+            delete commands[id];
+
+            if (typeof callback == 'function')
+            {
+              if (status == 'error')
+                callback(data.data);
+              else
+                callback(null, data.data);
+            }
+          }
         });
     };
 
     basis.doc.head.add(script);
   },
 
-  invoke: function(action, clientId, args, subject){
+  initChannel: function(clientId){
+    if (this.socket)
+      this.socket.emit('init-devpanel', clientId);
+    else
+      basis.dev.warn('[basisjs-acp] No transport (socket), but `initChannel` called');
+  },
+  invoke: function(action, clientId, channelId, args, subject){
+    var id = commandSeed++;
     var callback;
+
+    console.log('invoke', arguments);
+
+    if (Array.isArray(args))
+      args = args.map(JSON.stringify);
+    else
+      args = null;
 
     if (subject)
     {
@@ -57,10 +91,22 @@ module.exports = new Transport({
 
       if (typeof subject == 'function')
         callback = subject;
+
+      if (typeof callback == 'function')
+      {
+        commands[id] = callback;
+        setTimeout(function(){
+          if (commands.hasOwnProperty(id))
+          {
+            delete commands[id];
+            callback('Timeout');
+          }
+        }, 10000);
+      }
     }
 
     if (this.socket)
-      this.socket.emit(action, clientId, args, callback);
+      this.socket.emit('command', clientId, channelId, id, action, args);
     else
       basis.dev.warn('[basisjs-acp] No transport (socket), but action `' + action + '` called');
   }

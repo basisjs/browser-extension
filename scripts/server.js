@@ -177,7 +177,7 @@ clientServer.sockets.on('connect', function(socket){
   });
 
   socket.on('devpanelPacket', function(channelId, data){
-    acpServer.emit('devpanelPacket', channelId, data);
+    acpServer.emit('devpanelPacket', data);
   });
 });
 
@@ -209,13 +209,31 @@ acpServer.sockets.on('connect', function(socket){
 
     if (!client)
     {
-      var er = 'Wrong client id (' + clientId + '), client info not found';
+      var er = '[ACP server] Client with id `' + clientId + ')` not found';
       console.error(er);
       callback(er);
       return;
     }
 
     client.send('init-devpanel', null, callback);
+  });
+
+  socket.on('command', function(clientId, channelId, id, action, args){
+    var client = clients[clientId];
+
+    if (typeof callback != 'function')
+      callback = Function();
+
+    if (!client)
+    {
+      var er = '[ACP server] Client with id `' + clientId + '` not found';
+      console.error(er);
+      callback(er);
+      return;
+    }
+
+    if (client.socket)
+      client.socket.emit('command', clientId, channelId, id, action, args);
   });
 });
 

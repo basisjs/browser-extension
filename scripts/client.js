@@ -75,6 +75,19 @@
   socket.on('init-devpanel', function(args, callback){
     emitEvent('basisjs:init-devpanel');
   });
+  socket.on('command', function(clientId, channelId, id, command, args){
+    var channel = devpanels[channelId];
+
+    if (!channel)
+      return callback('[acp-client] Channel with `id` not found');
+
+    emitEvent(channel.output, {
+      type: 'command',
+      id: id,
+      command: command,
+      args: args
+    });
+  });
 
   //
   // communication with basis/devpanel

@@ -10,7 +10,14 @@ var Client = entity.createType('Client', {
 });
 
 Client.extendReader(function(data){
-  data.channels = data.devpanel || null;
+  data.channels = data.devpanel
+    ? data.devpanel.map(function(channelId){
+        return {
+          id: channelId,
+          client: data.id
+        };
+      })
+    : null;
 });
 
 module.exports = Client;

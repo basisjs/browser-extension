@@ -14,9 +14,8 @@ var AppProfile = entity.createType({
 
 var appProfile = AppProfile();
 
-appProfile.setState(basis.data.STATE.UNDEFINED);
-appProfile.setSyncAction(function(){
-  transport.invoke('getFileGraph', null, null, this);
-});
+// appProfile.setSyncAction(function(){
+//   transport.invoke('getFileGraph', null, null, this);
+//});
 
 module.exports = AppProfile;

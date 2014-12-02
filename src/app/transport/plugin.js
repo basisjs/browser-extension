@@ -41,11 +41,11 @@ module.exports = new Transport({
       });
     }, this);
 
-    this.on('response', function(data){
+    this.on('devpanelPacket', function(data){
       var id = data.id;
       var status = data.status;
 
-      console.log('response in ext', data);
+      console.log('devpanelPacket in ext', data);
 
       if (commands.hasOwnProperty(id))
       {
@@ -69,7 +69,7 @@ module.exports = new Transport({
     });
   },
 
-  invoke: function(action, clientId, args, subject){
+  invoke: function(action, clientId, channelId, args, subject){
     var id = commandSeed++;
     var callback;
 

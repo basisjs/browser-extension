@@ -1,6 +1,8 @@
 var Node = require('basis.ui').Node;
 var Value = require('basis.data').Value;
+var DatasetWrapper = require('basis.data').DatasetWrapper;
 var Client = require('app.type').Client;
+var Channel = require('app.type').Channel;
 var Expression = require('basis.data.value').Expression;
 var transport = require('app.transport');
 
@@ -25,7 +27,17 @@ var selectedClient = new basis.data.Object({
 });
 var selectedOnline = Value.from(selectedClient, 'update', 'data.online');
 var selectedDevpanel = Value.from(selectedClient, 'update', 'data.devpanel');
-
+var wrapper = new DatasetWrapper({
+  dataset: Value.from(selectedClient, 'update', 'data.channels'),
+  handler: {
+    itemsChanged: function(s, delta){
+      Channel.current.set(this.pick());
+    },
+    datasetChanged: function(){ // due to bug, itemsChanged should be fired after new dataset is set
+      Channel.current.set(this.pick());
+    }
+  }
+});
 
 module.exports = new Node({
   dataSource: Client.all,
@@ -33,7 +45,10 @@ module.exports = new Node({
   template: resource('./template/list.tmpl'),
   binding: {
     auto: autodp,
-    selectedOnline: selectedOnline
+    selectedOnline: selectedOnline,
+    curChannel: Channel.current.as(function(value){
+      return value && value.data.id;
+    })
   },
   action: {
     updateAuto: function(event){
@@ -82,10 +97,7 @@ new Expression(
   function(online, devpanel, auto){
     if (online && !devpanel && auto)
     {
-      transport.invoke('init-devpanel', selected.value, null, function(err){
-        if (err)
-          console.log(err);
-      });
+      transport.initChannel(selected.value);
     }
   }
 );
