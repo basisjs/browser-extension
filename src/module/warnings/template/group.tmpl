@@ -1,6 +1,8 @@
 <b:style src="group.css"/>
 
 <div class="app-warning-group">
-  <div class="app-warning-group__title">{title}</div>
+  <div class="app-warning-group__title">
+    <span class="app-warning-group__title-button app-warning-group__title-button_{hasFilename}" event-click="open">{title}</span>
+  </div>
   <div{childNodesElement} class="app-warning-group__items"/>
 </div>

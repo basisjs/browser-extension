@@ -8,3 +8,14 @@
   overflow: auto;
   overflow-y: scroll;
 }
+.app-warnings_empty
+{
+  display: none;
+  font-size: 200%;
+  color: #8A8;
+  padding: 20px;
+}
+.app-warnings_empty-empty
+{
+  display: block;
+}
