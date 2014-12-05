@@ -8,6 +8,7 @@ var Warning = new basis.entity.EntityType({
     file: String,
     message: String,
     loc: String,
+    theme: String,
     fatal: Boolean
   }
 });

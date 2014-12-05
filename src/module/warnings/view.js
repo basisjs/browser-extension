@@ -48,6 +48,7 @@ module.exports = new basis.ui.Node({
 
         return parts.slice(parts.length > 1 ? 2 : 1).join('');
       },
+      theme: 'data:theme',
       loc: function(node){
         return node.data.loc;
       },

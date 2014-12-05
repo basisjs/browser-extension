@@ -65,3 +65,17 @@
 {
   color: #D00;
 }
+.app-warning__theme
+{
+  display: none;
+}
+.app-warning__theme.theme
+{
+  display: inline-block;
+  background: #EEE;
+  color: #777;
+  font-size: 80%;
+  padding: 2px 6px;
+  margin-right: 1ex;
+  border-radius: 3px;
+}
