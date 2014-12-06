@@ -1,13 +1,29 @@
 <b:resource src="warning.css" />
 <b:define name="loc" type="bool"/>
 <b:define name="theme" type="bool"/>
+<b:define name="childCount" type="bool"/>
+<b:define name="collapsed" type="bool"/>
 
 <div class="app-warning">
   <div class="app-warning__message app-warning__message_{fatal}">
     <span class="app-warning__theme {theme}">{theme}</span>
-    <span class="app-warning__message-start">{messageStart}</span>
-    <span class="app-warning__message-details">{messageDetails}</span>
-    <span class="app-warning__loc app-warning__loc_{loc}">
-      [<span class="app-warning__loc-button" event-click="openLoc" title="{loc}">{locShort}</span>]</span>
+    <span class="app-warning__message-start">
+      <span class="app-warning__message-start-text_{linkOnStart}">
+        {messageStart}
+      </span>
+      <span class="app-warning__message-start-link app-warning__message-start-link_{linkOnStart}" event-click="openLoc" title="{loc}">
+        {messageStart}
+      </span>
+    </span>
+    <span class="app-warning__message-details app-warning__message-details_{loc}" event-click="openLoc" title="{loc}">
+      {messageDetails}
+    </span>
+    <!-- <span class="app-warning__loc app-warning__loc_{loc}">
+      [<span class="app-warning__loc-button" event-click="openLoc" title="{loc}">{locShort}</span>]
+    </span> -->
+    <span class="app-warning__loc-list app-warning__loc-list_{childCount}">
+      <span class="promo promo_{collapsed}">(<span event-click="expand">{childCount} more occurences</span>)</span>
+      <span class="list list_{collapsed}"><!--{childNodesHere}--></span>
+    </span>
   </div>
 </div>

@@ -7,7 +7,13 @@ var Warning = new basis.entity.EntityType({
   fields: {
     file: String,
     message: String,
-    loc: String,
+    loc: function(value){
+      if (Array.isArray(value))
+        return value;
+      if (value)
+        return [value];
+      return null;
+    },
     theme: String,
     fatal: Boolean
   }
