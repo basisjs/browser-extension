@@ -1,0 +1,59 @@
+.app-warnings-stat-item
+{
+  display: inline-block;
+  padding: 5px 10px;
+}
+.app-warnings-stat-item:first-child
+{
+  border-radius: 3px 0 0 3px;
+}
+.app-warnings-stat-item:last-child
+{
+  border-radius: 0 3px 3px 0;
+}
+.app-warnings-stat-item:hover
+{
+  background-color: #EEE;
+  cursor: pointer;
+}
+.app-warnings-stat-item_selected,
+.app-warnings-stat-item_selected:hover
+{
+  background: #3879D9;
+  color: white;
+  cursor: default;
+}
+
+/*.app-warnings-stat-item_type-html
+{
+  backgound-color: #FF0000;
+}
+.app-warnings-stat-item_type-script
+{
+  backgound-color: #99BBCC;
+}
+.app-warnings-stat-item_type-style
+{
+  backgound-color: #FF69B4;
+}
+.app-warnings-stat-item_type-template
+{
+  backgound-color: #88CC88;
+}
+.app-warnings-stat-item_type-l10n
+{
+  backgound-color: orange;
+}
+.app-warnings-stat-item_type-image
+{
+  backgound-color: #87CEEB;
+}
+.app-warnings-stat-item_type-json
+{
+  backgound-color: gray;
+}
+.app-warnings-stat-item_type-font
+{
+  backgound-color: #4169E1;
+}
+*/

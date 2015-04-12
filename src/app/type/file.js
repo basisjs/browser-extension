@@ -54,13 +54,13 @@ File.entityType.entityClass.extend({
 //
 app.transport.onMessage({
   filesChanged: function(data){
-  if (data.inserted)
-    for (var i = 0, file; file = data.inserted[i]; i++)
-      File(file);
+    if (data.inserted)
+      for (var i = 0, file; file = data.inserted[i]; i++)
+        File(file);
 
-  if (data.deleted)
-    for (var i = 0, filename; filename = data.deleted[i]; i++)
-      File(filename).destroy();
+    if (data.deleted)
+      for (var i = 0, filename; filename = data.deleted[i]; i++)
+        File(filename).destroy();
   },
   updateFile: function(data){
     var file = File(data.filename);

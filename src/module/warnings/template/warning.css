@@ -98,28 +98,28 @@
   display: inline;
 }
 
-.promo
+.app-warning__loc-list .promo
 {
   color: #EEE;
   display: none;
   cursor: pointer;
 }
-.promo SPAN
+.app-warning__loc-list .promo SPAN
 {
   color: #AAA;
   text-decoration: underline;
   text-decoration-color: rgba(100, 100, 100, .33);
 }
-.promo SPAN:hover
+.app-warning__loc-list .promo SPAN:hover
 {
   text-decoration-color: #E00;
   color: #D00;
 }
-.promo_collapsed
+.app-warning__loc-list .promo_collapsed
 {
   display: inline;
 }
-.list_collapsed
+.app-warning__loc-list .list_collapsed
 {
   display: none;
 }

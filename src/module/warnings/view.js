@@ -1,5 +1,110 @@
 basis.require('basis.ui');
+basis.require('basis.data.dataset');
+basis.require('basis.data.index');
 basis.require('app.type');
+
+var warningsByType = new basis.data.dataset.Split({
+  source: app.type.Warning.all,
+  rule: function(item){
+    return basis.path.extname(item.data.file);
+  }
+});
+
+var fatalWarnings = new basis.data.dataset.Subset({
+  source: app.type.Warning.all,
+  rule: 'data.fatal'
+});
+
+var StatItem = basis.ui.Node.subclass({
+  template: resource('./template/stat-item.tmpl'),
+  binding: {
+    caption: {
+      events: 'update',
+      getter: function(node){
+        return node.data.title ? node.data.title.replace('.', '') : 'other';
+      }
+    },
+    count: {
+      events: 'delegateChanged',
+      getter: function(node){
+        return basis.data.index.count(node.delegate);
+      }
+    }
+  }
+});
+
+var stat = new basis.ui.Node({
+  template: resource('./template/stat.tmpl'),
+  binding: {
+    total: 'satellite:',
+    fatal: 'satellite:',
+    hasWarnings: {
+      events: 'update',
+      getter: function(node){
+        return node.data.total > 0;
+      }
+    }
+  },
+  dataSource: warningsByType,
+  childClass: StatItem,
+  sorting: 'data.title',
+  selection: true,
+  data: {
+    total: app.type.Warning.all.itemCount,
+    fatal: fatalWarnings.itemCount
+  },
+  satelliteConfig: {
+    total: {
+      delegate: basis.fn.$self,
+      instanceOf: StatItem.subclass({
+        dataset: app.type.Warning.all,
+        binding: {
+          caption: basis.fn.$const('Total'),
+          count: 'data:total'
+        }
+      })
+    },
+    fatal: {
+      existsIf: function(owner){
+        return owner.data.fatal;
+      },
+      delegate: basis.fn.$self,
+      instanceOf: StatItem.subclass({
+        dataset: fatalWarnings,
+        binding: {
+          caption: basis.fn.$const('Fatal'),
+          count: 'data:fatal'
+        }
+      })
+    }
+  }
+});
+StatItem.prototype.contextSelection = stat.selection;
+stat.satellite.total.select();
+stat.selection.addHandler({
+  datasetChanged: function(selection){
+    var selected = selection.pick();
+    if (selected)
+      view.setDataSource(selected.dataset || selected.delegate);
+    else
+      selection.set([stat.satellite.total]);
+  }
+})
+
+app.type.Warning.all.addHandler({
+  datasetChanged: function(){
+    stat.update({
+      total: app.type.Warning.all.itemCount
+    });
+  }
+});
+fatalWarnings.addHandler({
+  datasetChanged: function(){
+    stat.update({
+      fatal: fatalWarnings.itemCount
+    });
+  }
+});
 
 function processMessage(node){
   var bracketContent = [];
@@ -16,13 +121,14 @@ function processMessage(node){
   };
 }
 
-module.exports = new basis.ui.Node({
+var view = new basis.ui.Node({
   active: true,
   dataSource: app.type.Warning.all,
   delegate: app.type.AppProfile({}),
 
   template: resource('template/view.tmpl'),
   binding: {
+    stat: stat,
     isOk: {
       events: 'childNodesModified stateChanged',
       getter: function(node){
@@ -31,6 +137,17 @@ module.exports = new basis.ui.Node({
     }
   },
 
+  // sorting: function(child){
+  //   var loc = child.data.loc && child.data.loc[0];
+  //   if (loc)
+  //   {
+  //     loc = loc.split(':');
+  //     console.log(loc, Number(loc[1]) * 100000 + Number(loc[2]));
+  //     return Number(loc[1]) * 100000 + Number(loc[2]);
+  //   }
+
+  //   return Infinity;
+  // },
   grouping: {
     groupGetter: function(child){
       return child.data.file;
@@ -148,3 +265,5 @@ module.exports = new basis.ui.Node({
     }
   }
 });
+
+module.exports = view;
