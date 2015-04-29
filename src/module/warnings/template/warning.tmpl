@@ -3,6 +3,7 @@
 <b:define name="theme" type="bool"/>
 <b:define name="childCount" type="bool"/>
 <b:define name="collapsed" type="bool"/>
+<b:define name="isolated" type="bool"/>
 
 <div class="app-warning">
   <div class="app-warning__message app-warning__message_{fatal}">
@@ -15,6 +16,8 @@
         {messageStart}
       </span>
     </span>
+    <span class="app-warning__isolate app-warning__isolate_{isolated}" title="Isolate prefix {isolated}">i</span>
+    &#x20;
     <span class="app-warning__message-details app-warning__message-details_{loc}" event-click="openLoc" title="{loc}">
       {messageDetails}
     </span>

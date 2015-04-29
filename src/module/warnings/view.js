@@ -73,7 +73,8 @@ var stat = new basis.ui.Node({
         dataset: fatalWarnings,
         binding: {
           caption: basis.fn.$const('Fatal'),
-          count: 'data:fatal'
+          count: 'data:fatal',
+          fatal: basis.fn.$true
         }
       })
     }
@@ -150,23 +151,56 @@ var view = new basis.ui.Node({
   // },
   grouping: {
     groupGetter: function(child){
-      return child.data.file;
+      return [child.data.file || '', child.data.originator || ''].join('\x00');
     },
     sorting: 'data.title || "-"',
     childClass: {
-      template: resource('template/group.tmpl'),
+      template: resource('template/group-by-originator.tmpl'),
       binding: {
         title: function(node){
-          return node.data.title || '[no file]';
+          var filename = node.data.title.split('\x00')[1];
+          return filename || '[no file]';
         },
         hasFilename: function(node){
-          return node.data.title ? 'hasFilename' : '';
+          var filename = node.data.title.split('\x00')[1];
+          return filename ? 'hasFilename' : '';
+        },
+        isolated: {
+          events: 'childNodesModified',
+          getter: function(node){
+            return node.nodes && node.nodes.length ? node.nodes[0].data.isolate : false;
+          }
         }
       },
       action: {
         open: function(){
           if (this.data.id)
             app.transport.invoke('openFile', this.data.id);
+        }
+      }
+    },
+    grouping: {
+      groupGetter: function(child){
+        return child.data.title.split('\x00')[0];
+      },
+      sorting: 'data.title || "-"',
+      childClass: {
+        template: resource('template/group.tmpl'),
+        binding: {
+          title: function(node){
+            var filename = node.data.title.split('\x00')[0];
+            return filename || '[no file]';
+          },
+          hasFilename: function(node){
+            var filename = node.data.title.split('\x00')[0];
+            return filename ? 'hasFilename' : '';
+          }
+        },
+        action: {
+          open: function(){
+            if (this.data.id)
+              app.transport.invoke('openFile', this.data.id);
+          }
         }
       }
     }
@@ -205,6 +239,9 @@ var view = new basis.ui.Node({
 
           return parts.join(':');
         }
+      },
+      isolated: function(node){
+        return !node.data.originator ? node.data.isolate : '';
       },
       collapsed: 'collapsed'
     },

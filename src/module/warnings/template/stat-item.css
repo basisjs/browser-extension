@@ -16,12 +16,21 @@
   background-color: #EEE;
   cursor: pointer;
 }
+.app-warnings-stat-item_fatal
+{
+  color: #D00;
+}
 .app-warnings-stat-item_selected,
 .app-warnings-stat-item_selected:hover
 {
   background: #3879D9;
   color: white;
   cursor: default;
+}
+.app-warnings-stat-item_fatal.app-warnings-stat-item_selected,
+.app-warnings-stat-item_fatal.app-warnings-stat-item_selected:hover
+{
+  background: #B00;
 }
 
 /*.app-warnings-stat-item_type-html

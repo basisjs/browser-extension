@@ -123,3 +123,23 @@
 {
   display: none;
 }
+
+.app-warning__isolate
+{
+  background: #ACA;
+  color: white;
+  padding: 2px 5px;
+  margin: -2px 2px;
+  position: relative;
+  top: -1px;
+  border-radius: 3px;
+  font-family: consolas, monaco, monospace;
+  font-size: 10px;
+  line-height: 1;
+  cursor: help;
+  display: none;
+}
+.app-warning__isolate_isolated
+{
+  display: inline-block;
+}

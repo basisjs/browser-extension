@@ -2,6 +2,10 @@ basis.require('basis.entity');
 
 var AppProfile = resource('appProfile.js').fetch();
 
+function nullOrString(value){
+  return typeof value == 'string' ? value : null;
+}
+
 var Warning = new basis.entity.EntityType({
   name: 'Warning',
   fields: {
@@ -15,6 +19,8 @@ var Warning = new basis.entity.EntityType({
       return null;
     },
     theme: String,
+    isolate: nullOrString,
+    originator: nullOrString,
     fatal: Boolean
   }
 });
@@ -26,7 +32,7 @@ Warning.all.setSyncAction(function(){
 Warning.all.addHandler({
   update: function(sender, delta){
     if ('warns' in delta)
-      this.sync(this.data.warns || []);
+      this.sync((this.data.warns || []).map(Warning.reader));
   }
 });
 

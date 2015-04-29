@@ -1,5 +1,6 @@
 <b:style src="./stat-item.css"/>
+<b:define name="fatal" type="bool"/>
 
-<span class="app-warnings-stat-item app-warnings-stat-item_{selected} app-warnings-stat-item_type-{type}" event-click="select">
+<span class="app-warnings-stat-item app-warnings-stat-item_{selected} app-warnings-stat-item_{fatal} app-warnings-stat-item_type-{type}" event-click="select">
   {caption}: {count}
 </span>
