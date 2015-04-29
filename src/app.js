@@ -18,7 +18,7 @@
 
       mainMenu.setChildNodes([
         l10nModule.fetch(),
-        resource('module/templater/index.js').fetch(),
+        //resource('module/templater/index.js').fetch(),
         resource('module/warnings/index.js').fetch(),
         resource('module/fileGraph/index.js').fetch()
       ], true);
