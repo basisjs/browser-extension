@@ -122,6 +122,21 @@ function processMessage(node){
   };
 }
 
+var groupMap = new basis.data.KeyObjectMap({
+  keyGetter: function(item){
+    return [item.data.file || '', item.data.originator || ''].join('\x00');
+  },
+  create: function(id, item){
+    return new basis.data.Object({
+      data: {
+        id: id,
+        file: item.data.file,
+        originator: item.data.originator
+      }
+    });
+  }
+})
+
 var view = new basis.ui.Node({
   active: true,
   dataSource: app.type.Warning.all,
@@ -151,48 +166,48 @@ var view = new basis.ui.Node({
   // },
   grouping: {
     groupGetter: function(child){
-      return [child.data.file || '', child.data.originator || ''].join('\x00');
+      return groupMap.resolve(child);
     },
-    sorting: 'data.title || "-"',
+    sorting: 'data.id || "-"',
     childClass: {
       template: resource('template/group-by-originator.tmpl'),
       binding: {
         title: function(node){
-          var filename = node.data.title.split('\x00')[1];
+          var filename = node.data.originator;
           return filename || '[no file]';
         },
         hasFilename: function(node){
-          var filename = node.data.title.split('\x00')[1];
+          var filename = node.data.originator;
           return filename ? 'hasFilename' : '';
-        },
+        }/*,
         isolated: {
           events: 'childNodesModified',
           getter: function(node){
             return node.nodes && node.nodes.length ? node.nodes[0].data.isolate : false;
           }
-        }
+        }*/
       },
       action: {
         open: function(){
           if (this.data.id)
-            app.transport.invoke('openFile', this.data.id);
+            app.transport.invoke('openFile', this.data.originator);
         }
       }
     },
     grouping: {
       groupGetter: function(child){
-        return child.data.title.split('\x00')[0];
+        return child.data.file;
       },
       sorting: 'data.title || "-"',
       childClass: {
         template: resource('template/group.tmpl'),
         binding: {
           title: function(node){
-            var filename = node.data.title.split('\x00')[0];
+            var filename = node.data.id;
             return filename || '[no file]';
           },
           hasFilename: function(node){
-            var filename = node.data.title.split('\x00')[0];
+            var filename = node.data.id;
             return filename ? 'hasFilename' : '';
           }
         },
@@ -240,9 +255,7 @@ var view = new basis.ui.Node({
           return parts.join(':');
         }
       },
-      isolated: function(node){
-        return !node.data.originator ? node.data.isolate : '';
-      },
+      isolated: 'data:isolate',
       collapsed: 'collapsed'
     },
     action: {

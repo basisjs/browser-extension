@@ -29,7 +29,7 @@
 {
   color: #D00;
 }
-.app-warning-group-originator__isolate
+/*.app-warning-group-originator__isolate
 {
   background: #ACA;
   color: white;
@@ -48,7 +48,7 @@
 {
   display: inline-block;
 }
-
+*/
 .app-warning-group-originator__items_hasFilename
 {
   margin-left: -4ex;

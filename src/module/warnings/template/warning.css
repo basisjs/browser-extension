@@ -128,16 +128,23 @@
 {
   background: #ACA;
   color: white;
-  padding: 2px 5px;
+  padding: 2px;
   margin: -2px 2px;
   position: relative;
   top: -1px;
-  border-radius: 3px;
+  border-radius: 50%;
   font-family: consolas, monaco, monospace;
   font-size: 10px;
   line-height: 1;
+  width: 10px;
+  text-align: center;
   cursor: help;
+  opacity: .65;
   display: none;
+}
+.app-warning__isolate:hover
+{
+  opacity: 1;
 }
 .app-warning__isolate_isolated
 {
