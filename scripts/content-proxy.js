@@ -4,20 +4,29 @@ var socketIoClientCode = fs
   .readFileSync(__dirname + '/../node_modules/socket.io/node_modules/socket.io-client/socket.io.js', 'utf-8')
   .replace('{', '{var define;');  // fix issue with require.js
 
-exports.process = function(mime, data, fn, fres, location){
-  switch (fn) {
-    case '/scripts/client.js':
-      return (
-        socketIoClientCode +
-        String(data)
-          .replace('{SELF_HOST}', ':' + server.port.client)
-      );
+module.exports = {
+  server: function(api, options){
+    api.addPreprocessor('.js', function(content, filename, cb){
+      switch (filename) {
+        case '/scripts/client.js':
+          cb(null,
+            socketIoClientCode +
+            String(content)
+              .replace('{SELF_HOST}', ':' + server.port.client)
+          );
+          break;
 
-    case '/scripts/acp.js':
-      return (
-        socketIoClientCode +
-        String(data)
-          .replace('{SELF_HOST}', ':' + server.port.acp)
-      );
+        case '/scripts/acp.js':
+          cb(null,
+            socketIoClientCode +
+            String(content)
+              .replace('{SELF_HOST}', ':' + server.port.acp)
+          );
+          break;
+
+        default:
+          cb(null, content);
+      }
+    });
   }
 };

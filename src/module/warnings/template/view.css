@@ -5,6 +5,27 @@
   left: 0;
   right: 0;
   bottom: 0;
+  overflow: hidden;
+}
+
+.app-warnings__empty
+{
+  display: none;
+  font-size: 200%;
+  color: #8A8;
+  padding: 20px;
+}
+.app-warnings__empty_isOk
+{
+  display: block;
+}
+
+.app-warnings__list
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   overflow: auto;
-  overflow-y: scroll;
 }

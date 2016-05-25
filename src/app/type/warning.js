@@ -2,24 +2,36 @@ var entity = require('basis.entity');
 var AppProfile = require('./appProfile.js');
 var DatasetWrapper = require('basis.data').DatasetWrapper;
 
-var Warning = entity.createType('Warning', {
-  file: String,
-  message: String,
-  fatal: Boolean
-});
+function nullOrString(value){
+  return typeof value == 'string' ? value : null;
+}
 
-var warningTrigger = new DatasetWrapper({
-  delegate: AppProfile(),
-  dataset: Warning.all,
-  handler: {
-    update: function(sender, delta){
-      if ('warns' in delta)
-        this.dataset.sync(this.data.warns || []);
-    }
+var Warning = new basis.entity.EntityType({
+  name: 'Warning',
+  fields: {
+    file: String,
+    message: String,
+    loc: function(value){
+      if (Array.isArray(value))
+        return value;
+      if (value)
+        return [value];
+      return null;
+    },
+    theme: String,
+    isolate: nullOrString,
+    originator: nullOrString,
+    fatal: Boolean
   }
 });
 Warning.all.setSyncAction(function(){
-  warningTrigger.setActive(true);
+  this.setActive(true);
+});
+Warning.all.addHandler({
+  update: function(sender, delta){
+    if ('warns' in delta)
+      this.sync((this.data.warns || []).map(Warning.reader));
+  }
 });
 
 module.exports = Warning;

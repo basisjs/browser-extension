@@ -1,6 +1,7 @@
 {
   "title": "Basis.js Developer Tools",
   "dependencies": {
+    "basisjs": "basisjs/basisjs",
     "socket.io": "1.0.6"
   }
 }

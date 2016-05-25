@@ -26,10 +26,10 @@ module.exports = new Transport({
         })
         .on('handshake', function(data){
           console.log('handshake', data);
-          Client.all.sync(basis.array(data.clients).map(Client.reader));
+          Client.all.setAndDestroyRemoved(basis.array(data.clients).map(Client.reader));
         })
         .on('clientList', function(data){
-          Client.all.sync(basis.array(data).map(Client.reader));
+          Client.all.setAndDestroyRemoved(basis.array(data).map(Client.reader));
         })
         .on('devpanelPacket', function(data){
           var id = data.id;

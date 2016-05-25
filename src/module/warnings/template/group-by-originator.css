@@ -1,0 +1,55 @@
+.app-warning-group-originator
+{
+  padding: 5px 0;
+}
+.app-warning-group-originator_hasFilename
+{
+  margin-left: 4ex;
+}
+
+.app-warning-group-originator__title
+{
+  padding: 0 6px 4px 0;
+  font-size: 90%;
+  color: #AAA;
+  display: none;
+}
+.app-warning-group-originator__title_hasFilename
+{
+  display: block;
+}
+
+.app-warning-group-originator__title-button
+{
+  text-decoration: underline;
+  color: #999;
+  cursor: pointer;
+}
+.app-warning-group-originator__title-button:hover
+{
+  color: #D00;
+}
+/*.app-warning-group-originator__isolate
+{
+  background: #ACA;
+  color: white;
+  padding: 2px 5px;
+  margin: -2px 2px;
+  position: relative;
+  top: -1px;
+  border-radius: 3px;
+  font-family: consolas, monaco, monospace;
+  font-size: 10px;
+  line-height: 1;
+  cursor: help;
+  display: none;
+}
+.app-warning-group-originator__isolate_isolated
+{
+  display: inline-block;
+}
+*/
+.app-warning-group-originator__items_hasFilename
+{
+  margin-left: -4ex;
+}

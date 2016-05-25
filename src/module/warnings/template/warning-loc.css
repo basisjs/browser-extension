@@ -1,0 +1,21 @@
+.app-warning__loc
+{
+  display: none;
+  color: #EEE;
+}
+.app-warning__loc_loc
+{
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.app-warning__loc-button
+{
+  text-decoration: underline;
+  color: #A00;
+  cursor: pointer;
+}
+.app-warning__loc-button:hover
+{
+  color: #D00;
+}

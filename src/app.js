@@ -52,7 +52,7 @@ module.exports = require('basis.app').create({
         //   : require('./module/l10n/index.js'),
         // require('./module/templater/index.js'),
         require('./module/warnings/index.js'),
-        require('./module/fileGraph/index.js')
+        // require('./module/fileGraph/index.js')
       ], true);
 
       // mainMenu.selectPage();

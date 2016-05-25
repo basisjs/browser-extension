@@ -1,0 +1,13 @@
+<b:style src="group-by-originator.css"/>
+<b:define name="isolated" type="bool"/>
+
+<div class="app-warning-group-originator app-warning-group-originator_{hasFilename}">
+  <div class="app-warning-group-originator__title app-warning-group-originator__title_{hasFilename}">
+    Originated by
+    &#x20;
+    <!-- <span class="app-warning-group-originator__isolate app-warning-group-originator__isolate_{isolated}" title="Isolate prefix {isolated}">i</span>
+    &#x20; -->
+    <span class="app-warning-group-originator__title-button" event-click="open">{title}</span>
+  </div>
+  <div{childNodesElement} class="app-warning-group-originator__items_{hasFilename}"/>
+</div>
