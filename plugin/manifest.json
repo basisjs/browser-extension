@@ -1,8 +1,8 @@
 {
-  "name": "Basis.js Tools",
-  "version": "1.3.24",
-  "description": "Basis.js Tools is a set of tools which helps developers to create applications on basis.js framework more easily.",
-  "devtools_page": "devtools.html",
+  "name": "Basis.js Devtools",
+  "version": "2.0.0",
+  "description": "Developer tools plugin to embed Basis.js app inspector",
+  "devtools_page": "plugin.html",
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "manifest_version": 2,
   "permissions":  [
@@ -11,15 +11,15 @@
     "http://*/*",
     "https://*/*"
   ],
-  "background": { "scripts": ["background.js"] },
   "icons": {
     "32": "icon32x32.png",
     "128": "icon128x128.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["http://*/*"],
-      "js": ["content.js"]
-    }
-  ]
+  "background": {
+    "scripts": ["$background.js"]
+  },
+  "content_scripts": [{
+    "matches": ["http://*/*"],
+    "js": ["$page.js"]
+  }]
 }

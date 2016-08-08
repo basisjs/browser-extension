@@ -1,8 +1,0 @@
-
-  #TemplateList .FileList
-  {
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-box-flex: 1;
-  }

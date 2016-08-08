@@ -1,6 +1,0 @@
-[submodule "lib/basisjs"]
-	path = lib/basisjs
-	url = https://github.com/basisjs/basisjs.git
-[submodule "lib/file-graph-viewer"]
-	path = lib/file-graph-viewer
-	url = https://github.com/lahmatiy/file-graph-viewer.git
