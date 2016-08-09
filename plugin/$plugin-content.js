@@ -1,43 +1,64 @@
+var DEBUG = false;
 var inspectedWindow = chrome.devtools.inspectedWindow;
-var connected = false;
-var client;
-var listenners = {};
+var debugIndicator = DEBUG ? createIndicator() : null;
+var contentConnected = false;
+var pageConnected = false;
+var listeners = {};
 var callbacks = {};
+var subscribers = [];
+var sandbox;
 var page = chrome.extension.connect({
   name: 'basisjsDevtool:plugin'
 });
 
-function slice(value){
-  return Array.prototype.slice.call(value);
-}
-
-function genUID(len){
-  function base36(val){
-    return Math.round(val).toString(36);
+function updateIndicator(){
+  if (DEBUG) {
+    debugIndicator.style.background = [
+      'blue',   // once disconnected
+      'orange', // contentConnected but no a page
+      'green'   // all connected
+    ][contentConnected + pageConnected];
   }
-
-  // uid should starts with alpha
-  var result = base36(10 + 25 * Math.random());
-
-  if (!len)
-    len = 16;
-
-  while (result.length < len)
-    result += base36(new Date * Math.random());
-
-  return result.substr(0, len);
 }
 
-page.onMessage.addListener(function(packet){
-  console.log('[plugin] recieve:', packet);
+function initUI(code){
+  var apiId = genUID();
+  
+  subscribers = [];
+  window[apiId] = function createAPI() {
+    return {
+      send: transport.send,
+      subscribe: function(fn){
+        subscribers.push(fn);
+      }
+    }
+  };
+
+  sandbox = document.createElement('iframe');
+  sandbox.srcdoc = '<script src="$plugin-content-inject.js"></script>';
+  sandbox.onload = function(){
+    sandbox.contentWindow.location.hash = apiId;
+    sandbox.contentWindow.eval(code);
+  };
+  document.documentElement.appendChild(sandbox);
+}
+
+function dropUI(){
+  if (sandbox) {
+    sandbox.parentNode.removeChild(sandbox);
+    sandbox.setAttribute('srcdoc', '');
+    sandbox.setAttribute('src', '');
+  }
+}
+
+page.onMessage.addListener(function(packet) {
+  if (DEBUG) console.log('[basisjs.plugin] Recieve:', packet);
 
   var args = packet.data;
   var callback = packet.callback;
 
-  if (packet.event == 'callback')
-  {
-    if (callbacks.hasOwnProperty(callback))
-    {
+  if (packet.event === 'callback') {
+    if (callbacks.hasOwnProperty(callback)) {
       callbacks[callback].apply(null, args);
       delete callbacks[callback];
     }
@@ -45,7 +66,8 @@ page.onMessage.addListener(function(packet){
   }
 
   if (callback)
-    args = args.concat(function(){
+    args = args.concat(function() {
+      // console.log('[plugin] send callback', callback, args);
       page.postMessage({
         event: 'callback',
         callback: callback,
@@ -53,18 +75,18 @@ page.onMessage.addListener(function(packet){
       });
     });
 
-  var list = listenners[packet.event];
+  var list = listeners[packet.event];
   if (list)
     for (var i = 0, item; item = list[i]; i++)
       item.fn.apply(item.context, args);
 });
 
 var transport = {
-  on: function(eventName, fn, context){
-    if (!listenners[eventName])
-      listenners[eventName] = [];
+  on: function(eventName, fn, context) {
+    if (!listeners[eventName])
+      listeners[eventName] = [];
 
-    listenners[eventName].push({
+    listeners[eventName].push({
       fn: fn,
       context: context
     });
@@ -72,14 +94,17 @@ var transport = {
     return this;
   },
 
-  send: function(){
+  send: function() {
     var args = slice(arguments);
     var callback = false;
 
-    if (args.length && args[args.length - 1])
-    {
+    if (args.length && typeof args[args.length - 1] === 'function') {
       callback = genUID();
       callbacks[callback] = args.pop();
+    }
+
+    if (DEBUG) {
+      console.log('[basisjs.plugin] send data', callback, args);
     }
 
     page.postMessage({
@@ -91,29 +116,46 @@ var transport = {
 };
 
 transport
-  .on('connect', function(){
-    indy.style.background = 'green';
-    transport.send({ x: 1 }, 1, 2, function(a){
-      console.log('CALLBACK from page!!!', a || 'FAIL');
+  .on('connect', function() {
+    contentConnected = true;
+    updateIndicator();
+  })
+  .on('page:connect', function() {
+    pageConnected = true;
+    updateIndicator();
+
+    // send interface UI request
+    // TODO: run once
+    dropUI();
+    var callback = genUID();
+    callbacks[callback] = function(err, type, content) {
+      if (type === 'script')
+        initUI(content);
+      else
+        alert('Unsupported UI content: ' + type);
+    };
+    page.postMessage({
+      event: 'getInspectorUI',
+      callback: callback
     });
   })
-  .on('disconnect', function(){ indy.style.background = 'blue'; })
-  .on('data', function(a, b, c, cb){
-    console.log('[plugin] recieve data', arguments);
-    console.info('[plugin]', a, b, c);
-    if (typeof cb !== 'function') debugger;
-    cb('OK');
+  .on('disconnect', function() {
+    contentConnected = false;
+    pageConnected = false;
+    updateIndicator();
+  })
+  .on('data', function(a, b, c, cb) {
+    if (DEBUG) {
+      console.log('[basisjs.plugin] recieve data', arguments);
+    }
+
+    var args = slice(arguments);
+    subscribers.forEach(function(fn){
+      fn.apply(null, args);
+    })
   });
 
 page.postMessage({
   event: 'plugin:init',
   tabId: inspectedWindow.tabId
 });
-
-var indy = document.createElement('div');
-indy.style = 'position:fixed;z-index:111;top:10px;left:10px;background:red;width:20px;height:20px;'
-document.documentElement.appendChild(indy);
-
-var iframe = document.createElement('iframe');
-iframe.srcdoc = 'todo';
-document.documentElement.appendChild(iframe);

@@ -1,117 +1,126 @@
-var connected = false;
-var sendClientInfoTimer;
-var title_;
-var location_;
+var DEBUG = false;
+var pluginConnected = false;
+var pageConnected = false;
+var debugIndicator = DEBUG ? createIndicator() : null;
 var outputChannelId;
-var inputChannelId = 'basisjsDevtool:connect-' +
-                      parseInt(10e12 * Math.random()).toString(36) +
-                      Date.now().toString(36);
+var inputChannelId = 'basisjsDevtool:' + genUID();
 
+function updateIndicator(){
+  if (debugIndicator) {
+    debugIndicator.style.background = [
+      'blue',   // once disconnected
+      'orange', // pluginConnected but no a page
+      'green'   // all connected
+    ][pluginConnected + pageConnected];
+  }
+}
 
-//
-// helpers
-//
-function sendToPlugin(event, data){
+function sendToPlugin(event, data) {
   plugin.postMessage({
     event: event,
     data: data
   });
 }
 
-function sendToPage(channelId){
-  console.log('$page', arguments);
+function emitPageEvent(channelId, data) {
+  if (DEBUG) {
+    console.log('[devtool plugin] send to page', channelId, data);
+  }
+
   document.dispatchEvent(new CustomEvent(channelId, {
-    detail: Array.prototype.slice.call(arguments, 1)
+    detail: data
   }));
 }
 
-//
-// client info
-//
-function getTitle(){
-  return title_ = document.title;
+function sendToPage(data){
+  emitPageEvent(outputChannelId, data);
 }
-function getLocation(){
-  return location_ = String(location);
-}
-function getClientInfo(){
-  return {
-    title: getTitle(),
-    location: getLocation()
-  };
-}
-function sendClientInfo(force){
-  var hasChanges =
-        force ||
-        title_ != getTitle() ||
-        location_ != getLocation();
 
-  if (hasChanges)
-    sendToPlugin('clientInfo', getClientInfo());
+function handshake() {
+  emitPageEvent('basisjs-devpanel:connect', {
+    input: inputChannelId,
+    output: outputChannelId
+  });
 }
 
 //
 // set up transport
 //
-var plugin = chrome.extension.connect({
+
+var plugin = chrome.runtime.connect({
   name: 'basisjsDevtool:page'
 });
 
-plugin.onMessage.addListener(function(packet){
-  console.log('plugin -> page', packet.event, packet);
+plugin.onMessage.addListener(function(packet) {
+  if (DEBUG) {
+    console.log('[devtool plugin] from plugin', packet.event, packet);
+  }
 
-  switch (packet.event)
-  {
+  switch (packet.event) {
     case 'connect':
-      indy.style.background = 'green';
-      if (!connected)
-      {
-        connected = true;
-
-        // send client info and shedule changes notification
-        sendClientInfo(true);
-        sendClientInfoTimer = setInterval(sendClientInfo, 150);
+      if (!pluginConnected && pageConnected) {
+        sendToPlugin('page:connect');
+        sendToPage({
+          event: 'connect'
+        });
       }
+
+      pluginConnected = true;
+      updateIndicator();
+
       break;
 
     case 'disconnect':
-      indy.style.background = 'blue';
-      connected = false;
-      clearInterval(sendClientInfoTimer);
+      if (pluginConnected && pageConnected) {
+        sendToPage({
+          event: 'disconnect'
+        });
+      }
+
+      pluginConnected = false;
+      updateIndicator();
       break;
 
-    case 'data':
+    case 'getInspectorUI':
     case 'callback':
-      plugin.postMessage(packet);
+    case 'data':
+      sendToPage(packet);
       break;
   }
 });
 
 
 //
-// connect to basis.js
+// connect to basis.js devpanel
 //
 
-document.addEventListener('basisjs-devpanel:init', function(e){
+document.addEventListener('basisjs-devpanel:init', function(e) {
   if (outputChannelId)
     return;
-  console.log('[plugin $page] connected');
-  outputChannelId = e.detail;
-  sendToPage('basisjs-devpanel:connect', inputChannelId);
+
+  var data = e.detail;
+  outputChannelId = data.input;
+  pageConnected = true;
+  updateIndicator();
+
+  if (!data.output) {
+    handshake();
+  }
+
+  if (pluginConnected) {
+    sendToPlugin('page:connect');
+    sendToPage({
+      event: 'connect'
+    });
+  }
 });
 
-document.addEventListener(inputChannelId, function(e){
-  // var packet = JSON.parse(e.detail);
-  console.info('[plugin $page] recieve', e.detail);
+document.addEventListener(inputChannelId, function(e) {
+  if (DEBUG) {
+    console.log('[devtool plugin] page -> plugin', e.detail);
+  }
+
   plugin.postMessage(e.detail);
 });
 
-sendToPage('basisjs-devpanel:connect', inputChannelId);
-
-//
-// notify background page about content is ready
-//
-
-var indy = document.createElement('div');
-indy.style = 'position:fixed;top:10px;left:10px;background:red;width:20px;height:20px;'
-document.body.appendChild(indy);
+handshake();
