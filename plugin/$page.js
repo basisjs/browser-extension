@@ -1,27 +1,27 @@
-var extensionReady = false;
+var connected = false;
 var sendClientInfoTimer;
-var notifyChannelId =
-      'basisjs-acp:connect-' +
-      parseInt(10e12 * Math.random()).toString(36) +
-      parseInt(performance.now()).toString(36);
 var title_;
 var location_;
+var outputChannelId;
+var inputChannelId = 'basisjsDevtool:connect-' +
+                      parseInt(10e12 * Math.random()).toString(36) +
+                      Date.now().toString(36);
 
 
 //
 // helpers
 //
-function sendToPlugin(action, id, data){
-  backgroundPort.postMessage({
-    action: action,
-    channelId: id,
+function sendToPlugin(event, data){
+  plugin.postMessage({
+    event: event,
     data: data
   });
 }
 
-function sendToPage(channelId, data){
+function sendToPage(channelId){
+  console.log('$page', arguments);
   document.dispatchEvent(new CustomEvent(channelId, {
-    detail: data
+    detail: Array.prototype.slice.call(arguments, 1)
   }));
 }
 
@@ -47,25 +47,26 @@ function sendClientInfo(force){
         location_ != getLocation();
 
   if (hasChanges)
-    sendToPlugin('clientInfo', null, getClientInfo());
+    sendToPlugin('clientInfo', getClientInfo());
 }
 
 //
 // set up transport
 //
-var backgroundPort = chrome.extension.connect({
-  name: 'basisjsContentScriptPort'
+var plugin = chrome.extension.connect({
+  name: 'basisjsDevtool:page'
 });
 
-backgroundPort.onMessage.addListener(function(packet){
-  console.log('to content', packet.action, packet);
+plugin.onMessage.addListener(function(packet){
+  console.log('plugin -> page', packet.event, packet);
 
-  switch (packet.action)
+  switch (packet.event)
   {
-    case 'extensionInit':
-      if (!extensionReady)
+    case 'connect':
+      indy.style.background = 'green';
+      if (!connected)
       {
-        extensionReady = true;
+        connected = true;
 
         // send client info and shedule changes notification
         sendClientInfo(true);
@@ -73,19 +74,15 @@ backgroundPort.onMessage.addListener(function(packet){
       }
       break;
 
-    case 'extensionDestroy':
-      extensionReady = false;
+    case 'disconnect':
+      indy.style.background = 'blue';
+      connected = false;
       clearInterval(sendClientInfoTimer);
       break;
 
-    case 'command':
-      if (packet.clientId)
-        sendToPage(packet.clientId, {
-          type: 'command',
-          id: packet.id,
-          command: packet.command,
-          args: packet.args
-        });
+    case 'data':
+    case 'callback':
+      plugin.postMessage(packet);
       break;
   }
 });
@@ -94,13 +91,27 @@ backgroundPort.onMessage.addListener(function(packet){
 //
 // connect to basis.js
 //
-document.addEventListener('basisjs-devpanel:init', function(){
-  sendToPage('basisjs-devpanel:connect', notifyChannelId);
-});
-sendToPage('basisjs-devpanel:connect', notifyChannelId);
 
+document.addEventListener('basisjs-devpanel:init', function(e){
+  if (outputChannelId)
+    return;
+  console.log('[plugin $page] connected');
+  outputChannelId = e.detail;
+  sendToPage('basisjs-devpanel:connect', inputChannelId);
+});
+
+document.addEventListener(inputChannelId, function(e){
+  // var packet = JSON.parse(e.detail);
+  console.info('[plugin $page] recieve', e.detail);
+  plugin.postMessage(e.detail);
+});
+
+sendToPage('basisjs-devpanel:connect', inputChannelId);
 
 //
 // notify background page about content is ready
 //
-sendToPlugin('contentScriptInit');
+
+var indy = document.createElement('div');
+indy.style = 'position:fixed;top:10px;left:10px;background:red;width:20px;height:20px;'
+document.body.appendChild(indy);

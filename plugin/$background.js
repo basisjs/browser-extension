@@ -1,7 +1,7 @@
 var connections = {};
 
 function getConnection(id){
-  if (id in connections == false)
+  if (id in connections === false)
     connections[id] = {
       page: null,
       plugin: null
@@ -10,100 +10,88 @@ function getConnection(id){
   return connections[id];
 }
 
-function attachPagePort(port){
-  var tabId = port.sender.tab && port.sender.tab.id;
-  var connection;
+function sendToPage(connection, payload){
+  if (connection && connection.page)
+  {
+    console.log('-> page', payload);
+    connection.page.postMessage(payload)
+  }
+  else
+    console.warn('-> page [not sent - no connection]', payload);
+}
 
-  console.log('page connected');
-  port.onMessage.addListener(function(payload){
-    console.log('content -> plugin', payload);
-    var action = payload.action;
+function sendToPlugin(connection, payload){
+  if (connection && connection.plugin)
+  {
+    console.log('-> plugin', payload);
+    connection.plugin.postMessage(payload)
+  }
+  else
+    console.warn('-> plugin [not sent - no connection]', payload);
+}
 
-    if (action == 'contentScriptInit' && !connection)
-    {
-      console.log('page init');
-      connection = getConnection(tabId);
-      connection.page = port;
+function connectPage(page){
+  var tabId = page.sender.tab && page.sender.tab.id;
+  var connection = getConnection(tabId);
 
-      if (connection.plugin)
-        connection.page.postMessage({
-          action: 'extensionInit'
-        });
-    }
+  connection.page = page;
+  if (connection.plugin)
+  {
+    sendToPage(connection, { event: 'connect' });
+    sendToPlugin(connection, { event: 'connect' });
+  }
+
+  page.onMessage.addListener(function(payload){
+    console.log('page -> plugin', payload);
 
     // proxy: page -> plugin
-    if (connection && connection.plugin)
-    {
-      console.log('page -> plugin', payload);
-      connection.plugin.postMessage(payload);
-    }
-    else
-      console.log('page -> plugin not sent - no connection', payload);
+    sendToPlugin(connection, payload);
   });
 
-  port.onDisconnect.addListener(function(){
-    if (connection)
-    {
-      console.log('page disconnect');
-      connection.page = null;
-
-      if (connection.plugin)
-        connection.plugin.postMessage({
-          action: 'contentScriptDestroy'
-        });
-    }
+  page.onDisconnect.addListener(function(){
+    connection.page = null;
+    sendToPlugin(connection, { event: 'disconnect' });
   });
 }
 
-function attachPluginPort(port){
+function connectPlugin(plugin){
   var connection;
 
-  console.log('plugin connect');
-  port.onMessage.addListener(function(payload){
-    var action = payload.action;
-
-    // save references
-    if (action == 'extensionInit' && !connection)
+  plugin.onMessage.addListener(function(payload){
+    console.log('plugin -> page', payload);
+    if (payload.event == 'plugin:init')
     {
-      console.log('plugin init');
       connection = getConnection(payload.tabId);
-      connection.plugin = port;
-      //connection.tabId = port.sender.tab && port.sender.tab.id;
+      connection.plugin = plugin;
+      //connection.tabId = plugin.sender.tab && plugin.sender.tab.id;
 
       if (connection.page)
-        connection.plugin.postMessage({
-          action: 'contentScriptInit'
-        });
+      {
+        sendToPage(connection, { event: 'connect' });
+        sendToPlugin(connection, { event: 'connect' });
+      }
+
+      return;
     }
 
     // proxy: plugin -> page
-    
-    if (connection && connection.page)
-    {
-      console.log('plugin -> page', payload);
-      connection.page.postMessage(payload);
-    }
-    else
-      console.log('plugin -> page not sent - no connection', payload);
+    sendToPage(connection, payload);
   });
 
-  port.onDisconnect.addListener(function(){
+  plugin.onDisconnect.addListener(function(){
     if (connection)
     {
       console.log('plugin disconnect');
       connection.plugin = null;
-      if (connection.page)
-        connection.page.postMessage({
-          action: 'extensionDestroy'
-        });
+      sendToPage(connection, { event: 'disconnect' });
     }
   });
 }
 
 chrome.extension.onConnect.addListener(function(port){
-  if (port.name == 'basisjsContentScriptPort')
-    attachPagePort(port);
+  if (port.name == 'basisjsDevtool:page')
+    connectPage(port);
 
-  if (port.name == 'basisjsExtensionPort')
-    attachPluginPort(port);
+  if (port.name == 'basisjsDevtool:plugin')
+    connectPlugin(port);
 });

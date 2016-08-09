@@ -1,132 +1,119 @@
 var inspectedWindow = chrome.devtools.inspectedWindow;
-var commandSeed = 1;
-var commands = {};
-var clientId = 'id:' + parseInt(Math.random()*1e10);
+var connected = false;
 var client;
+var listenners = {};
+var callbacks = {};
+var page = chrome.extension.connect({
+  name: 'basisjsDevtool:plugin'
+});
 
-var initClientListeners = function runOnce(){
-  var inited = false;
-  return function(transport){
-    if (inited)
-      return;
+function slice(value){
+  return Array.prototype.slice.call(value);
+}
 
-    inited = true;
-    transport
-      .on('clientInfo', function(data){
-        //
-      })
-      .on('contentScriptDestroy', function(){
-        //
-      });
+function genUID(len){
+  function base36(val){
+    return Math.round(val).toString(36);
   }
-};
+
+  // uid should starts with alpha
+  var result = base36(10 + 25 * Math.random());
+
+  if (!len)
+    len = 16;
+
+  while (result.length < len)
+    result += base36(new Date * Math.random());
+
+  return result.substr(0, len);
+}
+
+page.onMessage.addListener(function(packet){
+  console.log('[plugin] recieve:', packet);
+
+  var args = packet.data;
+  var callback = packet.callback;
+
+  if (packet.event == 'callback')
+  {
+    if (callbacks.hasOwnProperty(callback))
+    {
+      callbacks[callback].apply(null, args);
+      delete callbacks[callback];
+    }
+    return;
+  }
+
+  if (callback)
+    args = args.concat(function(){
+      page.postMessage({
+        event: 'callback',
+        callback: callback,
+        data: slice(arguments)
+      });
+    });
+
+  var list = listenners[packet.event];
+  if (list)
+    for (var i = 0, item; item = list[i]; i++)
+      item.fn.apply(item.context, args);
+});
 
 var transport = {
-  port: chrome.extension.connect({
-    name: 'basisjsExtensionPort'
-  }),
+  on: function(eventName, fn, context){
+    if (!listenners[eventName])
+      listenners[eventName] = [];
 
-  isReady: false,
-  handlers: {},
-
-  ready: function(handler, context){
-    if (this.isReady)
-      handler.call(context);
-
-    this.on('ready', handler, context);
-  },
-
-  message: function(message){
-    console.log('data to ext:', message);
-
-    if (message.action == 'ready')
-      this.isReady = true;
-
-    var handlers = this.handlers[message.action];
-    if (handlers)
-      for (var i = 0, handler; handler = handlers[i]; i++)
-        handler.handler.call(handler.context, message.data, message);
-  },
-  on: function(messageNameOrHandlers, handlerOrContext, handlerContext){
-    var handlers;
-    var handlerContext;
-
-    if (typeof messageNameOrHandlers == 'string')
-    {
-      handlers = {};
-      handlers[messageNameOrHandlers] = handlerOrContext;
-    }
-    else
-    {
-      handlers = messageNameOrHandlers;
-      handlerContext = handlerOrContext;
-    }
-
-    for (var message in handlers)
-    {
-      var handler = handlers[message];
-
-      if (!this.handlers[message])
-        this.handlers[message] = [];
-
-      this.handlers[message].push({
-        handler: handler,
-        context: handlerContext
-      });
-    }
+    listenners[eventName].push({
+      fn: fn,
+      context: context
+    });
 
     return this;
   },
 
-  send: function(action, clientId, channelId, args){
-    var id = commandSeed++;
-    var callback;
+  send: function(){
+    var args = slice(arguments);
+    var callback = false;
 
-    if (Array.isArray(args))
-      args = args.map(JSON.stringify);
-    else
-      args = null;
+    if (args.length && args[args.length - 1])
+    {
+      callback = genUID();
+      callbacks[callback] = args.pop();
+    }
 
-    this.port.postMessage({
-      action: 'command',
-      data: {
-        clientId: clientId,
-        id: id,
-        command: action,
-        args: args
-      }
+    page.postMessage({
+      event: 'data',
+      data: args,
+      callback: callback
     });
   }
 };
 
-transport.on('contentScriptInit', function(data){
-  // init listeners that depends on client
-  initClientListeners(transport);
-}, transport);
+transport
+  .on('connect', function(){
+    indy.style.background = 'green';
+    transport.send({ x: 1 }, 1, 2, function(a){
+      console.log('CALLBACK from page!!!', a || 'FAIL');
+    });
+  })
+  .on('disconnect', function(){ indy.style.background = 'blue'; })
+  .on('data', function(a, b, c, cb){
+    console.log('[plugin] recieve data', arguments);
+    console.info('[plugin]', a, b, c);
+    if (typeof cb !== 'function') debugger;
+    cb('OK');
+  });
 
-transport.on('devpanelPacket', function(data){
-  var id = data.id;
-  var status = data.status;
-
-  console.log('devpanelPacket in ext', data);
-
-  if (commands.hasOwnProperty(id))
-  {
-    var callback = commands[id];
-    delete commands[id];
-
-    if (typeof callback == 'function')
-    {
-      if (status == 'error')
-        callback(data.data);
-      else
-        callback(null, data.data);
-    }
-  }
-}, transport);
-
-transport.port.onMessage.addListener(transport.message.bind(transport));
-transport.port.postMessage({
-  action: 'extensionInit',
+page.postMessage({
+  event: 'plugin:init',
   tabId: inspectedWindow.tabId
 });
+
+var indy = document.createElement('div');
+indy.style = 'position:fixed;z-index:111;top:10px;left:10px;background:red;width:20px;height:20px;'
+document.documentElement.appendChild(indy);
+
+var iframe = document.createElement('iframe');
+iframe.srcdoc = 'todo';
+document.documentElement.appendChild(iframe);
