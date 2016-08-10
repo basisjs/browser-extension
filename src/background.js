@@ -58,6 +58,7 @@ function connectPlugin(plugin) {
 
   plugin.onMessage.addListener(function(payload) {
     console.log('plugin -> page', payload);
+
     if (payload.event == 'plugin:init') {
       connection = getConnection(payload.tabId);
       connection.plugin = plugin;

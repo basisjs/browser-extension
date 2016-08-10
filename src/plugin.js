@@ -2,10 +2,11 @@ var DEBUG = false;
 var inspectedWindow = chrome.devtools.inspectedWindow;
 var debugIndicator = DEBUG ? createIndicator() : null;
 var contentConnected = false;
-var pageConnected = false;
+var devtoolConnected = false;
+var devtoolFeatures = [];
 var listeners = {};
 var callbacks = {};
-var subscribers = [];
+var subscribers = createSubscribers();
 var dropSandboxTimer;
 var sandbox;
 var page = chrome.extension.connect({
@@ -23,16 +24,20 @@ function updateConnectionStateIndicator(id, state) {
 
 function updateIndicator() {
   updateConnectionStateIndicator('connection-to-page', contentConnected);
-  updateConnectionStateIndicator('connection-to-basisjs', pageConnected);
-  $('state-banner').style.display = contentConnected && pageConnected ? 'none' : 'block';
+  updateConnectionStateIndicator('connection-to-basisjs', devtoolConnected);
+  $('state-banner').style.display = contentConnected && devtoolConnected ? 'none' : 'block';
 
   if (DEBUG) {
     debugIndicator.style.background = [
       'gray',   // once disconnected
       'orange', // contentConnected but no a page
       'green'   // all connected
-    ][contentConnected + pageConnected];
+    ][contentConnected + devtoolConnected];
   }
+}
+
+function sandboxError(message) {
+  sandbox.srcdoc = '<div style="padding:20px;color:#D00;">' + message + '</div>';
 }
 
 function initSandbox() {
@@ -43,24 +48,49 @@ function initSandbox() {
   document.documentElement.appendChild(sandbox);
 }
 
-function sandboxError(message) {
-  sandbox.srcdoc = '<div style="padding:20px;color:#D00;">' + message + '</div>';
+function notify(type, args) {
+  for (var i = 0; i < subscribers[type].length; i++) {
+    subscribers[type][i].apply(null, args);
+  }
+}
+
+function createSubscribers() {
+  return {
+    data: [],
+    connection: [],
+    features: []
+  };
 }
 
 function initUI(code) {
   var apiId = genUID();
   
-  subscribers = [];
+  subscribers = createSubscribers();
+
   window[apiId] = function createAPI() {
     return {
       send: transport.send,
-      subscribe: function(fn){
-        subscribers.push(fn);
-      },
-      on: function(){
-        return this;
-      },
-      off: function(){
+      subscribe: function(channel, fn) {
+        if (typeof channel === 'function') {
+          fn = channel;
+          channel = 'data';
+        }
+
+        if (!subscribers.hasOwnProperty(channel)) {
+          return console.warn('[remote inspector] Unknown channel name: ' + channel);
+        }
+
+        subscribers[channel].push(fn);
+
+        switch (channel) {
+          case 'connection':
+            fn(devtoolConnected);
+            break;
+          case 'features':
+            fn(devtoolFeatures);
+            break;
+        }
+
         return this;
       }
     }
@@ -72,6 +102,7 @@ function initUI(code) {
 
 function dropSandbox() {
   if (sandbox) {
+    subscribers = createSubscribers();
     sandbox.parentNode.removeChild(sandbox);
     sandbox.setAttribute('srcdoc', '');
     sandbox.setAttribute('src', '');
@@ -80,7 +111,9 @@ function dropSandbox() {
 }
 
 page.onMessage.addListener(function(packet) {
-  if (DEBUG) console.log('[basisjs.plugin] Recieve:', packet);
+  if (DEBUG) {
+    console.log('[basisjs.plugin] Recieve:', packet);
+  }
 
   var args = packet.data;
   var callback = packet.callback;
@@ -95,7 +128,10 @@ page.onMessage.addListener(function(packet) {
 
   if (callback)
     args = args.concat(function() {
-      // console.log('[plugin] send callback', callback, args);
+      if (DEBUG) {
+        console.log('[plugin] send callback', callback, args);
+      }
+
       page.postMessage({
         event: 'callback',
         callback: callback,
@@ -148,8 +184,11 @@ transport
     contentConnected = true;
     updateIndicator();
   })
-  .on('page:connect', function() {
-    pageConnected = true;
+  .on('devtool:connect', function(features) {
+    devtoolConnected = true;
+    notify('connection', [devtoolConnected]);
+    devtoolFeatures = features;
+    notify('features', [devtoolFeatures]);
     updateIndicator();
 
     // send interface UI request
@@ -174,19 +213,23 @@ transport
   })
   .on('disconnect', function() {
     contentConnected = false;
-    pageConnected = false;
+    devtoolConnected = false;
+    notify('connection', [devtoolConnected]);
+    devtoolFeatures = [];
+    notify('features', [devtoolFeatures]);
     updateIndicator();
     dropSandboxTimer = setTimeout(dropSandbox, 2000);
+  })
+  .on('features', function(features) {
+    devtoolFeatures = features;
+    notify('features', [devtoolFeatures]);
   })
   .on('data', function() {
     if (DEBUG) {
       console.log('[basisjs.plugin] recieve data', arguments);
     }
 
-    var args = slice(arguments);
-    subscribers.forEach(function(fn){
-      fn.apply(null, args);
-    })
+    notify('data', arguments);
   });
 
 page.postMessage({

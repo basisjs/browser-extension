@@ -1,6 +1,7 @@
 var DEBUG = false;
 var pluginConnected = false;
-var pageConnected = false;
+var devtoolConnected = false;
+var features = [];
 var debugIndicator = DEBUG ? createIndicator() : null;
 var outputChannelId;
 var inputChannelId = 'basisjsDevtool:' + genUID();
@@ -11,7 +12,7 @@ function updateIndicator(){
       'blue',   // once disconnected
       'orange', // pluginConnected but no a page
       'green'   // all connected
-    ][pluginConnected + pageConnected];
+    ][pluginConnected + devtoolConnected];
   }
 }
 
@@ -58,8 +59,8 @@ plugin.onMessage.addListener(function(packet) {
 
   switch (packet.event) {
     case 'connect':
-      if (!pluginConnected && pageConnected) {
-        sendToPlugin('page:connect');
+      if (!pluginConnected && devtoolConnected) {
+        sendToPlugin('devtool:connect', [features]);
         sendToPage({
           event: 'connect'
         });
@@ -71,7 +72,7 @@ plugin.onMessage.addListener(function(packet) {
       break;
 
     case 'disconnect':
-      if (pluginConnected && pageConnected) {
+      if (pluginConnected && devtoolConnected) {
         sendToPage({
           event: 'disconnect'
         });
@@ -98,17 +99,17 @@ document.addEventListener('basisjs-devpanel:init', function(e) {
   if (outputChannelId)
     return;
 
-  var data = e.detail;
-  outputChannelId = data.input;
-  pageConnected = true;
+  var packet = e.detail;
+  outputChannelId = packet.input;
+  devtoolConnected = true;
   updateIndicator();
 
-  if (!data.output) {
+  if (!packet.output) {
     handshake();
   }
 
   if (pluginConnected) {
-    sendToPlugin('page:connect');
+    sendToPlugin('devtool:connect', [packet.features || features]);
     sendToPage({
       event: 'connect'
     });
@@ -116,11 +117,17 @@ document.addEventListener('basisjs-devpanel:init', function(e) {
 });
 
 document.addEventListener(inputChannelId, function(e) {
+  var packet = e.detail;
+
   if (DEBUG) {
-    console.log('[devtool plugin] page -> plugin', e.detail);
+    console.log('[devtool plugin] page -> plugin', packet);
   }
 
-  plugin.postMessage(e.detail);
+  if (packet.event === 'features') {
+    features = packet.data[0];
+  }
+
+  plugin.postMessage(packet);
 });
 
 handshake();
