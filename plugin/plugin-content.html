@@ -1,0 +1,53 @@
+<!doctype html>
+<meta charset="utf-8"/>
+
+<style>
+  BODY,
+  HTML
+  {
+    padding: 0;
+    margin: 0;
+  }
+
+  iframe
+  {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    z-index: 1;
+    background: white;
+  }
+
+  #state-banner
+  {
+    padding: 20px;
+    color: #888;
+  }
+  .connection
+  {
+    margin-bottom: 10px;
+  }
+  .state.pending
+  {
+    color: orange;
+  }
+  .state.ok
+  {
+    color: #090;
+  }
+</style>
+
+<div id="state-banner">
+  <div class="connection">
+    Connection to page – <span id="connection-to-page" class="state pending">pending...</span>
+  </div>
+  <div class="connection">
+    Connection to basis.js devpanel – <span id="connection-to-basisjs" class="state pending">pending...</span>
+  </div>
+</div>
+
+<script src="helpers.js"></script>
+<script src="$plugin-content.js"></script>
