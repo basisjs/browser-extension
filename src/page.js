@@ -1,4 +1,5 @@
 var DEBUG = false;
+var sessionId = genUID();
 var pluginConnected = false;
 var devtoolConnected = false;
 var features = [];
@@ -60,7 +61,7 @@ plugin.onMessage.addListener(function(packet) {
   switch (packet.event) {
     case 'connect':
       if (!pluginConnected && devtoolConnected) {
-        sendToPlugin('devtool:connect', [features]);
+        sendToPlugin('devtool:connect', [sessionId, features]);
         sendToPage({
           event: 'connect'
         });
@@ -109,7 +110,7 @@ document.addEventListener('basisjs-devpanel:init', function(e) {
   }
 
   if (pluginConnected) {
-    sendToPlugin('devtool:connect', [packet.features || features]);
+    sendToPlugin('devtool:connect', [sessionId, packet.features || features]);
     sendToPage({
       event: 'connect'
     });
@@ -125,6 +126,9 @@ document.addEventListener(inputChannelId, function(e) {
 
   if (packet.event === 'features') {
     features = packet.data[0];
+    if (!pluginConnected){
+      return;
+    }
   }
 
   plugin.postMessage(packet);

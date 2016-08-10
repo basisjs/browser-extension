@@ -3,6 +3,7 @@ var inspectedWindow = chrome.devtools.inspectedWindow;
 var debugIndicator = DEBUG ? createIndicator() : null;
 var contentConnected = false;
 var devtoolConnected = false;
+var devtoolSession = null;
 var devtoolFeatures = [];
 var callbacks = {};
 var listeners;
@@ -57,6 +58,7 @@ function notify(type, args) {
 function createSubscribers() {
   return {
     data: [],
+    session: [],
     connection: [],
     features: []
   };
@@ -85,6 +87,9 @@ function initUI(code) {
         subscribers[channel].push(fn);
 
         switch (channel) {
+          case 'session':
+            fn(devtoolSession);
+            break;
           case 'connection':
             fn(devtoolConnected);
             break;
@@ -170,11 +175,10 @@ listeners = {
     contentConnected = true;
     updateIndicator();
   },
-  'devtool:connect': function(features) {
-    devtoolConnected = true;
-    notify('connection', [devtoolConnected]);
-    devtoolFeatures = features;
-    notify('features', [devtoolFeatures]);
+  'devtool:connect': function(sessionId, features) {
+    notify('session', [devtoolSession = sessionId]);
+    notify('features', [devtoolFeatures = features]);
+    notify('connection', [devtoolConnected = true]);
     updateIndicator();
 
     // send interface UI request
@@ -194,16 +198,13 @@ listeners = {
   },
   'disconnect': function() {
     contentConnected = false;
-    devtoolConnected = false;
-    notify('connection', [devtoolConnected]);
-    devtoolFeatures = [];
-    notify('features', [devtoolFeatures]);
+    notify('features', [devtoolFeatures = []]);
+    notify('connection', [devtoolConnected = false]);
     updateIndicator();
     dropSandboxTimer = setTimeout(dropSandbox, 2000);
   },
   'features': function(features) {
-    devtoolFeatures = features;
-    notify('features', [devtoolFeatures]);
+    notify('features', [devtoolFeatures = features]);
   },
   'data': function() {
     if (DEBUG) {
