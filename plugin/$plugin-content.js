@@ -6,22 +6,48 @@ var pageConnected = false;
 var listeners = {};
 var callbacks = {};
 var subscribers = [];
+var dropSandboxTimer;
 var sandbox;
 var page = chrome.extension.connect({
   name: 'basisjsDevtool:plugin'
 });
 
-function updateIndicator(){
+function $(id) {
+  return document.getElementById(id);
+}
+
+function updateConnectionStateIndicator(id, state) {
+  $(id).innerHTML = state ? 'OK' : 'pending...';
+  $(id).className = 'state ' + (state ? 'ok' : 'pending');
+}
+
+function updateIndicator() {
+  updateConnectionStateIndicator('connection-to-page', contentConnected);
+  updateConnectionStateIndicator('connection-to-basisjs', pageConnected);
+  $('state-banner').style.display = contentConnected && pageConnected ? 'none' : 'block';
+
   if (DEBUG) {
     debugIndicator.style.background = [
-      'blue',   // once disconnected
+      'gray',   // once disconnected
       'orange', // contentConnected but no a page
       'green'   // all connected
     ][contentConnected + pageConnected];
   }
 }
 
-function initUI(code){
+function initSandbox() {
+  clearTimeout(dropSandboxTimer);
+  dropSandbox();
+  sandbox = document.createElement('iframe');
+  sandbox.srcdoc = '<div id="sandbox-splashscreen" style="padding:20px;color:#888;">Fetching UI...</div>';
+  document.documentElement.appendChild(sandbox);
+}
+
+function sandboxError(message) {
+  sandbox.srcdoc = '<div style="padding:20px;color:#D00;">' + message + '</div>';
+}
+
+function initUI(code) {
   var apiId = genUID();
   
   subscribers = [];
@@ -34,20 +60,16 @@ function initUI(code){
     }
   };
 
-  sandbox = document.createElement('iframe');
-  sandbox.srcdoc = '<html></html>';
-  sandbox.onload = function(){
-    sandbox.contentWindow.location.hash = apiId;
-    sandbox.contentWindow.eval(code);
-  };
-  document.documentElement.appendChild(sandbox);
+  sandbox.contentWindow.location.hash = apiId;
+  sandbox.contentWindow.eval(code + ';document.getElementById("sandbox-splashscreen").style.display="none"');
 }
 
-function dropUI(){
+function dropSandbox() {
   if (sandbox) {
     sandbox.parentNode.removeChild(sandbox);
     sandbox.setAttribute('srcdoc', '');
     sandbox.setAttribute('src', '');
+    sandbox = null;
   }
 }
 
@@ -126,13 +148,18 @@ transport
 
     // send interface UI request
     // TODO: run once
-    dropUI();
+    initSandbox();
     var callback = genUID();
     callbacks[callback] = function(err, type, content) {
-      if (type === 'script')
-        initUI(content);
-      else
-        alert('Unsupported UI content: ' + type);
+      if (err) {
+        return sandboxError('Fetch UI error: ' + err);
+      }
+
+      if (type !== 'script') {
+        return sandboxError('Unsupported UI content: ' + type);
+      }
+
+      initUI(content);
     };
     page.postMessage({
       event: 'getInspectorUI',
@@ -143,6 +170,7 @@ transport
     contentConnected = false;
     pageConnected = false;
     updateIndicator();
+    dropSandboxTimer = setTimeout(dropSandbox, 2000);
   })
   .on('data', function() {
     if (DEBUG) {
