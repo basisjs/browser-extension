@@ -56,6 +56,12 @@ function initUI(code) {
       send: transport.send,
       subscribe: function(fn){
         subscribers.push(fn);
+      },
+      on: function(){
+        return this;
+      },
+      off: function(){
+        return this;
       }
     }
   };
