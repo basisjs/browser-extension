@@ -24,11 +24,12 @@
   #state-banner
   {
     padding: 20px;
-    color: #888;
+    color: #444;
+    font-size: 14px;
   }
   .connection
   {
-    margin-bottom: 10px;
+    margin-bottom: 16px;
   }
   .state.pending
   {
@@ -38,6 +39,13 @@
   {
     color: #090;
   }
+  .comment
+  {
+    color: #999;
+    font-size: 12px;
+    margin-top: 4px;
+    margin-left: 16px;
+  }
 </style>
 
 <div id="state-banner">
@@ -46,6 +54,7 @@
   </div>
   <div class="connection">
     Connection to basis.js devpanel – <span id="connection-to-basisjs" class="state pending">pending...</span>
+    <div class="comment">NOTE: basis.js 1.9+ with devpanel activated is required</di>
   </div>
 </div>
 
