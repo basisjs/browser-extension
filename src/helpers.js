@@ -5,8 +5,8 @@ function createIndicator(){
   return debugIndicator;
 }
 
-function slice(value){
-  return Array.prototype.slice.call(value);
+function slice(value, offset){
+  return Array.prototype.slice.call(value, offset);
 }
 
 function genUID(len){

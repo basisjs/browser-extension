@@ -4,8 +4,8 @@ var debugIndicator = DEBUG ? createIndicator() : null;
 var contentConnected = false;
 var devtoolConnected = false;
 var devtoolFeatures = [];
-var listeners = {};
 var callbacks = {};
+var listeners;
 var subscribers = createSubscribers();
 var dropSandboxTimer;
 var sandbox;
@@ -69,7 +69,9 @@ function initUI(code) {
 
   window[apiId] = function createAPI() {
     return {
-      send: transport.send,
+      send: function(){
+        sendToPage.apply(null, ['data'].concat(slice(arguments)));
+      },
       subscribe: function(channel, fn) {
         if (typeof channel === 'function') {
           fn = channel;
@@ -110,6 +112,26 @@ function dropSandbox() {
   }
 }
 
+function sendToPage(event) {
+  var args = slice(arguments, 1);
+  var callback = false;
+
+  if (args.length && typeof args[args.length - 1] === 'function') {
+    callback = genUID();
+    callbacks[callback] = args.pop();
+  }
+
+  if (DEBUG) {
+    console.log('[basisjs.plugin] send data', callback, args);
+  }
+
+  page.postMessage({
+    event: event,
+    data: args,
+    callback: callback
+  });
+}
+
 page.onMessage.addListener(function(packet) {
   if (DEBUG) {
     console.log('[basisjs.plugin] Recieve:', packet);
@@ -139,52 +161,16 @@ page.onMessage.addListener(function(packet) {
       });
     });
 
-  var list = listeners[packet.event];
-  if (list)
-    for (var i = 0, item; item = list[i]; i++)
-      item.fn.apply(item.context, args);
+  if (listeners.hasOwnProperty(packet.event))
+    listeners[packet.event].apply(null, args);
 });
 
-var transport = {
-  on: function(eventName, fn, context) {
-    if (!listeners[eventName])
-      listeners[eventName] = [];
-
-    listeners[eventName].push({
-      fn: fn,
-      context: context
-    });
-
-    return this;
-  },
-
-  send: function() {
-    var args = slice(arguments);
-    var callback = false;
-
-    if (args.length && typeof args[args.length - 1] === 'function') {
-      callback = genUID();
-      callbacks[callback] = args.pop();
-    }
-
-    if (DEBUG) {
-      console.log('[basisjs.plugin] send data', callback, args);
-    }
-
-    page.postMessage({
-      event: 'data',
-      data: args,
-      callback: callback
-    });
-  }
-};
-
-transport
-  .on('connect', function() {
+listeners = {
+  'connect': function() {
     contentConnected = true;
     updateIndicator();
-  })
-  .on('devtool:connect', function(features) {
+  },
+  'devtool:connect': function(features) {
     devtoolConnected = true;
     notify('connection', [devtoolConnected]);
     devtoolFeatures = features;
@@ -192,10 +178,9 @@ transport
     updateIndicator();
 
     // send interface UI request
-    // TODO: run once
+    // TODO: reduce reloads
     initSandbox();
-    var callback = genUID();
-    callbacks[callback] = function(err, type, content) {
+    sendToPage('getInspectorUI', function(err, type, content) {
       if (err) {
         return sandboxError('Fetch UI error: ' + err);
       }
@@ -205,13 +190,9 @@ transport
       }
 
       initUI(content);
-    };
-    page.postMessage({
-      event: 'getInspectorUI',
-      callback: callback
     });
-  })
-  .on('disconnect', function() {
+  },
+  'disconnect': function() {
     contentConnected = false;
     devtoolConnected = false;
     notify('connection', [devtoolConnected]);
@@ -219,18 +200,19 @@ transport
     notify('features', [devtoolFeatures]);
     updateIndicator();
     dropSandboxTimer = setTimeout(dropSandbox, 2000);
-  })
-  .on('features', function(features) {
+  },
+  'features': function(features) {
     devtoolFeatures = features;
     notify('features', [devtoolFeatures]);
-  })
-  .on('data', function() {
+  },
+  'data': function() {
     if (DEBUG) {
       console.log('[basisjs.plugin] recieve data', arguments);
     }
 
     notify('data', arguments);
-  });
+  }
+};
 
 page.postMessage({
   event: 'plugin:init',
