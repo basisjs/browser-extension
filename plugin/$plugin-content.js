@@ -35,7 +35,7 @@ function initUI(code){
   };
 
   sandbox = document.createElement('iframe');
-  sandbox.srcdoc = '<script src="$plugin-content-inject.js"></script>';
+  sandbox.srcdoc = '<html></html>';
   sandbox.onload = function(){
     sandbox.contentWindow.location.hash = apiId;
     sandbox.contentWindow.eval(code);
@@ -144,7 +144,7 @@ transport
     pageConnected = false;
     updateIndicator();
   })
-  .on('data', function(a, b, c, cb) {
+  .on('data', function() {
     if (DEBUG) {
       console.log('[basisjs.plugin] recieve data', arguments);
     }
