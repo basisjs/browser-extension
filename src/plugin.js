@@ -201,7 +201,7 @@ listeners = {
     notify('features', [devtoolFeatures = []]);
     notify('connection', [devtoolConnected = false]);
     updateIndicator();
-    dropSandboxTimer = setTimeout(dropSandbox, 2000);
+    dropSandboxTimer = setTimeout(dropSandbox, 3000);
   },
   'features': function(features) {
     notify('features', [devtoolFeatures = features]);
