@@ -1,3 +1,4 @@
+var DEBUG = false;
 var connections = {};
 
 function getConnection(id) {
@@ -13,19 +14,28 @@ function getConnection(id) {
 
 function sendToPage(connection, payload) {
   if (connection && connection.page) {
-    console.log('-> page', payload);
+    if (DEBUG) {
+      console.log('-> page', payload);
+    }
+
     connection.page.postMessage(payload)
   } else {
-    console.warn('-> page [not sent - no connection]', payload);
+    if (DEBUG) {
+      console.warn('-> page [not sent - no connection]', payload);
+    }
   }
 }
 
 function sendToPlugin(connection, payload) {
   if (connection && connection.plugin) {
-    console.log('-> plugin', payload);
+    if (DEBUG) {
+      console.log('-> plugin', payload);
+    }
     connection.plugin.postMessage(payload)
   } else {
-    console.warn('-> plugin [not sent - no connection]', payload);
+    if (DEBUG) {
+      console.warn('-> plugin [not sent - no connection]', payload);
+    }
   }
 }
 
@@ -41,13 +51,19 @@ function connectPage(page) {
   }
 
   page.onMessage.addListener(function(payload) {
-    console.log('page -> plugin', payload);
+    if (DEBUG) {
+      console.log('page -> plugin', payload);
+    }
 
     // proxy: page -> plugin
     sendToPlugin(connection, payload);
   });
 
   page.onDisconnect.addListener(function() {
+    if (DEBUG) {
+      console.log('page disconnect', tabId);
+    }
+
     connection.page = null;
     sendToPlugin(connection, { event: 'disconnect' });
   });
@@ -57,7 +73,9 @@ function connectPlugin(plugin) {
   var connection;
 
   plugin.onMessage.addListener(function(payload) {
-    console.log('plugin -> page', payload);
+    if (DEBUG) {
+      console.log('plugin -> page', payload);
+    }
 
     if (payload.event == 'plugin:init') {
       connection = getConnection(payload.tabId);
@@ -78,7 +96,10 @@ function connectPlugin(plugin) {
 
   plugin.onDisconnect.addListener(function() {
     if (connection) {
-      console.log('plugin disconnect');
+      if (DEBUG) {
+        console.log('plugin disconnect');
+      }
+
       connection.plugin = null;
       sendToPage(connection, { event: 'disconnect' });
     }
